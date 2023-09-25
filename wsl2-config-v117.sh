@@ -15,6 +15,10 @@
 # Bugfixes (1.1.5)
 # chown (1.1.7) 
 #
+# Bijgwerkt 25 september 2023 
+# Nvidia eruit bij Microk8s
+# Community eruit bij Microk8s 
+#
 # Start melding aanmaken
 PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
 NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
@@ -145,9 +149,9 @@ echo Installatie KubeADM mbv SNAP gestart
 snap install kubeadm --classic --channel=latest > /dev/null 2>&1
 #
 echo MicroK8S enable addon
-microk8s enable community 
+# microk8s enable community 
 microk8s enable dashboard
-microk8s enable gpu 
+# microk8s enable gpu 
 # microk8s enable dns
 # microk8s enable hostpath-storage
 #
