@@ -74,8 +74,9 @@ function ubuntu_update () {
 } 
 # Hoofdmenu weergeven
 while true; do
+    clear
     echo 'Configuratie' $NAME $VERSION 'HoofdMenu'
-    echo 'Script wordt uitgevoerd als'$USER
+    echo 'Script wordt uitgevoerd als' $USER
     echo 'Gestart vanuit gebruiker' $SUDO_USER
     echo " "
     echo "Maak een keuze:"
@@ -482,17 +483,23 @@ while true; do
             ;;
         7)
             echo "U heeft gekozen voor optie 7."
-            # ansible 
-            apt update 
-            apt-add-repository ppa:ansible/ansible
-            apt update 
+            # Ansible Repo toevoegen 
+            echo "Ansible repository toevoegen aan apt"
+            apt update -qq
+            apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
+            apt update -qq
+            # Ansible Installatie 
+            echo "Installeren Ansible"
             apt install ansible -y 
             # inventory (standaard in /etc/ansible/hosts directory) 
-            curl -s -o /etc/ansible/hosts/db_servers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/db_servers
-            curl -s -o /etc/ansible/hosts/load_balancers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/load_balancers
-            curl -s -o /etc/ansible/hosts/webservers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/webservers
-            curl -s -o /etc/ansible/hosts/werkstations https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/werkstations
+            mkdir -p /etc/ansible/inventory 
+            curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/db_servers
+            curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/load_balancers
+            curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/webservers
+            curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/werkstations
             # playbooks
+            mkdir -p /home/$SUDO_USER/playbooks
+            chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
             curl -s -o /home/$SUDO_USER/playbooks/ws_basis_config-V001.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ws_basis_config-V001.yml
             ;;
         9)
