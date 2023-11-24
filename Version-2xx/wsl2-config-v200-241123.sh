@@ -27,7 +27,7 @@
 # #######################
 # Hoofdmenu met keuzes en check sources.list (2.0.0.161123 DEVELOP) 
 # Functies (2.0.0.181123 DEVELOP) 
-# flask demo (2.0.0.241123 DEVELOP)
+# flask demo en minikube(2.0.0.241123 DEVELOP)
 #
 #
 #
@@ -43,7 +43,28 @@ NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
 VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
 VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
 VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
-# Function to install Docker
+# 
+# Functies
+#
+# Function Bijwerken Ubuntu 
+#
+function ubuntu_update () {
+    apt update -qq
+    apt upgrade -qq -y > /dev/null 2>&1
+    apt autoremove -qq -y
+    timedatectl set-timezone Europe/Amsterdam
+    # VMware Tools 
+    apt install -qq -y open-vm-tools
+    # Midnight Commander 
+    apt install -qq -y mc
+    apt install -qq -y screenfetch
+    apt install -qq -y wget
+} 
+#
+#
+# Function Installeren Docker 
+#
+#
 function install_docker() {
   # Check if Docker is installed
   if ! [ -x "$(command -v docker)" ]; then
@@ -59,20 +80,25 @@ function install_docker() {
     echo 'Docker is already installed.'
   fi
 }
-# Function Bijwerken Ubuntu 
-function ubuntu_update () {
-    apt update -qq
-    apt upgrade -qq -y > /dev/null 2>&1
-    apt autoremove -qq -y
-    timedatectl set-timezone Europe/Amsterdam
-    # VMware Tools 
-    apt install -qq -y open-vm-tools
-    # Midnight Commander 
-    apt install -qq -y mc
-    apt install -qq -y screenfetch
-    apt install -qq -y wget
-} 
+#
+#
+# Function Minikube config 
+#
+#
+function minikube_config () {
+    minikube config set driver docker 
+    # Beschikbaar geheugen delen door 4 en in variable stoppen
+    ram=$(free --mega | grep 'Mem' | awk '{print $7/4}')
+    minikube config set memory $ram 
+    cpu_aantal=$(nproc)
+    minikube config set cpus $cpu_aantal  
+    # minikube config view 
+}
+#
+#
 # Hoofdmenu weergeven
+#
+#
 while true; do
     clear
     echo 'Configuratie' $NAME $VERSION 'HoofdMenu'
@@ -95,7 +121,8 @@ while true; do
     case $keuze in
         1)
             # LINUX BIJWERKEN
-            echo "U heeft gekozen voor optie 1."
+            clear 
+            echo "Optie 1 - Linux Bijwerken gestart ..."
             if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
                 sed 's@mirrors.edge.kernel.org@nl.archive.ubuntu.com@' -i /etc/apt/sources.list
                 echo "Waarde aangepast naar nl.archive.ubuntu.com in sources.list"
@@ -103,7 +130,7 @@ while true; do
                 # Replace the value with nl.archive.ubuntu.com
                 echo "Mirrors.edge.kernel.org waarde niet aangetroffen in sources.list"
             fi
-            #
+            #.
             if grep -q "nl.archive.ubuntu.com" /etc/apt/sources.list; then
                 echo "The file /etc/apt/sources.list contains nl.archive.ubuntu.com"
             else
@@ -120,7 +147,8 @@ while true; do
             ;;
         2)
             # Scripts maken 
-            echo "U heeft gekozen voor optie 2."
+            clear 
+            echo "Optie 2 - Scripts maken gestart ..."
             if [ ! -d "/home/$SUDO_USER/scripts" ]; then
                 mkdir -p /home/$SUDO_USER/scripts
                 mkdir -p /home/$SUDO_USER/scripts/gui
@@ -247,6 +275,7 @@ while true; do
                 mkdir -p /home/$SUDO_USER/docker
                 mkdir -p /home/$SUDO_USER/docker/apache 
                 mkdir -p /home/$SUDO_USER/docker/flask-demo
+                mkdir -p /home/$SUDO_USER/docker/flask-demo/templates 
                 mkdir -p /home/$SUDO_USER/docker/mysql
                 mkdir -p /home/$SUDO_USER/docker/nextcloud
                 mkdir -p /home/$SUDO_USER/docker/nginx
@@ -324,12 +353,15 @@ while true; do
             # FLASK demo
             # https://hackmd.io/@pmanzoni/r1uWcTqfU
             #
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/index.html https://raw.githubusercontent.com/pmanzoni/flask/master/templates/index.html
             curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file https://raw.githubusercontent.com/pmanzoni/flask/master/Dockerfile
             curl -s -o /home/$SUDO_USER/docker/flask-demo/app.py https://raw.githubusercontent.com/pmanzoni/flask/master/app.py
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/templates/index.html https://raw.githubusercontent.com/pmanzoni/flask/master/templates/index.html
             #
             echo "#! /bin/bash" > /home/$SUDO_USER/docker/flask-demo/flask-demo-build.sh
-            echo "docker build -f /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file -t flask-demo:V100 /home/$SUDO_USER/docker/flask-demo/ ." >> /home/$SUDO_USER/docker/flask-demo/flask-demo-build.sh
+            echo "docker build -f ./flask-demo-dkr-file -t flask-demo:v100 ." >> /home/$SUDO_USER/docker/flask-demo/flask-demo-build.sh
+            echo "docker run -p 8888:5000 -d --name flaskdemo flask-demo:v100" >> /home/$SUDO_USER/docker/flask-demo/flask-demo-build.sh
+            ip_address=$(ip addr show eth1 | grep 'inet\b' | awk '{print $2}' | cut -d/ -f1)
+            echo "Ga naar poort 8888 op" $ip_address
             chmod +x /home/$SUDO_USER/docker/flask-demo/flask-demo-build.sh
             # # docker build -t <YOUR_USERNAME>/myfirstapp .
             # # docker run -p 8888:5000 --name myfirstapp YOUR_USERNAME/myfirstapp
@@ -428,32 +460,32 @@ while true; do
                 # Call the function to install Docker
                 install_docker
             fi
-            # echo 'Docker and Docker Compose are installed.'
-            # MiniKube
+            # Docker is installed 
+            #
+            # Directory TMP check 
             if [ ! -d "/home/$SUDO_USER/tmp" ]; then
                 mkdir -p /home/$SUDO_USER/tmp
                 chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
             fi 
+            # Installatie Minikube 
             if ! [ -x "$(command -v minikube)" ]; then
-                echo 'Error: minikube is not installed.' >&2
+                echo 'Minikube niet aangetroffen. Installatie gestart ...' >&2
                 curl -o /home/$SUDO_USER/tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
                 dpkg -i /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
                 rm /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
-                minikube config set driver docker 
-                minikube config set memory 4096 
-                minikube config set cpus 4  
             fi 
+            # Installatie kubeadm
             if ! [ -x "$(command -v kubeadm)" ]; then
                 echo 'Error: kubeadm is not installed.' >&2
                 snap install kubeadm --classic --channel=latest
             fi
+            # Installatie kubectl 
             if ! [ -x "$(command -v kubectl)" ]; then
                 echo 'Error: minikube is not installed.' >&2
                 snap install kubectl --classic --channel=latest
             fi
-                minikube config set driver docker 
-                minikube config set memory 4096 
-                minikube config set cpus 4  
+            # Minikube configuratie uitvoeren 
+            minikube_config
             ;;
         6)
             echo "U heeft gekozen voor optie 6."
