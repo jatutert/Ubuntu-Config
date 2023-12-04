@@ -570,59 +570,80 @@ while true; do
         7)
             echo "Optie 7 - Installatie Ansible inclusief demo omgeving gestart ..."
             #
-            # Functie veranderen ubuntu repo uitvoeren
-            change_ubuntu_repo
-            # Functie updaten Ubuntu uitvoeren 
-            ubuntu_update
-            # Ansible Repo toevoegen 
-            apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
-            # Functie updaten Ubuntu uitvoeren 
-            ubuntu_update
-            # Ansible Installatie 
-            echo "Installeren Ansible"
-            apt install ansible -y 
-            # inventory (standaard in /etc/ansible/hosts directory) 
-            mkdir -p /etc/ansible/inventory 
-            curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/ansible_demo
-            # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/db_servers
-            # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/load_balancers
-            # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/webservers
-            # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/werkstations
-            # 
-            # playbooks
-            mkdir -p /home/$SUDO_USER/playbooks
-            chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
-            curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ansible_demo_playbook.yml
-            #
-            # Aanpassen etc hosts bestand binnen ubuntu linux 
-            #
             #
             # MASTER
             # ######
+            #
             #
             # Haal de hostname op
             hostname=$(hostname)
             #
             # Controleer of de hostname gelijk is aan "ulx-s-mst-001"
             if [ "$hostname" == "ulx-s-mst-001" ]; then
-                # Haal het IP-adres van eth1 op
-                eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-                # Voeg 1 toe aan het IP-adres van eth1
-                IFS=. read -r a b c d <<< "$eth1_ip"
-                eth1_plus1_ip="$a.$b.$c.$((d+1))"
-                # Sla de IP-adressen op in afzonderlijke variabelen
-                eth1_ip_var="eth1_ip=$eth1_ip"
-                eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
-                # Aanpassen hosts bestand 
-                if grep -q "$eth1_ip" /etc/hosts; then
-                   echo "$hostname already exists in /etc/hosts"
-                else
-                   # Add the hostname and IP address to /etc/hosts
-                   echo "$eth1_ip_var ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
-                   echo "$eth1_plus1_ip_var ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
-                   echo "Hostname $hostname added to /etc/hosts"
-                fi
-                ssh-copy-id -i $HOME/.ssh/id_rsa.pub vagrant@$eth1_plus1_ip_var
+                #
+                # Stap 1 Installatie
+                    # Aanpassen Ubuntu Standaard Repository naar Nederland 
+                    change_ubuntu_repo
+                    # Bijwerken Ubuntu Standaard Repository naar laatste stand van zaken
+                    ubuntu_update
+                    # Ansible Repo toevoegen 
+                    apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
+                    # Bijwerken Ubuntu Repository met Ansible 
+                    ubuntu_update
+                    # Installeren ANSIBLE latest
+                    apt install ansible -y 
+                    echo "Stap 1 Installatie Ansible gereed"
+                # 
+                # Stap 2 Aanpassen etc hosts bestand 
+                    # vullen variable hostname
+                    hostname=$(hostname)
+                    # Haal het IP-adres van eth1 op
+                    eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+                    # Voeg 1 toe aan het IP-adres van eth1
+                    IFS=. read -r a b c d <<< "$eth1_ip"
+                    eth1_plus1_ip="$a.$b.$c.$((d+1))"
+                    # Sla de IP-adressen op in afzonderlijke variabelen
+                    eth1_ip_var="eth1_ip=$eth1_ip"
+                    eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
+                    # Aanpassen hosts bestand 
+                    if grep -q "$eth1_ip" /etc/hosts; then
+                       echo "$hostname already exists in /etc/hosts"
+                    else
+                       # Add the hostname and IP address to /etc/hosts
+                       echo "$eth1_ip ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
+                       echo "$eth1_plus1_ip ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
+                       echo "Hostname $hostname added to /etc/hosts"
+                    fi
+                    #
+                    echo "Aanpassen Ubuntu Hosts bestand gereed"
+                #
+                # Stap 3 Inventory ophalen van GitHUB  
+                   mkdir -p /etc/ansible/inventory 
+                   curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/ansible_demo
+                   # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/db_servers
+                   # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/load_balancers
+                   # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/webservers
+                   # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/werkstations
+                   echo "Ophalen Inventory vanaf GitHub gereed"
+                # 
+                # Stap 4 aanpassen ansible config met Inventory 
+                    if grep -q "defaults" /etc/ansible/ansible.cfg; then
+                        echo "Ansible Configuratiebestand reeds voorzien van Inventory"
+                    else
+                        # Add the hostname and IP address to /etc/hosts
+                        echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
+                        echo "inventory = inventory/" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
+                        echo "Ansible Configuratiebestand voorzien van Inventory"
+                    fi
+                    echo "Aanpassen Ansible CFG gereed" 
+                #
+                # Stap 5 Playbooks ophalen van GitHUB
+                    mkdir -p /home/$SUDO_USER/playbooks
+                    chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
+                    curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ansible_demo_playbook.yml
+                    echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
+                #
+                # Stap x 
             fi
             #
             #
@@ -634,24 +655,31 @@ while true; do
             hostname=$(hostname)
             #
             if [ "$hostname" == "ulx-s-slv-001" ]; then
-                # Haal het IP-adres van eth1 op
-                eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-                # Voeg 1 toe aan het IP-adres van eth1
-                IFS=. read -r a b c d <<< "$eth1_ip"
-                eth1_min1_ip="$a.$b.$c.$((d-1))"
-                # Sla de IP-adressen op in afzonderlijke variabelen
-                eth1_ip_var="eth1_ip=$eth1_ip"
-                eth1_min1_ip_var="eth1_min1_ip=$eth1_min1_ip"
-                if grep -q "$eth1_ip" /etc/hosts; then
-                    echo "$hostname already exists in /etc/hosts"
-                else
-                   # Add the hostname and IP address to /etc/hosts
-                   echo "$eth1_ip_var ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
-                   echo "$eth1_min1_ip_var ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
-                   echo "Hostname $hostname added to /etc/hosts"
-                fi
-                ssh-copy-id -i $HOME/.ssh/id_rsa.pub vagrant@$eth1_min1_ip_var                
-            fi
+                #
+                # Stap 1 Aanpassen etc hosts bestand
+                #
+                    # vullen variable hostname
+                    hostname=$(hostname)
+                    # Haal het IP-adres van eth1 op
+                    eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+                    # Voeg 1 toe aan het IP-adres van eth1
+                    IFS=. read -r a b c d <<< "$eth1_ip"
+                    eth1_min1_ip="$a.$b.$c.$((d-1))"
+                    # Sla de IP-adressen op in afzonderlijke variabelen
+                    eth1_ip_var="eth1_ip=$eth1_ip"
+                    eth1_min1_ip_var="eth1_min1_ip=$eth1_min1_ip"
+                    if grep -q "$eth1_ip" /etc/hosts; then
+                        echo "$hostname already exists in /etc/hosts"
+                    else
+                        # Add the hostname and IP address to /etc/hosts
+                        echo "$eth1_ip ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
+                        echo "$eth1_min1_ip ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
+                        echo "Hostname $hostname added to /etc/hosts"
+                    fi                
+                #
+                # Stap x  
+                #
+           fi
         ;;
         9)
             echo "U heeft gekozen om het menu te verlaten."
