@@ -643,6 +643,10 @@ while true; do
                     curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ansible_demo_playbook.yml
                     echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
                 #
+                # Stap 6 SSH verbinden script maken 
+                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-slv-001' > /home/$SUDO_USER/ssh_ulx-s-slv-001.sh 
+                chmod +x /home/$USER_USER/ssh_ulx-s-slv-001.sh
+                # 
                 # Stap x 
             fi
             #
@@ -676,6 +680,10 @@ while true; do
                         echo "$eth1_min1_ip ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
                         echo "Hostname $hostname added to /etc/hosts"
                     fi                
+                #
+                # Stap 2 SSH verbinden script maken 
+                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-mst-001' > /home/$SUDO_USER/ssh_ulx-s-mst-001.sh 
+                chmod +x /home/$USER_USER/ssh_ulx-s-mst-001.sh
                 #
                 # Stap x  
                 #
