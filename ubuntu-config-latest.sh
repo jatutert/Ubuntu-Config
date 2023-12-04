@@ -2,7 +2,7 @@
 #
 #
 # Configuratiescript Ubuntu voor bijvoorbeeld Vagrant en WSL2 
-# Versie: 2.0.0 DEVELOP d.d. 30-11-2023
+# Versie: 2.0.0 DEVELOP d.d. 02-12-2023
 # Auteur: John Tutert
 #
 # ######################
@@ -30,6 +30,8 @@
 # flask demo en minikube(2.0.0.241123 DEVELOP)
 # meerdere talen flash demo (2.0.0.301123 DEVELOP) 
 # ubuntu update repo als functie (2.0.0.301123 DEVELOP)
+# hosts bestand aanpassen (2.0.0.02122023 DEVELOP)
+#
 #
 #
 # Check of script wordt uitgevoerd als SUDO 
@@ -554,10 +556,15 @@ while true; do
             #
             #
             # IT Fundamentals 
+            # GNU Compiler C 
             apt install gcc -y
+            # JAVA JDK 
             apt install openjdk-17-jdk -y
+            # Image metadata tool 
             apt install exif -y
+            # RAW files editor 
             apt install okteta -y
+            # Data image hider 
             apt install steghide -y
             ;;
         7)
@@ -586,7 +593,66 @@ while true; do
             mkdir -p /home/$SUDO_USER/playbooks
             chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
             curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ansible_demo_playbook.yml
-            ;;
+            #
+            # Aanpassen etc hosts bestand binnen ubuntu linux 
+            #
+            #
+            # MASTER
+            # ######
+            #
+            # Haal de hostname op
+            hostname=$(hostname)
+            #
+            # Controleer of de hostname gelijk is aan "ulx-s-mst-001"
+            if [ "$hostname" == "ulx-s-mst-001" ]; then
+                # Haal het IP-adres van eth1 op
+                eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+                # Voeg 1 toe aan het IP-adres van eth1
+                IFS=. read -r a b c d <<< "$eth1_ip"
+                eth1_plus1_ip="$a.$b.$c.$((d+1))"
+                # Sla de IP-adressen op in afzonderlijke variabelen
+                eth1_ip_var="eth1_ip=$eth1_ip"
+                eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
+                # Aanpassen hosts bestand 
+                if grep -q "$eth1_ip" /etc/hosts; then
+                   echo "$hostname already exists in /etc/hosts"
+                else
+                   # Add the hostname and IP address to /etc/hosts
+                   echo "$eth1_ip_var ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
+                   echo "$eth1_plus1_ip_var ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
+                   echo "Hostname $hostname added to /etc/hosts"
+                fi
+                ssh-copy-id -i $HOME/.ssh/id_rsa.pub vagrant@$eth1_plus1_ip_var
+            fi
+            #
+            #
+            # SLAVE
+            # ######
+            #
+            # 
+            # Haal de hostname op
+            hostname=$(hostname)
+            #
+            if [ "$hostname" == "ulx-s-slv-001" ]; then
+                # Haal het IP-adres van eth1 op
+                eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+                # Voeg 1 toe aan het IP-adres van eth1
+                IFS=. read -r a b c d <<< "$eth1_ip"
+                eth1_min1_ip="$a.$b.$c.$((d-1))"
+                # Sla de IP-adressen op in afzonderlijke variabelen
+                eth1_ip_var="eth1_ip=$eth1_ip"
+                eth1_min1_ip_var="eth1_min1_ip=$eth1_min1_ip"
+                if grep -q "$eth1_ip" /etc/hosts; then
+                    echo "$hostname already exists in /etc/hosts"
+                else
+                   # Add the hostname and IP address to /etc/hosts
+                   echo "$eth1_ip_var ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
+                   echo "$eth1_min1_ip_var ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
+                   echo "Hostname $hostname added to /etc/hosts"
+                fi
+                ssh-copy-id -i $HOME/.ssh/id_rsa.pub vagrant@$eth1_min1_ip_var                
+            fi
+        ;;
         9)
             echo "U heeft gekozen om het menu te verlaten."
             exit 0
