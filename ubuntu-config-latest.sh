@@ -2,7 +2,7 @@
 #
 #
 # Configuratiescript Ubuntu voor bijvoorbeeld Vagrant en WSL2 
-# Versie: 2.0.0 DEVELOP d.d. 02-12-2023
+# Versie: 2.0.0 DEVELOP d.d. 04-12-2023
 # Auteur: John Tutert
 #
 # ######################
@@ -31,7 +31,7 @@
 # meerdere talen flash demo (2.0.0.301123 DEVELOP) 
 # ubuntu update repo als functie (2.0.0.301123 DEVELOP)
 # hosts bestand aanpassen (2.0.0.02122023 DEVELOP)
-#
+# ansible (2.0.0.x) 
 #
 #
 # Check of script wordt uitgevoerd als SUDO 
