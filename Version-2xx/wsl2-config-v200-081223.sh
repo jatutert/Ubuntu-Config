@@ -32,7 +32,7 @@
 # ubuntu update repo als functie (2.0.0.301123 DEVELOP)
 # hosts bestand aanpassen (2.0.0.02122023 DEVELOP)
 # ansible (2.0.0.x) 
-#
+# vagrantfile 6.x (08122023) 
 #
 # Check of script wordt uitgevoerd als SUDO 
 if [ $(id -u) -ne 0 ]; then
@@ -114,6 +114,14 @@ function minikube_config () {
     cpu_aantal=$(nproc)
     minikube config set cpus $cpu_aantal  
     # minikube config view 
+    #
+    echo "#! /bin/bash" > /home/$SUDO_USER/minikube_config.sh 
+    echo "minikube config set driver docker" >> /home/$SUDO_USER/minikube_config.sh 
+    echo "ram=$(free --mega | grep 'Mem' | awk '{print $7/4}')" >> /home/$SUDO_USER/minikube_config.sh 
+    echo "minikube config set memory $ram" >> /home/$SUDO_USER/minikube_config.sh  
+    echo "cpu_aantal=$(nproc)" >> /home/$SUDO_USER/minikube_config.sh  
+    echo "minikube config set cpus $cpu_aantal" >> /home/$SUDO_USER/minikube_config.sh  
+    chmod +x /home/$SUDO_USER/minikube_config.sh 
 }
 #
 #
@@ -463,7 +471,7 @@ while true; do
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
@@ -476,7 +484,7 @@ while true; do
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
@@ -508,12 +516,12 @@ while true; do
             chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
             # K8S IO website demos
             # MySQL 
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://k8s.io/examples/application/mysql/mysql-pv.yaml
-            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://k8s.io/examples/application/mysql/mysql-deployment.yaml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-pv.yaml
+            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-deployment.yaml
             # NGINX
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://k8s.io/examples/application/deployment.yaml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://k8s.io/examples/application/deployment-scale.yaml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://k8s.io/examples/application/deployment-update.yaml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment.yaml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-scale.yaml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-update.yaml
             #
             # Docker moet wel er zijn voor minikube !!! 
             #
@@ -535,18 +543,18 @@ while true; do
             if ! [ -x "$(command -v minikube)" ]; then
                 echo 'Minikube niet aangetroffen. Installatie gestart ...' >&2
                 curl -o /home/$SUDO_USER/tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-                dpkg -i /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
+                dpkg -i /home/$SUDO_USER/tmp/minikube_latest_amd64.deb > /dev/null 2>&1
                 rm /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
             fi 
             # Installatie kubeadm
             if ! [ -x "$(command -v kubeadm)" ]; then
-                echo 'Error: kubeadm is not installed.' >&2
-                snap install kubeadm --classic --channel=latest
+                echo 'Installatie kubeadm gestart ...' >&2
+                snap install kubeadm --classic --channel=latest > /dev/null 2>&1
             fi
             # Installatie kubectl 
             if ! [ -x "$(command -v kubectl)" ]; then
-                echo 'Error: minikube is not installed.' >&2
-                snap install kubectl --classic --channel=latest
+                echo 'Installatie kubectl gestart ...' >&2
+                snap install kubectl --classic --channel=latest > /dev/null 2>&1
             fi
             # Minikube configuratie uitvoeren 
             minikube_config
@@ -660,7 +668,7 @@ while true; do
                 #
                 # Stap 6 SSH verbinden script maken 
                 echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ssh_ulx-s-slv-001.sh 
-                chmod +x /home/$USER_USER/ssh_ulx-s-slv-001.sh
+                chmod +x /home/$SUDO_USER/ssh_ulx-s-slv-001.sh
                 # 
                 # Stap x 
             fi
@@ -699,7 +707,7 @@ while true; do
                 #
                 # Stap 2 SSH verbinden script maken 
                 echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-001' > /home/$SUDO_USER/ssh_ulx-s-mst-001.sh 
-                chmod +x /home/$USER_USER/ssh_ulx-s-mst-001.sh
+                chmod +x /home/$SUDO_USER/ssh_ulx-s-mst-001.sh
                 #
                 # Stap x  
                 #
