@@ -2,7 +2,7 @@
 #
 #
 # Configuratiescript Ubuntu voor bijvoorbeeld Vagrant en WSL2 
-# Versie: 2.0.0 DEVELOP d.d. 04-12-2023
+# Versie: 2.0.0 DEVELOP d.d. 08-12-2023
 # Auteur: John Tutert
 #
 # ######################
@@ -437,16 +437,6 @@ while true; do
             curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mysql/compose.yaml
             curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mongo.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mongo/compose.yaml
             curl -s -o /home/$SUDO_USER/yaml/docker-compose/wordpress/wordpress-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/wordpress-mysql/compose.yaml
-
-
-
-
-
-
-
-
-
-
             ;;
         5)
             # Kubernetes MiniKube 
@@ -472,6 +462,7 @@ while true; do
             echo '#' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+            echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
@@ -484,7 +475,7 @@ while true; do
             echo '#'              >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'Updaten NGiNX van versie 14 naar versie 16 gestart ...' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+            echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
@@ -496,7 +487,7 @@ while true; do
             echo '#! /bin/bash' > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'echo Aanpassen aantal replicas van 2 naar 4 gestart ...' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+            echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
@@ -603,7 +594,7 @@ while true; do
             hostname=$(hostname)
             #
             # Hostname ulx-s-2204-L-A-001 is Ansible Controller 
-            if [ "$hostname" == "ulx-s-2204-L-A-001" ]; then
+            if [ "$hostname" == "ulx-s-2204-l-a-001" ]; then
                 #
                 # Stap 1 Installatie
                     # Aanpassen Ubuntu Standaard Repository naar Nederland 
@@ -634,8 +625,8 @@ while true; do
                        echo "$hostname already exists in /etc/hosts"
                     else
                        # Add the hostname and IP address to /etc/hosts
-                       echo "$eth1_ip ulx-s-2204-L-A-001" | sudo tee -a /etc/hosts > /dev/null
-                       echo "$eth1_plus1_ip ulx-s-2204-L-A-010" | sudo tee -a /etc/hosts > /dev/null
+                       echo "$eth1_ip ulx-s-2204-l-a-001" | sudo tee -a /etc/hosts > /dev/null
+                       echo "$eth1_plus1_ip ulx-s-2204-l-a-010" | sudo tee -a /etc/hosts > /dev/null
                        echo "Hostname $hostname added to /etc/hosts"
                     fi
                     #
@@ -668,7 +659,7 @@ while true; do
                     echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
                 #
                 # Stap 6 SSH verbinden script maken 
-                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-L-A-010' > /home/$SUDO_USER/ssh_ulx-s-slv-001.sh 
+                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ssh_ulx-s-slv-001.sh 
                 chmod +x /home/$USER_USER/ssh_ulx-s-slv-001.sh
                 # 
                 # Stap x 
@@ -683,7 +674,7 @@ while true; do
             hostname=$(hostname)
             #
             # Hostname ulx-s-2204-L-A-010 is slaaf 1 voor ansible controller 
-            if [ "$hostname" == "ulx-s-2204-L-A-010" ]; then
+            if [ "$hostname" == "ulx-s-2204-l-a-010" ]; then
                 #
                 # Stap 1 Aanpassen etc hosts bestand
                 #
@@ -701,13 +692,13 @@ while true; do
                         echo "$hostname already exists in /etc/hosts"
                     else
                         # Add the hostname and IP address to /etc/hosts
-                        echo "$eth1_ip ulx-s-2204-L-A-010" | sudo tee -a /etc/hosts > /dev/null
-                        echo "$eth1_min1_ip ulx-s-2204-L-A-001" | sudo tee -a /etc/hosts > /dev/null
+                        echo "$eth1_ip ulx-s-2204-l-a-010" | sudo tee -a /etc/hosts > /dev/null
+                        echo "$eth1_min1_ip ulx-s-2204-l-a-001" | sudo tee -a /etc/hosts > /dev/null
                         echo "Hostname $hostname added to /etc/hosts"
                     fi                
                 #
                 # Stap 2 SSH verbinden script maken 
-                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-L-A-001' > /home/$SUDO_USER/ssh_ulx-s-mst-001.sh 
+                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-001' > /home/$SUDO_USER/ssh_ulx-s-mst-001.sh 
                 chmod +x /home/$USER_USER/ssh_ulx-s-mst-001.sh
                 #
                 # Stap x  
