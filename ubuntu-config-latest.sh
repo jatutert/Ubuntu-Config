@@ -363,18 +363,15 @@ while true; do
             # Docker 
             echo "Optie 4 - Installatie Docker-CE inclusief Compose met demo omgeving gestart ..."
             #
+            # Directories maken 
             maak_directories
             #
-            # JTU YAML files ophalen
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/docker-compose-yaml/main/docker-compose-nextcloud-vagrant.yml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/odoo/docker-compose.yml https://raw.githubusercontent.com/jatutert/docker-compose-yaml/main/docker-compose-odoo-vagrant.yml  
-            # awesome compose YAML files ophalen
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/prometheus-grafana/prometheus-grafana.yml https://raw.githubusercontent.com/docker/awesome-compose/master/prometheus-grafana/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/nextcloud-redis-mariadb.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nextcloud-redis-mariadb/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mysql/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mongo.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mongo/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/wordpress/wordpress-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/wordpress-mysql/compose.yaml
-            # Dockerfile uit slides van lesweek 4 module virtualisatie 
+            # Installatie DOCKER-CE en Docker Compose binnen Ubuntu 
+            install_docker
+            #
+            # Voorbeelden maken of downloaden 
+            #
+            # VOORBEELD ## Dockerfile uit slides van lesweek 4 module virtualisatie 
             echo '# start with OS ubuntu' > /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
             echo 'FROM ubuntu:latest' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
             echo 'RUN apt-get update' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
@@ -392,7 +389,7 @@ while true; do
             echo "docker build –f /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file -t ubtu-apache:V100 ." >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-build.sh
             chmod +x /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-build.sh
             #
-            # FLASK demo
+            # VOORBEELD ## FLASK demo
             #
             # Default demo dockerfile
             # https://hackmd.io/@pmanzoni/r1uWcTqfU
@@ -419,12 +416,37 @@ while true; do
             #
             chmod +x /home/$SUDO_USER/docker/flask-demo/flask-images-build.sh
             chmod +x /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh
-            # # docker build -t <YOUR_USERNAME>/myfirstapp .
-            # # docker run -p 8888:5000 --name myfirstapp YOUR_USERNAME/myfirstapp
             #
-            # Installatie DOCKER-CE 
-            # Call the function to install Docker
-            install_docker
+            # VOORBEELD ## MINIO Docker
+            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            echo '#' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            echo '# Minio Object Storage on Docker' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            echo 'docker run -d -p 9000:9000 -p 9001:9001 -p 9090:9090 --name minio -v /home/$USER/data/minio:/data -e "MINIO_ROOT_USER=minio1234" -e "MINIO_ROOT_PASSWORD=minio1234" minio/minio server /data --console-address ":9001"' >>/home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            echo 'echo MINIO_ROOT_USER=minio1234' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            echo 'echo MINIO_ROOT_PASSWORD=minio1234' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            chmod +x /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
+            #
+            # DOCKER COMPOSE 
+            #
+            # DOCKER COMPOSE YAML JTU bestanden ophalen
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/docker-compose-yaml/main/docker-compose-nextcloud-vagrant.yml
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/odoo/docker-compose.yml https://raw.githubusercontent.com/jatutert/docker-compose-yaml/main/docker-compose-odoo-vagrant.yml  
+            # DOCKER COMPOSE YAML awesome compose YAML bestanden ophalen
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/prometheus-grafana/prometheus-grafana.yml https://raw.githubusercontent.com/docker/awesome-compose/master/prometheus-grafana/compose.yaml
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/nextcloud-redis-mariadb.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nextcloud-redis-mariadb/compose.yaml
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mysql/compose.yaml
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mongo.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mongo/compose.yaml
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/wordpress/wordpress-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/wordpress-mysql/compose.yaml
+
+
+
+
+
+
+
+
+
+
             ;;
         5)
             # Kubernetes MiniKube 
@@ -462,6 +484,7 @@ while true; do
             echo '#'              >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+            echo 'Updaten NGiNX van versie 14 naar versie 16 gestart ...' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
@@ -473,6 +496,7 @@ while true; do
             echo '#! /bin/bash' > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+            echo 'echo Aanpassen aantal replicas van 2 naar 4 gestart ...' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
@@ -578,8 +602,8 @@ while true; do
             # Haal de hostname op
             hostname=$(hostname)
             #
-            # Controleer of de hostname gelijk is aan "ulx-s-mst-001"
-            if [ "$hostname" == "ulx-s-mst-001" ]; then
+            # Hostname ulx-s-2204-L-A-001 is Ansible Controller 
+            if [ "$hostname" == "ulx-s-2204-L-A-001" ]; then
                 #
                 # Stap 1 Installatie
                     # Aanpassen Ubuntu Standaard Repository naar Nederland 
@@ -610,8 +634,8 @@ while true; do
                        echo "$hostname already exists in /etc/hosts"
                     else
                        # Add the hostname and IP address to /etc/hosts
-                       echo "$eth1_ip ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
-                       echo "$eth1_plus1_ip ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
+                       echo "$eth1_ip ulx-s-2204-L-A-001" | sudo tee -a /etc/hosts > /dev/null
+                       echo "$eth1_plus1_ip ulx-s-2204-L-A-010" | sudo tee -a /etc/hosts > /dev/null
                        echo "Hostname $hostname added to /etc/hosts"
                     fi
                     #
@@ -643,6 +667,10 @@ while true; do
                     curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ansible_demo_playbook.yml
                     echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
                 #
+                # Stap 6 SSH verbinden script maken 
+                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-L-A-010' > /home/$SUDO_USER/ssh_ulx-s-slv-001.sh 
+                chmod +x /home/$USER_USER/ssh_ulx-s-slv-001.sh
+                # 
                 # Stap x 
             fi
             #
@@ -654,7 +682,8 @@ while true; do
             # Haal de hostname op
             hostname=$(hostname)
             #
-            if [ "$hostname" == "ulx-s-slv-001" ]; then
+            # Hostname ulx-s-2204-L-A-010 is slaaf 1 voor ansible controller 
+            if [ "$hostname" == "ulx-s-2204-L-A-010" ]; then
                 #
                 # Stap 1 Aanpassen etc hosts bestand
                 #
@@ -672,10 +701,14 @@ while true; do
                         echo "$hostname already exists in /etc/hosts"
                     else
                         # Add the hostname and IP address to /etc/hosts
-                        echo "$eth1_ip ulx-s-slv-001" | sudo tee -a /etc/hosts > /dev/null
-                        echo "$eth1_min1_ip ulx-s-mst-001" | sudo tee -a /etc/hosts > /dev/null
+                        echo "$eth1_ip ulx-s-2204-L-A-010" | sudo tee -a /etc/hosts > /dev/null
+                        echo "$eth1_min1_ip ulx-s-2204-L-A-001" | sudo tee -a /etc/hosts > /dev/null
                         echo "Hostname $hostname added to /etc/hosts"
                     fi                
+                #
+                # Stap 2 SSH verbinden script maken 
+                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-L-A-001' > /home/$SUDO_USER/ssh_ulx-s-mst-001.sh 
+                chmod +x /home/$USER_USER/ssh_ulx-s-mst-001.sh
                 #
                 # Stap x  
                 #
