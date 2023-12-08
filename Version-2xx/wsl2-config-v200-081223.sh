@@ -606,7 +606,7 @@ while true; do
                     # Bijwerken Ubuntu Repository met Ansible 
                     ubuntu_update
                     # Installeren ANSIBLE latest
-                    apt install ansible -y 
+                    apt install ansible -y > /dev/null 2>&1
                     echo "Stap 1 Installatie Ansible gereed"
                 # 
                 # Stap 2 Aanpassen etc hosts bestand 
