@@ -472,6 +472,7 @@ while true; do
             echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+            echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
             echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
@@ -689,7 +690,12 @@ while true; do
                     # Upgraden Ubuntu naar laatste stand van zaken 
                     ubuntu_update
                 #
-                # Stap 2 Aanpassen etc hosts bestand
+                # Stap 2 Installatie SSHPASS
+                # 
+                    # Starten installatie sshpass
+                    apt install sshpass -y
+                #
+                # Stap 3 Aanpassen etc hosts bestand
                 #
                     # vullen variable hostname
                     hostname=$(hostname)
@@ -710,7 +716,7 @@ while true; do
                         echo "Hostname $hostname added to /etc/hosts"
                     fi                
                 #
-                # Stap 3 SSH verbinden script maken 
+                # Stap 4 SSH verbinden script maken 
                 echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-001' > /home/$SUDO_USER/ansible_cntrl_ssh.sh 
                 chmod +x /home/$SUDO_USER/ansible_cntrl_ssh.sh 
                 #
