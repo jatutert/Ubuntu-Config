@@ -33,6 +33,7 @@
 # hosts bestand aanpassen (2.0.0.02122023 DEVELOP)
 # ansible (2.0.0.x) 
 # vagrantfile 6.x (08122023) 
+# bugfiles (09122023)
 #
 # Check of script wordt uitgevoerd als SUDO 
 if [ $(id -u) -ne 0 ]; then
@@ -51,20 +52,22 @@ VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d 
 # Function Change Repo Ubuntu 
 #
 function change_ubuntu_repo () {
+    clear
+    echo "Aanpassen Ubuntu Repository"
     if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
         sed 's@mirrors.edge.kernel.org@nl.archive.ubuntu.com@' -i /etc/apt/sources.list
-        echo "Waarde aangepast naar nl.archive.ubuntu.com in sources.list"
+        echo "Ubuntu Repository aangepast kernel.org naar ubuntu.com in sources.list"
     else
         # Replace the value with nl.archive.ubuntu.com
         echo "Mirrors.edge.kernel.org waarde niet aangetroffen in sources.list"
     fi
     #
     if grep -q "nl.archive.ubuntu.com" /etc/apt/sources.list; then
-        echo "The file /etc/apt/sources.list contains nl.archive.ubuntu.com"
+        echo "Ubuntu Repository is juist ingesteld"
     else
         # Replace the value with nl.archive.ubuntu.com
         sudo sed -i 's/archive.ubuntu.com/nl.archive.ubuntu.com/g' /etc/apt/sources.list
-        echo "The value has been updated to nl.archive.ubuntu.com"
+        echo "Ubuntu Repository aangepast naar nl.archive.ubuntu.com in sources.list"
     fi
 }
 #
@@ -231,8 +234,8 @@ function maak_directories () {
 while true; do
     clear
     echo 'Configuratie' $NAME $VERSION 'HoofdMenu'
-    echo 'Script wordt uitgevoerd als' $USER
-    echo 'Gestart vanuit gebruiker' $SUDO_USER
+    echo 'Script wordt uitgevoerd als user' $USER
+    echo 'Gestart vanuit user' $SUDO_USER
     echo " "
     echo "Maak een keuze:"
     echo " " 
@@ -369,6 +372,7 @@ while true; do
             ;;
         4)
             # Docker 
+            clear
             echo "Optie 4 - Installatie Docker-CE inclusief Compose met demo omgeving gestart ..."
             #
             # Directories maken 
@@ -422,7 +426,7 @@ while true; do
             curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-image-build.sh
             curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-run.sh
             #
-            chmod +x /home/$SUDO_USER/docker/flask-demo/flask-images-build.sh
+            chmod +x /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh
             chmod +x /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh
             #
             # VOORBEELD ## MINIO Docker
@@ -448,6 +452,7 @@ while true; do
             ;;
         5)
             # Kubernetes MiniKube 
+            clear
             echo "Optie 5 - Installatie K8S inclusief demo omgeving gestart ..."
             #
             maak_directories
@@ -528,7 +533,7 @@ while true; do
             #
             # Check if Docker is installed
             if ! [ -x "$(command -v docker)" ]; then
-                echo 'Error: Docker is not installed.' >&2
+                echo 'Commando DOCKER geeft GEEN resultaat' >&2
                 # Installatie DOCKER-CE 
                 # Call the function to install Docker
                 install_docker
@@ -570,7 +575,7 @@ while true; do
             shutdown -r now 
             #
             # # Check if GNOME is installed
-            # if ! [ -x "$(command -v gnome-shell)" ]; then
+            # if ! [ -x "$(command -v gnome-shell)" ]; the
             #  echo 'GNOME is not installed. Installing GNOME...' >&2
             #  sudo apt-get update
             #  sudo apt-get install gnome-shell
@@ -592,6 +597,7 @@ while true; do
             apt install steghide -y
             ;;
         7)
+            clear
             echo "Optie 7 - Installatie Ansible inclusief demo omgeving gestart ..."
             #
             #
