@@ -517,12 +517,12 @@ while true; do
             chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
             # K8S IO website demos
             # MySQL 
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-pv.yaml
-            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-deployment.yaml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-pv.yml
+            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-deployment.yml
             # NGINX
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment.yaml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-scale.yaml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-update.yaml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment.yml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-scale.yml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-update.yml
             #
             # Docker moet wel er zijn voor minikube !!! 
             #
