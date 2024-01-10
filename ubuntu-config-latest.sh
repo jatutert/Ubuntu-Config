@@ -34,6 +34,7 @@
 # ansible (2.0.0.x) 
 # vagrantfile 6.x (08122023) 
 # bugfiles (09122023)
+# Nieuwe GitHub Structuur verwerkt (29dec2023)
 #
 # Check of script wordt uitgevoerd als SUDO 
 if [ $(id -u) -ne 0 ]; then
@@ -55,7 +56,7 @@ function change_ubuntu_repo () {
     clear
     echo "Aanpassen Ubuntu Repository"
     if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
-        sed 's@mirrors.edge.kernel.org@nl.archive.ubuntu.com@' -i /etc/apt/sources.list
+        sed "s@mirrors.edge.kernel.org@nl.archive.ubuntu.com@" -i /etc/apt/sources.list
         echo "Ubuntu Repository aangepast kernel.org naar ubuntu.com in sources.list"
     else
         # Replace the value with nl.archive.ubuntu.com
@@ -66,7 +67,7 @@ function change_ubuntu_repo () {
         echo "Ubuntu Repository is juist ingesteld"
     else
         # Replace the value with nl.archive.ubuntu.com
-        sudo sed -i 's/archive.ubuntu.com/nl.archive.ubuntu.com/g' /etc/apt/sources.list
+        sed "s@archive.ubuntu.com@nl.archive.ubuntu.com@" -i /etc/apt/sources.list
         echo "Ubuntu Repository aangepast naar nl.archive.ubuntu.com in sources.list"
     fi
 }
@@ -405,26 +406,26 @@ while true; do
             #
             # Default demo dockerfile
             # https://hackmd.io/@pmanzoni/r1uWcTqfU
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file https://raw.githubusercontent.com/pmanzoni/flask/master/Dockerfile
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file
             # Meerdere talen demo dockerfiles 
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-de https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-dkr-file-de
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-fr https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-dkr-file-fr
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-it https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-dkr-file-it
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-nl https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-dkr-file-nl
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-uk https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-dkr-file-uk
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-de https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-de
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-fr https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-fr
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-it https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-it
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-nl https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-nl
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-uk https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-uk
             # Python Script
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/app.py https://raw.githubusercontent.com/pmanzoni/flask/master/app.py
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/app.py https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/app.py
             # Default index.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/templates/index.html https://raw.githubusercontent.com/pmanzoni/flask/master/templates/index.html
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/templates/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index.html
             # Meerdere talen demo index.html 
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/deutsch/index.html https://raw.githubusercontent.com/jatutert/docker-demos/main/index-deutsch.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/english/index.html https://raw.githubusercontent.com/jatutert/docker-demos/main/index-english.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/francais/index.html https://raw.githubusercontent.com/jatutert/docker-demos/main/index-francais.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/italiano/index.html https://raw.githubusercontent.com/jatutert/docker-demos/main/index-italiano.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/nederlands/index.html https://raw.githubusercontent.com/jatutert/docker-demos/main/index-nederlands.html
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/deutsch/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-deutsch.html
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/english/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-english.html
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/francais/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-francais.html
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/italiano/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-italiano.html
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/nederlands/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-nederlands.html
             #
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-image-build.sh
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh https://raw.githubusercontent.com/jatutert/docker-demos/main/flask-demo-run.sh
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-image-build.sh
+            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-run.sh
             #
             chmod +x /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh
             chmod +x /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh
@@ -441,8 +442,8 @@ while true; do
             # DOCKER COMPOSE 
             #
             # DOCKER COMPOSE YAML JTU bestanden ophalen
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/docker-compose-yaml/main/docker-compose-nextcloud-vagrant.yml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/odoo/docker-compose.yml https://raw.githubusercontent.com/jatutert/docker-compose-yaml/main/docker-compose-odoo-vagrant.yml  
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/demos/main/Docker-Compose/YAML/NextCloud/docker-compose-nextcloud-vagrant.yml
+            curl -s -o /home/$SUDO_USER/yaml/docker-compose/odoo/docker-compose.yml https://raw.githubusercontent.com/jatutert/demos/main/Docker-Compose/YAML/Odoo/docker-compose-odoo-vagrant.yml  
             # DOCKER COMPOSE YAML awesome compose YAML bestanden ophalen
             curl -s -o /home/$SUDO_USER/yaml/docker-compose/prometheus-grafana/prometheus-grafana.yml https://raw.githubusercontent.com/docker/awesome-compose/master/prometheus-grafana/compose.yaml
             curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/nextcloud-redis-mariadb.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nextcloud-redis-mariadb/compose.yaml
@@ -522,12 +523,12 @@ while true; do
             chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
             # K8S IO website demos
             # MySQL 
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-pv.yml
-            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/MySQL/mysql-deployment.yml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
+            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
             # NGINX
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment.yml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-scale.yml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/k8s-demo/main/YAML/NGINX/deployment-update.yml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
+            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
             #
             # Docker moet wel er zijn voor minikube !!! 
             #
@@ -649,11 +650,11 @@ while true; do
                 #
                 # Stap 3 Inventory ophalen van GitHUB  
                    mkdir -p /etc/ansible/inventory 
-                   curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/ansible_demo
-                   # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/db_servers
-                   # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/load_balancers
-                   # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/webservers
-                   # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/Ansible/main/Inventory/werkstations
+                   curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
+                   # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
+                   # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
+                   # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
+                   # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
                    echo "Ophalen Inventory vanaf GitHub gereed"
                 # 
                 # Stap 4 aanpassen ansible config met Inventory 
@@ -670,7 +671,7 @@ while true; do
                 # Stap 5 Playbooks ophalen van GitHUB
                     mkdir -p /home/$SUDO_USER/playbooks
                     chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
-                    curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/Ansible/main/PlayBooks/Ubuntu-Linux/ansible_demo_playbook.yml
+                    curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Playbooks/Linux/ansible_demo_playbook.yml
                     echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
                 #
                 # Stap 6 SSH verbinden script maken 

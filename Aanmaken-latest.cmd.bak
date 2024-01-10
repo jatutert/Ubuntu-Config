@@ -9,8 +9,8 @@
 :: Aanmaken LATEST voor WSL2 Config (versie 1)
 
 :: Stel de bron- en doelmap in
-set source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-JATUTERT-Repositories\Ubuntu-Config\Version-1xx
-set destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-JATUTERT-Repositories\Ubuntu-Config
+set source=D:\OneDrive - Saxion\Eigen-Scripts\GIT-jatutert-VagrantFile\Ubuntu-Config\Version-1xx
+set destination=D:\OneDrive - Saxion\Eigen-Scripts\GIT-jatutert-VagrantFile\Ubuntu-Config
 
 :: Zoek het nieuwste bestand in de bronmap
 FOR /F "delims=" %%I IN ('DIR "%source%" /B /A:-D /O:-D') DO SET NewestFile=%%I & GOTO Continue
@@ -22,8 +22,8 @@ COPY "%source%\%NewestFile%" "%destination%\wsl2-config-latest.sh"
 :: Aanmaken latest voor Ubuntu Config (versie 2)
 
 :: Stel de bron- en doelmap in
-set source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-JATUTERT-Repositories\Ubuntu-Config\Version-2xx
-set destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-JATUTERT-Repositories\Ubuntu-Config
+set source=D:\OneDrive - Saxion\Eigen-Scripts\GIT-jatutert-VagrantFile\Ubuntu-Config\Version-2xx
+set destination=D:\OneDrive - Saxion\Eigen-Scripts\GIT-jatutert-VagrantFile\Ubuntu-Config
 
 :: Zoek het nieuwste bestand in de bronmap
 FOR /F "delims=" %%I IN ('DIR "%source%" /B /A:-D /O:-D') DO SET NewestFile=%%I & GOTO Continue
