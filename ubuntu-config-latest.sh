@@ -35,6 +35,7 @@
 # vagrantfile 6.x (08122023) 
 # bugfiles (09122023)
 # Nieuwe GitHub Structuur verwerkt (29dec2023)
+# Semaphore Ansible Management installatie opgenomen binnen Ansible 
 #
 # Check of script wordt uitgevoerd als SUDO 
 if [ $(id -u) -ne 0 ]; then
@@ -678,7 +679,17 @@ while true; do
                 echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
                 chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
                 # 
-                # Stap x 
+                # Stap 7
+				# https://docs.semui.co/administration-guide/installations
+				# 
+				snap install semaphore
+                snap stop semaphore
+				semaphore user add --admin --login labadmin --name=LABAdmin --email=labadmin@labadmin.local --password=labadmin
+				snap start semaphore
+				# Aanpassen standaard poort 3000 naar 4444
+				snap set semaphore port=4444
+				# Herstarten com nieuwe poort actief te maken 
+				snap restart semaphore
             fi
             #
             #
