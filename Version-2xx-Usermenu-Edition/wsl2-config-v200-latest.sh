@@ -87,6 +87,16 @@ function ubuntu_update () {
     # apt install -qq -y wget
 } 
 #
+# Function Powershell 
+#
+function pwrshell_install () {
+    apt-get update -qq
+	curl -o /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.2/powershell_7.4.2-1.deb_amd64.deb
+	dpkg -i /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+	apt-get install -f
+	rm /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+} 
+#
 #
 # Function Installeren Docker 
 #
