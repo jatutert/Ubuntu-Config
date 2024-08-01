@@ -1,12 +1,10 @@
 #! /bin/bash
 #
 #
-# Configuratiescript Ubuntu voor bijvoorbeeld Vagrant en WSL2 
-# Versie: 3.0.0 ALPHA 0002 d.d. 25-05-2024
+# Configuratiescript Linux 
+# Versie: 3.0.0 ALPHA 2
+# ONLY FOR TESTING PURPOSES 
 # Auteur: John Tutert
-#
-#
-# DIT SCRIPT IS NOG NIET UITVOERBAAR !!!!
 #
 #
 # ######################
@@ -44,86 +42,120 @@
 # #######################
 # Changelog V3
 # #######################
-# Implementatie van start parameters van het script en op basis van parameter uitvoeren onderdelen (menu gaat dus eruit) 
+# Opdelen script in compomenten in plaats van keuzes via menu
+# Opdelen script in functies die aangeroepen kunnen worden 
+# 
 #
-# 25 mei 2024 ALPHA versie 0001 Implementatie van suggestie van Google Gemini (vanaf regel 260) 
 #
 #
-# Script moet algemeen linux worden ipv alleen ubuntu linux // Zodat ook uitgevoerd kan worden in minikube VM 
-
-
-
-naamconventie in script
-
-alx = alpine 
-dlx = debian 
-ulx = canonical ubuntu
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Check of script wordt uitgevoerd als SUDO 
+#
+# ################################################################################
+#
+# COMPONENT 1
+#
+# CHECKS
+#
+# ################################################################################
+#
+#
+#
+#
+# Controleer execute als sudo 
 if [ $(id -u) -ne 0 ]; then
     echo "Dit script moet worden uitgevoerd als sudo."
     exit 1
 fi
-
-
-
-
-# Vullen Variabelen 
-PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
-NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
-VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
-VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
-VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
-
-
-GHTutSOFT = http://www.github.com/jatutert/ ... enz ... 
-
 #
 #
-
-
-
-
-
-
-
-
-
-
-
-# 
-# Functies
+# Controleer of er een parameter is meegegeven
 #
-
-
-
-
-
+#
+if [ $# -eq 0 ]; then
+  echo "Geen parameter opgegeven. Gebruik 'docker' of 'ansible' om de juiste actie uit te voeren."
+  exit 1
+fi
+#
+#
+#
+#
 # ################################################################################
+#
+# COMPONENT 2
+#
+# DECLARATIE FUNCTIES 
+#
+# ################################################################################
+#
+#
+#
+#
+# ################################################################################
+#
+# COMPONENT 2
+#
+# FUNCTIONS
+#
+# ALPINE LINUX
+#
+# ################################################################################
+#
+#
+# Function Bijwerken ALPINE 
+#
+function alx_update_os () {
+    apk update -qq
+    apk upgrade -qq -y 
+    apk add open-vm-tools 
+} 
+#
+# Function Bijwerken ALPINE 
+#
+function alx_vm_tools () {
+    apk add open-vm-tools 
+} 
+# ################################################################################
+#
+# COMPONENT 2
+#
+# FUNCTIONS
+#
+# Debian LINUX
+#
+# ################################################################################
+#
+#
+# Function Bijwerken Debian
+#
+function dbn_update_os () {
+    apk update -qq
+    apk upgrade -qq -y 
+    apk add open-vm-tools 
+} 
+#
+# Function Bijwerken Debian
+#
+function dbn_vm_tools () {
+    apk add open-vm-tools 
+} 
+#
+#
+# ################################################################################
+#
+# COMPONENT 2
 #
 # FUNCTIONS
 #
 # UBUNTU LINUX
 #
 # ################################################################################
-
-
 #
-# Function Change Repo Ubuntu 
 #
-function ulx_change_repo_nl () {
+# CATEGORIE UBUNTU OS FUNCTIES
+#
+#
+# UBUNTU OS FUNCTIES ## Functie Change Repo Ubuntu 
+#
+function ulx_os_change_repo_nl () {
     clear
     echo "Aanpassen Ubuntu Repository"
     if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
@@ -143,137 +175,397 @@ function ulx_change_repo_nl () {
     fi
 }
 #
-# Function Bijwerken Ubuntu 
 #
-function ulx_upgrade_os () {
+# UBUNTU OS FUNCTIES ## Functie Update Ubuntu OS 
+#
+#
+function ulx_os_update_apt () {
+    apt update -qq
+} 
+#
+#
+# UBUNTU OS FUNCTIES ## Functie Upgrade Ubuntu OS 
+#
+#
+function ulx_os_upgrade_os () {
     apt update -qq
     apt upgrade -qq -y > /dev/null 2>&1
     apt autoremove -qq -y
-    apt install -qq -y open-vm-tools 
 } 
-
 #
-# Function ULX Change Timezone 
+# UBUNTU OS FUNCTIES ## Functie Change Timezone 
 #
-function ulx_timezone_change () {
+function ulx_os_timezone_change () {
     timedatectl set-timezone Europe/Amsterdam
 } 
-
 #
-# Function OPEN VM TOOLS
+# UBUNTU OS FUNCTIES ## GNOME GUI Install 
 #
-function ulx_vm_tools () {
+function ulx_os_gnome_install () {
+    # Installate GNOME GUI (https://phoenixnap.com/kb/how-to-install-a-gui-on-ubuntu)
+    #
+    #
+    # Functie bijwerken ubuntu 
+    ulx_os_update_apt
+    #
+    # Installatie GNOME 
+    apt install ubuntu-desktop -y
+    shutdown -r now 
+    #
+    # # Check if GNOME is installed
+    # if ! [ -x "$(command -v gnome-shell)" ]; the
+    #  echo 'GNOME is not installed. Installing GNOME...' >&2
+    #  sudo apt-get update
+    #  sudo apt-get install gnome-shell
+    # else
+    #  echo 'GNOME is already installed.'
+    # fi
+    #
+} 
+#
+#
+# CATEGORIE UBUNTU OS Install Software Functies 
+#
+#
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Open VM Tools 
+#
+#
+function ulx_install_vm_tools () {
     apt install -qq -y open-vm-tools 
 } 
-
-
-
-
 #
-# Function Powershell 
 #
-function pwrshell_install () {
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Powershell  
+#
+#
+function ulx_install_pwrshell () {
     apt-get update -qq
-	curl -o /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.2/powershell_7.4.2-1.deb_amd64.deb
-	dpkg -i /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
-	apt-get install -f
-	rm /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+    curl -o /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.2/powershell_7.4.2-1.deb_amd64.deb
+    dpkg -i /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+    apt-get install -f
+    rm /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+}
+#
+#
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Cockpit
+#
+#
+function ulx_install_cockpit () {
+    apt install -qq -y cockpit > /dev/null 2>&1
+    systemctl enable --now cockpit.socket
+    echo '[Socket]' > /home/$SUDO_USER/scripts/tmp/listen.conf
+    echo 'ListenStream=' >> /home/$SUDO_USER/scripts/tmp/listen.conf
+    echo 'ListenStream=1234' >> /home/$SUDO_USER/scripts/tmp/listen.conf
+    mkdir -p /etc/systemd/system/cockpit.socket.d/
+    cp /home/$SUDO_USER/scripts/tmp/listen.conf /etc/systemd/system/cockpit.socket.d
+    systemctl daemon-reload
+    systemctl restart cockpit.socket
+} 
+#
+#
+# UBUNTU OS Install Software Functies ## Functie Installatie Docker
+#
+#
+function ulx_install_docker () {
+    # Check if Docker is installed
+    if ! [ -x "$(command -v docker)" ]; then
+        echo 'Docker is not installed. Installing Docker...' >&2
+        # ChatGPT curl -fsSL https://get.docker.com -o get-docker.sh
+        # ChatGPT sudo sh get-docker.sh
+        apt install -y curl apt-transport-https
+        apt purge -qq -y lxc-docker* || true
+        curl -sSL https://get.docker.com/ | sh
+        service docker start
+        usermod -a -G docker $SUDO_USER
+    else
+        echo 'Docker is already installed.'
+    fi
+}
+#
+#
+# UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible 
+#
+#
+function ulx_install_ansible_cntrl () {
+    #
+    # STAP 1
+    # Updaten Ubuntu
+    #
+    echo "Stap 1 - Update Ubuntu gestart ..."
+    # 1A Aanpassen Ubuntu Standaard Repository naar Nederland 
+    ulx_os_change_repo_nl
+    # 1B Updaten APT
+    ulx_os_update_apt
+    # 1C Ansible Repo toevoegen 
+    apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
+    # 1D Updaten APT
+    ulx_os_update_apt
+    #
+    # STAP 2
+    # Installatie Ansible Controller op Ubuntu 22.04
+    echo "Stap 2 - Installatie Ansible Controller gestart ..."
+    #
+    apt install ansible -y > /dev/null 2>&1
+    #
+    # STAP 3
+    # Aanpassen etc hosts bestand
+    echo "Stap 3 - Aanpassen hosts betand gestart ..."
+    #
+    # 3a vullen variable hostname
+    hostname=$(hostname)
+    # 3b Haal het IP-adres van eth1 op
+    eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+    # 3c Voeg 1 toe aan het IP-adres van eth1
+    IFS=. read -r a b c d <<< "$eth1_ip"
+    eth1_plus1_ip="$a.$b.$c.$((d+1))"
+    # 3d Sla de IP-adressen op in afzonderlijke variabelen
+    eth1_ip_var="eth1_ip=$eth1_ip"
+    eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
+    # 3e Aanpassen hosts bestand 
+    if grep -q "$eth1_ip" /etc/hosts; then
+        echo "$hostname already exists in /etc/hosts"
+    else
+        # Add the hostname and IP address to /etc/hosts
+        echo "$eth1_ip ansible_demo_ctrl_001" | sudo tee -a /etc/hosts > /dev/null
+        echo "$eth1_plus1_ip ansible_demo_host_001" | sudo tee -a /etc/hosts > /dev/null
+        echo "Hostname $hostname added to /etc/hosts"
+    fi
+    #
+    #
+    # STAP 4
+    # Inventory ophalen van GitHUB
+    echo "Stap 4 - Ophalen Inventory bestanden vanaf GitHUB JATUTERT gestart ..."
+    mkdir -p /etc/ansible/inventory 
+    curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
+    # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
+    # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
+    # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
+    # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
+    echo "Ophalen Inventory vanaf GitHub gereed"
+    #
+    # STAP 5
+    # Aanpassen ansible config met Inventory
+    echo "Stap 5 - Aanpassen Ansible config met Inventory gestart ..."
+    if grep -q "defaults" /etc/ansible/ansible.cfg; then
+        echo "Ansible Configuratiebestand reeds voorzien van Inventory"
+    else
+        # Add the hostname and IP address to /etc/hosts
+        echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
+        echo "inventory = inventory/" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
+        echo "Ansible Configuratiebestand voorzien van Inventory"
+    fi
+    #
+    # STAP 6
+    # Playbooks ophalen van GitHUB
+    echo "Stap 6 - Ophalen Playbooks vanaf GitHUB JATUTERT gestart ..."
+    mkdir -p /home/$SUDO_USER/playbooks
+    chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
+    curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Playbooks/Linux/ansible_demo_playbook.yml
+    echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
+    #
+    # STAP 7
+    # SSH verbinden script maken 
+    # Uitvoeren als user Vagrant en niet als Root anders krijg je SSH foutmelding bij Ansible 
+    echo "Stap 7 - SSH Verbindingsscript maken gestart ..."
+    echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
+    echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
+    chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
+}
+#
+#
+#
+#
+function ulx_install_ansible_slave_1 () {
+    # Stap 1 Installatie
+    # Aanpassen Ubuntu Standaard Repository naar Nederland 
+    ulx_os_change_repo_nl
+    # Updaten APT 
+    ulx_os_update_apt
+    #
+    # Stap 2 Installatie SSHPASS
+    # 
+    # Starten installatie sshpass
+    apt install sshpass -y
+    #
+    # Stap 3 Aanpassen etc hosts bestand
+    #
+    # vullen variable hostname
+    hostname=$(hostname)
+    # Haal het IP-adres van eth1 op
+    eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+    # Voeg 1 toe aan het IP-adres van eth1
+    IFS=. read -r a b c d <<< "$eth1_ip"
+    eth1_min1_ip="$a.$b.$c.$((d-1))"
+    # Sla de IP-adressen op in afzonderlijke variabelen
+    eth1_ip_var="eth1_ip=$eth1_ip"
+    eth1_min1_ip_var="eth1_min1_ip=$eth1_min1_ip"
+    if grep -q "$eth1_ip" /etc/hosts; then
+        echo "$hostname already exists in /etc/hosts"
+    else
+        # Add the hostname and IP address to /etc/hosts
+        echo "$eth1_ip ansible_demo_host_001" | sudo tee -a /etc/hosts > /dev/null
+        echo "$eth1_min1_ip ansible_demo_ctrl_001" | sudo tee -a /etc/hosts > /dev/null
+        echo "Hostname $hostname added to /etc/hosts"
+    fi
+    #
+    # Stap 4 SSH verbinden script maken 
+    echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_cntrl_ssh.sh 
+    echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-001' > /home/$SUDO_USER/ansible_cntrl_ssh.sh 
+    chmod +x /home/$SUDO_USER/ansible_cntrl_ssh.sh 
+    #
+    # Stap x
+    #
+} 
+#
+#
+#
+#
+function ulx_install_ansible_semaphore () {
+    # Installatie semaphore 
+    # https://docs.semui.co/administration-guide/installations
+    #
+    echo "Installatie SemaPhore gestart ..."
+    snap install semaphore
+    snap stop semaphore
+    semaphore user add --admin --login labadmin --name=LABAdmin --email=labadmin@labadmin.local --password=labadmin
+    snap start semaphore
+    # Aanpassen standaard poort 3000 naar 4444
+    snap set semaphore port=4444
+    # Herstarten com nieuwe poort actief te maken 
+    snap restart semaphore
+} 
+#
+#
+#
+#
+# CATEGORIE UBUNTU OS DOCKER Software Functies 
+#
+#
+#
+#
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Images Pull
+#
+#
+function ulx_docker_images_pull () {
+    # docker pull hello-world
+    docker pull alpine
+    docker pull debian
+    # docker pull ubuntu:20.04
+    docker pull ubuntu:22.04
+    docker pull registry
+    docker pull prakhar1989/static-site
+    # docker pull mariadb:10.6
+    # docker pull minio/minio
+    # docker pull nextcloud
+    docker pull nginx
+    # docker pull postgres:latest
+    # docker pull wordpress
+} 
+#
+#
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Minikube 
+#
+#
+function ulx_docker_minikube_init () {
+
+    #
+    # Docker moet wel er zijn voor minikube !!! 
+    #
+    # Check if Docker is installed
+    #
+    if ! [ -x "$(command -v docker)" ]; then
+        echo 'Commando DOCKER geeft GEEN resultaat' >&2
+        # Installatie DOCKER-CE 
+        # Call the function to install Docker
+        install_docker
+    fi
+    # Docker is installed 
+    #
+    # Directory TMP check 
+    if [ ! -d "/home/$SUDO_USER/tmp" ]; then
+        mkdir -p /home/$SUDO_USER/tmp
+        chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
+    fi 
+    # Installatie Minikube 
+    if ! [ -x "$(command -v minikube)" ]; then
+        echo 'Minikube niet aangetroffen. Installatie gestart ...' >&2
+        curl -o /home/$SUDO_USER/tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+        dpkg -i /home/$SUDO_USER/tmp/minikube_latest_amd64.deb > /dev/null 2>&1
+        rm /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
+    fi 
+    #
+    # Installatie kubeadm
+    #
+    if ! [ -x "$(command -v kubeadm)" ]; then
+        echo 'Installatie kubeadm gestart ...' >&2
+        snap install kubeadm --classic --channel=latest > /dev/null 2>&1
+    fi
+    #
+    # Installatie kubectl 
+    #
+    if ! [ -x "$(command -v kubectl)" ]; then
+        echo 'Installatie kubectl gestart ...' >&2
+        snap install kubectl --classic --channel=latest > /dev/null 2>&1
+    fi
+    #
+    # Minikube configuratie uitvoeren 
+    ram=$(free --mega | grep 'Mem' | awk '{print $7/4}') | minikube config set memory $ram 
+    cpu_aantal=$(nproc) | minikube config set cpus $cpu_aantal  
+    minikube config set driver docker
+} 
+#
+#
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Minikube CONFIG 
+#
+#
+function ulx_docker_minikube_config () {
+    ram=$(free --mega | grep 'Mem' | awk '{print $7/4}') | minikube config set memory $ram 
+    cpu_aantal=$(nproc) | minikube config set cpus $cpu_aantal  
+    minikube config set driver docker
+}
+#
+#
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Create  
+#
+#
+function ulx_docker_portainer_create () {
+    docker pull portainer/portainer-ce:latest
+    docker volume create portainer_data
+    docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+} 
+#
+#
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Remove 
+#
+#
+function ulx_docker_portainer_remove () {
+    docker stop portainer
+    docker rm portainer
+    docker rmi portainer/portainer-ce:latest
+    docker volume rm portainer_data
+    docker system prune
 } 
 
-
+#
+# CATEGORIE UBUNTU OS Maak Scripts Functies 
 #
 #
-# Function Installeren Docker 
+# UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies 
 #
 #
-function install_docker() {
-  # Check if Docker is installed
-  if ! [ -x "$(command -v docker)" ]; then
-    echo 'Docker is not installed. Installing Docker...' >&2
-    # ChatGPT curl -fsSL https://get.docker.com -o get-docker.sh
-    # ChatGPT sudo sh get-docker.sh
-    apt install -y curl apt-transport-https
-    apt purge -qq -y lxc-docker* || true
-    curl -sSL https://get.docker.com/ | sh
-    service docker start
-    usermod -a -G docker $SUDO_USER
-  else
-    echo 'Docker is already installed.'
-  fi
-}
-
 #
-#
-# Function Installeren Portainer 
-#
-#
-function ulx_portainer_install() {
-    # Portainer Run
-    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-    echo 'docker pull portainer/portainer-ce:latest' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-    echo 'docker volume create portainer_data' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-    echo 'docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-    echo 'echo Ga naar https://xxxxxxx:9443' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-    chmod +x /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-    # Portainer Remove
-    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-    echo 'docker stop portainer' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-    echo 'docker rm portainer' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-    echo 'docker rmi portainer/portainer-ce:latest' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-    echo 'docker volume rm portainer_data' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-    echo 'docker system prune' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-    chmod +x /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-} 
-
-
-
-
-#
-#
-# Function Minikube config 
-#
-#
-function minikube_config () {
-    minikube config set driver docker 
-    # Beschikbaar geheugen delen door 4 en in variable stoppen
-    ram=$(free --mega | grep 'Mem' | awk '{print $7/4}')
-    minikube config set memory $ram 
-    cpu_aantal=$(nproc)
-    minikube config set cpus $cpu_aantal  
-    # minikube config view 
+function ulx_maak_docker_scripts () {
     #
-    echo "#! /bin/bash" > /home/$SUDO_USER/minikube_config.sh 
-    echo "minikube config set driver docker" >> /home/$SUDO_USER/minikube_config.sh 
-    echo "ram=$(free --mega | grep 'Mem' | awk '{print $7/4}')" >> /home/$SUDO_USER/minikube_config.sh 
-    echo "minikube config set memory $ram" >> /home/$SUDO_USER/minikube_config.sh  
-    echo "cpu_aantal=$(nproc)" >> /home/$SUDO_USER/minikube_config.sh  
-    echo "minikube config set cpus $cpu_aantal" >> /home/$SUDO_USER/minikube_config.sh  
-    chmod +x /home/$SUDO_USER/minikube_config.sh 
-}
 
-
-
-
-function maak_docker_scripts () {
-    #
-    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/docker-install.sh  
-    echo 'apt install -y curl apt-transport-https' >> /home/$SUDO_USER/scripts/docker/docker-install.sh
-    echo 'apt purge -qq -y lxc-docker* || true' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-    echo 'curl -sSL https://get.docker.com/ | sh' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-    echo 'service docker start' >> /home/$SUDO_USER/scripts/docker/docker-install.sh  
-    echo 'usermod -a -G docker $SUDO_USER' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-    echo 'shutdown -r now' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-    chmod +x /home/$SUDO_USER/scripts/docker/docker-install.sh 
-    #
     # Docker-CE images ophalen script maken 
     #
     echo '#! /bin/bash'       > /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
-	# Hello World
+    # Hello World
     # echo 'docker pull hello-world > /dev/null 2>&1'  >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-	# echo echo Hello World    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
+    # echo echo Hello World    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
-	# Operating Systems 
+    # Operating Systems 
     echo echo Alpine Linux   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull alpine > /dev/null 2>&1'       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo echo Debian Linux   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
@@ -282,30 +574,30 @@ function maak_docker_scripts () {
     echo 'docker pull ubuntu:20.04 > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
     # Docker Services
-	#
+    #
     echo echo Registry       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull registry > /dev/null 2>&1'     >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
     # General Services
-	#
-	echo echo prakhar1989 static-site >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
+    #
+    echo echo prakhar1989 static-site >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull prakhar1989/static-site > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #	
     echo echo MariaDB DBMS   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull mariadb:10.6 > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-	#
+    #
     # echo echo MinIO          >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     # echo 'docker pull minio/minio > /dev/null 2>&1'  >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-	#
+    #
     echo echo NextCloud      >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull nextcloud > /dev/null 2>&1'    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-	#
+    #
     echo echo NGNINX         >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull nginx > /dev/null 2>&1'        >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-	#
+    #
     # echo echo ODOO ERP       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     # echo 'docker pull odoo:latest > /dev/null 2>&1'  >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-	#
+    #
     echo echo Postgress DBMS >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull postgres:latest > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
@@ -313,18 +605,18 @@ function maak_docker_scripts () {
     echo 'docker pull wordpress > /dev/null 2>&1'    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     chmod +x /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
-	#
-	#
-	#
+    #
+    #
+    #
     # Docker-CE demo Alpine script maken
     echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
     echo 'clear' >> /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
     echo 'docker run -it alpine /bin/sh' >> /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
     chmod +x /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
     #
-	#
-	#
-	#
+    #
+    #
+    #
     # Docker-CE demo Minio Script maken 
     echo '#! /bin/bash' > /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
     echo '#' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
@@ -335,31 +627,9 @@ function maak_docker_scripts () {
     chmod +x /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
 }
 #
-function maak_compose_scripts () {
-    #
-    # Docker Compose demo script NextCloud
-    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    echo '#' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    echo 'cd /home/$USER' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    echo 'clear' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    echo 'docker compose -f /home/$USER/yaml/docker-compose/nextcloud/docker-compose.yml up --quiet-pull -d' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    echo 'echo NextCloud port 8888'	>> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    chmod +x /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-    #
-    # Docker Compose demo script ODOO
-    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    echo '#'>> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    echo 'cd /home/$USER' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    echo 'clear' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    echo 'docker compose -f /home/$USER/yaml/docker-compose/odoo/docker-compose.yml up --quiet-pull -d' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    echo 'echo Odoo port 10016' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    echo 'echo Chat port 20016' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-    chmod +x /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-} 
-
-
+# UBUNTU Maak Scripts DOCKER Voorbeelden 
 #
-function maak_docker_voorbeelden () {
+function ulx_maak_docker_voorbeelden () {
     #
     # VOORBEELD ## Dockerfile uit slides van lesweek 4 module virtualisatie 
     echo '# start with OS ubuntu' > /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
@@ -382,33 +652,62 @@ function maak_docker_voorbeelden () {
     # VOORBEELD ## FLASK demo
     # Default demo dockerfile 
     # https://hackmd.io/@pmanzoni/r1uWcTqfU
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-dkr-file
     # Meerdere talen demo dockerfiles 
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-de https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-de
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-fr https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-fr
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-it https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-it
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-nl https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-nl
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-uk https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-uk
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-de https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-dkr-file-de
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-fr https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-dkr-file-fr
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-it https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-dkr-file-it
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-nl https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-dkr-file-nl
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-uk https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-dkr-file-uk
     # Python Script
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/app.py https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/app.py
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/app.py https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/app.py
     # Default index.html
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/templates/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index.html
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/templates/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/index.html
     # Meerdere talen demo index.html 
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/deutsch/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-deutsch.html
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/english/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-english.html
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/francais/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-francais.html
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/italiano/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-italiano.html
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/nederlands/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-nederlands.html
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/deutsch/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/index-deutsch.html
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/english/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/index-english.html
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/francais/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/index-francais.html
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/italiano/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/index-italiano.html
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/nederlands/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/index-nederlands.html
     #
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-image-build.sh
-    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-run.sh
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-image-build.sh
+    curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/Dockerfiles/FLASK/flask-demo-run.sh
     #
     chmod +x /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh
     chmod +x /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh
     #
 }
 #
-function maak_compose_voorbeelden () {
+# UBUNTU Maak Scripts DOCKER COMPOSE
+#
+#
+# UBUNTU Maak Scripts DOCKER COMPOSE Demos 
+#
+function ulx_maak_compose_scripts () {
+    #
+    # Docker Compose demo script NextCloud
+    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    echo '#' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    echo 'clear' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    echo 'docker compose -f /home/$USER/yaml/docker-compose/nextcloud/docker-compose.yml up --quiet-pull -d' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    echo 'echo NextCloud port 8888'	>> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    chmod +x /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
+    #
+    # Docker Compose demo script ODOO
+    echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    echo '#'>> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    echo 'clear' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    echo 'docker compose -f /home/$USER/yaml/docker-compose/odoo/docker-compose.yml up --quiet-pull -d' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    echo 'echo Odoo port 10016' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    echo 'echo Chat port 20016' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+    chmod +x /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
+} 
+#
+# UBUNTU Maak Scripts DOCKER COMPOSE Demos Voorbeelden 
+#
+function ulx_maak_compose_voorbeelden () {
     #
     # DOCKER COMPOSE YAML JTU bestanden ophalen
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/demos/main/Docker-Compose/YAML/NextCloud/docker-compose-nextcloud-vagrant.yml
@@ -421,67 +720,50 @@ function maak_compose_voorbeelden () {
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/wordpress/wordpress-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/wordpress-mysql/compose.yaml
 } 
 #
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# UBUNTU Maak Scripts Onderwijsmodules
 #
 # Introductie Infrastructuren
-curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-mysqlserver.sh
-curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-webserver.sh
-curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-sftpserver.sh
-chmod +x /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh
-chmod +x /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh
-chmod +x /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh
-
+#
+#
+function ulx_intro_infra_scripts () {
+    curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-mysqlserver.sh
+    curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-webserver.sh
+    curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-webserver-v2.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-webserver-v2.sh
+    curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-sftpserver.sh
+    chmod +x /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh
+    chmod +x /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh
+    chmod +x /home/$SUDO_USER/scripts/intro_infra/install-webserver-v2.sh
+    chmod +x /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh
 }
-
-
-
-# ################################################################################
 #
-# FUNCTIONS
 #
-# ALPINE LINUX
+# IT Fundamentals 
 #
-# ################################################################################
-
-
-
 #
-# Function Bijwerken ALPINE 
-#
-function alx_update_os () {
-    apk update -qq
-    apk upgrade -qq -y 
-    apk add open-vm-tools 
+function ulx_it-funda_tooling () {
+    # GNU Compiler C 
+    apt install gcc -y
+    # JAVA JDK 
+    apt install openjdk-17-jdk -y
+    # Image metadata tool 
+    apt install exif -y
+    # RAW files editor 
+    apt install okteta -y
+    # Data image hider 
+    apt install steghide -y
 } 
-
-
 #
-# Function Bijwerken ALPINE 
 #
-function alx_vm_tools () {
-    apk add open-vm-tools 
+# Virtualisatie
+#
+#
+function ulx_virtualisatie_scripts () { 
+   # LEEG
 } 
-
-
-
-
+#
+#
+#
+#
 # ################################################################################
 #
 # FUNCTIONS
@@ -489,9 +771,8 @@ function alx_vm_tools () {
 # LINUX DISTRO ONAFHANKELIJK
 #
 # ################################################################################
-
-
-
+#
+#
 #
 #
 # Function maak directories 
@@ -593,385 +874,35 @@ function maak_directories () {
     fi 
 }
 #
+# 
+# Function menu 
 #
 #
-
-
-
-
-# ################################################################################
-#
-# HOOFDPROGRAMMA
-#
-# ALLE LINUX DISTROS
-#
-# ################################################################################
-
-
-
-# Controleer of er een parameter is meegegeven
-if [ $# -eq 0 ]; then
-  echo "Geen parameter opgegeven. Gebruik 'docker' of 'ansible' om de juiste actie uit te voeren."
-  exit 1
-fi
-
-# Bepaal de actie op basis van de parameter
-actie=$1
-
-
-
-kijk naar de inhoud van /etc/os-release 
-zie regel 83 en verder
-
-Inhoud regel 83 en verder: 
-PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
-NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
-VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
-VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
-VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
-
-
-#
-# ALPINE
+function menu () {
 #
 #
-
-
-
-if [ $NAME == "alpine" ]; then
-
-
-
-
-fi
-
-
-
-#
-# DEBIAN 
 #
 #
-
-
-
-
-
-
-#
-# UBUNTU 
-#
-#
-
-
-
-
-if [ $distro == "ubuntu" ]; then
-    echo "UBUNTU distro geselecteerd"
-    #
-    # UBUNTU OPTIE 1 Voer bijwerkt actie uit
-    if [ $actie == "update" ]; then
-        # Voer hier uw Docker-commando's uit
-        echo "Docker-actie geselecteerd."
-
-  
-# Functie verder Ubuntu repo uitvoeren
-            change_ubuntu_repo
-            # Functie Bijwerken Ubuntu uitvoeren 
-            ubuntu_update
-            if [ ! -d "/home/$SUDO_USER/tmp" ]; then
-                mkdir -p /home/$SUDO_USER/tmp
-                chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
-            fi 
-  
-    # UBUJNTU OPTIE 2 Voer scripts actie uit
-    elif [ $actie == "scripts" ]; then
-        # Voer hier uw Ansible-commando's uit
-        echo "Ansible-actie geselecteerd."
-        ansible-playbook playbook.yml
-
-    # OPTIE 3 Voer scripts actie uit
-    elif [ $actie == "cockpit" ]; then
-        echo "Optie 3 - Installatie Cockpit gestart ..."
-        # echo Installatie COCKPIT op poort 1234
-        apt install -qq -y cockpit > /dev/null 2>&1
-        systemctl enable --now cockpit.socket
-        # COCKPIT poort instellen op poort 1234
-        echo '[Socket]' > /home/$SUDO_USER/scripts/tmp/listen.conf
-        echo 'ListenStream=' >> /home/$SUDO_USER/scripts/tmp/listen.conf
-        echo 'ListenStream=1234' >> /home/$SUDO_USER/scripts/tmp/listen.conf
-        mkdir -p /etc/systemd/system/cockpit.socket.d/
-        cp /home/$SUDO_USER/scripts/tmp/listen.conf /etc/systemd/system/cockpit.socket.d
-        # Herstarten COCKPIT zodat poort 1234 actief wordt 
-        systemctl daemon-reload
-        systemctl restart cockpit.socket
-
-    # OPTIE 4 Voer DOCKER actie uit
-    elif [ $actie == "docker" ]; then
-	
-	
-	# OPTIE 5 Voer Minikube actie uit
-    elif [ $actie == "minikube" ]; then
-
-
-    # OPTIE 6 Voer GNOME actie uit
-    elif [ $actie == "gnome" ]; then
-  
-
-    # OPTIE 7C Voer Ansible-actie uit Controller
-    elif [ $actie == "ansiblecntrl" ]; then
-  
-    #
-    #
-    #
-    #
-    # MASTER
-    # ######
-    #
-    #
-    # Haal de hostname op
-    hostname=$(hostname)
-    # 
-    # Hostname ulx-s-2204-L-A-001 is Ansible Controller 
-    if [ "$hostname" == "ulx-s-2204-l-a-001" ]; then
-        #
-        # STAP 1
-	    # Updaten Ubuntu
-	    #
-	    echo "Stap 1 - Update Ubuntu gestart ..."
-        # 1A Aanpassen Ubuntu Standaard Repository naar Nederland 
-        change_ubuntu_repo
-        # 1B Upgraden Ubuntu naar laatste stand van zaken 
-        ubuntu_update
-        # 1C Ansible Repo toevoegen 
-        apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
-        # 1D Upgraden Ubuntu naar laatste stand van zaken
-        ubuntu_update
-        #
-	    # STAP 2
-	    # Installatie Ansible Controller op Ubuntu 22.04
-	    echo "Stap 2 - Installatie Ansible Controller gestart ..."
-	    #
-        apt install ansible -y > /dev/null 2>&1
-        # 
-        # STAP 3
-        # Aanpassen etc hosts bestand
-	    echo "Stap 3 - Aanpassen hosts betand gestart ..."
-        #	
-        # 3a vullen variable hostname
-        hostname=$(hostname)
-        # 3b Haal het IP-adres van eth1 op
-        eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-        # 3c Voeg 1 toe aan het IP-adres van eth1
-        IFS=. read -r a b c d <<< "$eth1_ip"
-        eth1_plus1_ip="$a.$b.$c.$((d+1))"
-        # 3d Sla de IP-adressen op in afzonderlijke variabelen
-        eth1_ip_var="eth1_ip=$eth1_ip"
-        eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
-        # 3e Aanpassen hosts bestand 
-        if grep -q "$eth1_ip" /etc/hosts; then
-            echo "$hostname already exists in /etc/hosts"
-        else
-            # Add the hostname and IP address to /etc/hosts
-            echo "$eth1_ip ulx-s-2204-l-a-001" | sudo tee -a /etc/hosts > /dev/null
-            echo "$eth1_plus1_ip ulx-s-2204-l-a-010" | sudo tee -a /etc/hosts > /dev/null
-            echo "Hostname $hostname added to /etc/hosts"
-        fi
-        #
-        #
-        # STAP 4
-	    # Inventory ophalen van GitHUB
-	    echo "Stap 4 - Ophalen Inventory bestanden vanaf GitHUB JATUTERT gestart ..."
-        mkdir -p /etc/ansible/inventory 
-        curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
-        # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
-        # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
-        # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
-        # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
-        echo "Ophalen Inventory vanaf GitHub gereed"
-        # 
-        # STAP 5
-	    # Aanpassen ansible config met Inventory
-	    echo "Stap 5 - Aanpassen Ansible config met Inventory gestart ..."
-        if grep -q "defaults" /etc/ansible/ansible.cfg; then
-            echo "Ansible Configuratiebestand reeds voorzien van Inventory"
-        else
-            # Add the hostname and IP address to /etc/hosts
-            echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
-            echo "inventory = inventory/" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
-            echo "Ansible Configuratiebestand voorzien van Inventory"
-        fi
-        #
-        # STAP 6
-	    # Playbooks ophalen van GitHUB
-	    echo "Stap 6 - Ophalen Playbooks vanaf GitHUB JATUTERT gestart ..."
-        mkdir -p /home/$SUDO_USER/playbooks
-        chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
-        curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Playbooks/Linux/ansible_demo_playbook.yml
-        echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
-        #
-        # STAP 7
-	    # SSH verbinden script maken 
-	    # Uitvoeren als user Vagrant en niet als Root anders krijg je SSH foutmelding bij Ansible 
-	    echo "Stap 7 - SSH Verbindingsscript maken gestart ..."
-        echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
-	    echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
-        chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
-        # 
-        # STAP 8
-	    # Installatie semaphore 
-        # https://docs.semui.co/administration-guide/installations
-	    # 
-	    # Deze stap zit nu in Windows Command file 09 04 2024 JTU
-	    # 
-	    # echo "Stap 8 - Installatie SemaPhore gestart ..."
-        # snap install semaphore
-        # snap stop semaphore
-	    # semaphore user add --admin --login labadmin --name=LABAdmin --email=labadmin@labadmin.local --password=labadmin
-        # snap start semaphore
-        # # Aanpassen standaard poort 3000 naar 4444
-        # snap set semaphore port=4444
-        # # Herstarten com nieuwe poort actief te maken 
-        # snap restart semaphore
-    fi
-
-  
-
-    # OPTIE 7H Voer Ansible-actie uit Host 
-    elif [ $actie == "ansiblehost" ]; then
-
-
-    #
-    #
-    # SLAVE
-    # ######
-    #
-    # 
-    # Haal de hostname op
-    hostname=$(hostname)
-    #
-    # Hostname ulx-s-2204-L-A-010 is slaaf 1 voor ansible controller 
-    if [ "$hostname" == "ulx-s-2204-l-a-010" ]; then
-        # Stap 1 Installatie
-        # Aanpassen Ubuntu Standaard Repository naar Nederland 
-        change_ubuntu_repo
-        # Upgraden Ubuntu naar laatste stand van zaken 
-        ubuntu_update
-        #
-        # Stap 2 Installatie SSHPASS
-        # 
-        # Starten installatie sshpass
-        apt install sshpass -y
-        #
-        # Stap 3 Aanpassen etc hosts bestand
-        #
-        # vullen variable hostname
-        hostname=$(hostname)
-        # Haal het IP-adres van eth1 op
-        eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-        # Voeg 1 toe aan het IP-adres van eth1
-        IFS=. read -r a b c d <<< "$eth1_ip"
-        eth1_min1_ip="$a.$b.$c.$((d-1))"
-        # Sla de IP-adressen op in afzonderlijke variabelen
-        eth1_ip_var="eth1_ip=$eth1_ip"
-        eth1_min1_ip_var="eth1_min1_ip=$eth1_min1_ip"
-        if grep -q "$eth1_ip" /etc/hosts; then
-            echo "$hostname already exists in /etc/hosts"
-        else
-            # Add the hostname and IP address to /etc/hosts
-            echo "$eth1_ip ulx-s-2204-l-a-010" | sudo tee -a /etc/hosts > /dev/null
-            echo "$eth1_min1_ip ulx-s-2204-l-a-001" | sudo tee -a /etc/hosts > /dev/null
-            echo "Hostname $hostname added to /etc/hosts"
-        fi                
-        #
-        # Stap 4 SSH verbinden script maken 
-        echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_cntrl_ssh.sh 
-        echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-001' > /home/$SUDO_USER/ansible_cntrl_ssh.sh 
-        chmod +x /home/$SUDO_USER/ansible_cntrl_ssh.sh 
-        #
-        # Stap x  
-        #
-    fi
-#
-# Thats all folks 
-#
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-.
-
-
-
-
-
-
-
-
-
-
-# Onjuiste parameter
-else
-  echo "Onjuiste parameter: $actie. Gebruik 'docker' of 'ansible'."
-  exit 1
-fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
-#
-# Hoofdmenu weergeven
-#
-#
-while true; do
-    clear
-    echo 'Configuratie' $NAME $VERSION 'HoofdMenu'
-    echo 'Script wordt uitgevoerd als user' $USER
-    echo 'Gestart vanuit user' $SUDO_USER
-    echo " "
-    echo "Maak een keuze:"
-    echo " " 
-    echo "1. Ubuntu bijwerken"
-    echo "2. Ubuntu BASH Scripts maken voor demos"
-    echo "3. Cockpit beheeromgeving installeren"
-    echo "4. Docker-CE inclusief Compose met demo omgeving"
-    echo "5. Minikube inclusief demo omgeving"
-    echo "6. GNOME Grafische omgeving installeren"
-    echo "7. Ansible inclusief demo omgeving"
-    echo "9. Verlaat het menu"
-    # Keuze opvragen 
-    read -p "Voer uw keuze in: " keuze
-    # keuze verwerken 
-    case $keuze in
+    while true; do
+        clear
+        echo 'Configuratie' $NAME $VERSION 'HoofdMenu'
+        echo 'Script wordt uitgevoerd als user' $USER
+        echo 'Gestart vanuit user' $SUDO_USER
+        echo " "
+        echo "Maak een keuze:"
+        echo " " 
+        echo "1. Ubuntu bijwerken"
+        echo "2. Ubuntu BASH Scripts maken voor demos"
+        echo "3. Cockpit beheeromgeving installeren"
+        echo "4. Docker-CE inclusief Compose met demo omgeving"
+        echo "5. Minikube inclusief demo omgeving"
+        echo "6. GNOME Grafische omgeving installeren"
+        echo "7. Ansible inclusief demo omgeving"
+        echo "9. Verlaat het menu"
+        # Keuze opvragen 
+        read -p "Voer uw keuze in: " keuze
+        # keuze verwerken 
+        case $keuze in
         1)
             # LINUX BIJWERKEN
             clear 
@@ -986,481 +917,31 @@ while true; do
             fi 
             ;;
         2)
-            # Scripts maken 
             clear 
-            echo "Optie 2 - Scripts maken gestart ..."
-            #
-            maak_directories
-            #
-            # Script maken voor installatie van Docker-CE 
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/docker-install.sh  
-            echo 'apt install -y curl apt-transport-https' >> /home/$SUDO_USER/scripts/docker/docker-install.sh
-            echo 'apt purge -qq -y lxc-docker* || true' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-            echo 'curl -sSL https://get.docker.com/ | sh' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-            echo 'service docker start' >> /home/$SUDO_USER/scripts/docker/docker-install.sh  
-            echo 'usermod -a -G docker $SUDO_USER' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-            echo 'shutdown -r now' >> /home/$SUDO_USER/scripts/docker/docker-install.sh 
-            chmod +x /home/$SUDO_USER/scripts/docker/docker-install.sh 
-            # Docker-CE images ophalen script maken 
-            echo '#! /bin/bash'       > /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo Hello World    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull hello-world > /dev/null 2>&1'  >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo prakhar1989 static-site >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull prakhar1989/static-site > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh 
-            echo echo Alpine Linux   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull alpine > /dev/null 2>&1'       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo Debian Linux   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull debian > /dev/null 2>&1'       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo MariaDB DBMS   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull mariadb:10.6 > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo MinIO          >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull minio/minio > /dev/null 2>&1'  >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo NextCloud      >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull nextcloud > /dev/null 2>&1'    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo NGNINX         >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull nginx > /dev/null 2>&1'        >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo ODOO ERP       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull odoo:latest > /dev/null 2>&1'  >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo Postgress DBMS >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull postgres:latest > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo Registry       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull registry > /dev/null 2>&1'     >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo Ubuntu 20 04 LTS >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull ubuntu:20.04 > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo echo WordPress      >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            echo 'docker pull wordpress > /dev/null 2>&1'    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            chmod +x /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-            # Docker-CE demo Alpine script maken
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
-            echo 'clear' >> /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
-            echo 'docker run -it alpine /bin/sh' >> /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
-            chmod +x /home/$SUDO_USER/scripts/docker/alpine-run/alpine-run.sh
-            # Portainer Run
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-            echo 'docker pull portainer/portainer-ce:latest' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-            echo 'docker volume create portainer_data' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-            echo 'docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-            echo 'echo Ga naar https://xxxxxxx:9443' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-            chmod +x /home/$SUDO_USER/scripts/docker/portainer/portainer-run.sh
-            # Portainer Remove
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            echo 'docker stop portainer' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            echo 'docker rm portainer' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            echo 'docker rmi portainer/portainer-ce:latest' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            echo 'docker volume rm portainer_data' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            echo 'docker system prune' >> /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            chmod +x /home/$SUDO_USER/scripts/docker/portainer/portainer-remove.sh
-            # Docker Compose demo script NextCloud
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            echo '#' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            echo 'clear' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            echo 'docker compose -f /home/$USER/yaml/docker-compose/nextcloud/docker-compose.yml up --quiet-pull -d' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            echo 'echo NextCloud port 8888'	>> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            chmod +x /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
-            # Docker Compose demo script ODOO
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            echo '#'>> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            echo 'clear' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            echo 'docker compose -f /home/$USER/yaml/docker-compose/odoo/docker-compose.yml up --quiet-pull -d' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            echo 'echo Odoo port 10016' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            echo 'echo Chat port 20016' >> /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            chmod +x /home/$SUDO_USER/scripts/docker-compose/odoo/docker-compose-odoo.sh
-            # Introductie Infrastructuren
-            curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-mysqlserver.sh
-            curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-webserver.sh
-            curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-sftpserver.sh
-            chmod +x /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh
-            chmod +x /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh
-            chmod +x /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh
+            echo "Optie 2 - Gekozen ..."
             ;;
         3)
-            # Installatie Cockpit 
-            echo "Optie 3 - Installatie Cockpit gestart ..."
-            # echo Installatie COCKPIT op poort 1234
-            apt install -qq -y cockpit > /dev/null 2>&1
-            systemctl enable --now cockpit.socket
-            # COCKPIT poort instellen op poort 1234
-            echo '[Socket]' > /home/$SUDO_USER/scripts/tmp/listen.conf
-            echo 'ListenStream=' >> /home/$SUDO_USER/scripts/tmp/listen.conf
-            echo 'ListenStream=1234' >> /home/$SUDO_USER/scripts/tmp/listen.conf
-            mkdir -p /etc/systemd/system/cockpit.socket.d/
-            cp /home/$SUDO_USER/scripts/tmp/listen.conf /etc/systemd/system/cockpit.socket.d
-            # Herstarten COCKPIT zodat poort 1234 actief wordt 
-            systemctl daemon-reload
-            systemctl restart cockpit.socket
+            clear
+            echo "Optie 3 - Gekozen ..."
             ;;
         4)
-            # Docker 
             clear
-            echo "Optie 4 - Installatie Docker-CE inclusief Compose met demo omgeving gestart ..."
-            #
-            # Directories maken 
-            maak_directories
-            #
-            # Installatie DOCKER-CE en Docker Compose binnen Ubuntu 
-            install_docker
-            #
-            # Voorbeelden maken of downloaden 
-            #
-            # VOORBEELD ## Dockerfile uit slides van lesweek 4 module virtualisatie 
-            echo '# start with OS ubuntu' > /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'FROM ubuntu:latest' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'RUN apt-get update' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'RUN apt-get -y upgrade' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo '# install apache2 in noninteractivemode' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo '# copy website' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'COPY index.html /var/www/html/' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo '# start webserver' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'CMD /usr/sbin/apache2ctl -D FOREGROUND' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo '# expose port 80' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            echo 'EXPOSE 80' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
-            #
-            echo "#! /bin/bash" > /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-build.sh
-            echo "docker build –f /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file -t ubtu-apache:V100 ." >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-build.sh
-            chmod +x /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-build.sh
-            #
-            # VOORBEELD ## FLASK demo
-            #
-            # Default demo dockerfile
-            # https://hackmd.io/@pmanzoni/r1uWcTqfU
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file
-            # Meerdere talen demo dockerfiles 
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-de https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-de
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-fr https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-fr
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-it https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-it
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-nl https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-nl
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-dkr-file-uk https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-dkr-file-uk
-            # Python Script
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/app.py https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/app.py
-            # Default index.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/templates/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index.html
-            # Meerdere talen demo index.html 
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/deutsch/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-deutsch.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/english/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-english.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/francais/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-francais.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/italiano/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-italiano.html
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/nederlands/index.html https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/index-nederlands.html
-            #
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-image-build.sh
-            curl -s -o /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh https://raw.githubusercontent.com/jatutert/demos/main/Docker/FLASK/flask-demo-run.sh
-            #
-            chmod +x /home/$SUDO_USER/docker/flask-demo/flask-image-build.sh
-            chmod +x /home/$SUDO_USER/docker/flask-demo/flask-demo-run.sh
-            #
-            # VOORBEELD ## MINIO Docker
-            echo '#! /bin/bash' > /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            echo '#' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            echo '# Minio Object Storage on Docker' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            echo 'docker run -d -p 9000:9000 -p 9001:9001 -p 9090:9090 --name minio -v /home/$USER/data/minio:/data -e "MINIO_ROOT_USER=minio1234" -e "MINIO_ROOT_PASSWORD=minio1234" minio/minio server /data --console-address ":9001"' >>/home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            echo 'echo MINIO_ROOT_USER=minio1234' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            echo 'echo MINIO_ROOT_PASSWORD=minio1234' >> /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            chmod +x /home/$SUDO_USER/scripts/minio_scripts/minio-docker-run.sh
-            #
-            # DOCKER COMPOSE 
-            #
-            # DOCKER COMPOSE YAML JTU bestanden ophalen
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/demos/main/Docker-Compose/YAML/NextCloud/docker-compose-nextcloud-vagrant.yml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/odoo/docker-compose.yml https://raw.githubusercontent.com/jatutert/demos/main/Docker-Compose/YAML/Odoo/docker-compose-odoo-vagrant.yml  
-            # DOCKER COMPOSE YAML awesome compose YAML bestanden ophalen
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/prometheus-grafana/prometheus-grafana.yml https://raw.githubusercontent.com/docker/awesome-compose/master/prometheus-grafana/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/nextcloud-redis-mariadb.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nextcloud-redis-mariadb/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mysql/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mongo.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mongo/compose.yaml
-            curl -s -o /home/$SUDO_USER/yaml/docker-compose/wordpress/wordpress-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/wordpress-mysql/compose.yaml
+            echo "Optie 4 - Gekozen ..."
             ;;
         5)
-            # Kubernetes MiniKube 
             clear
-            echo "Optie 5 - Installatie K8S inclusief demo omgeving gestart ..."
-            #
-            maak_directories
-            #
-            # Kubernetes MicroK8S Minikube demo simple deployment NGINX
-            echo '#! /bin/bash' > /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo '#' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'kubectl create deployment nginx-webserver --image=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'kubectl expose deployment nginx-webserver --type="NodePort" --port 80' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'kubectl describe deployment nginx-webserver' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'kubectl get svc nginx-webserver' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            chmod +x /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
-            #
-            # Kubernetes MicroK8S Minikube demo deployment NGINX stap 1
-            # Stap 1 is deployment van omgeving met NGINX versie 14
-            echo '#! /bin/bash' > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo '#' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-            #
-            # Kubernetes MicroK8S Minikube demo deployment NGINX stap 2
-            # Stap 2 is updaten van NGINX van versie 14 naar versie 16
-            echo '#! /bin/bash'    > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo '#'              >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-            #
-            # Kubernetes MicroK8S Minikube demo deployment NGINX stap 3
-            # Stap 3 is replicatecount van 2 naar 4 bijwerken 
-            echo '#! /bin/bash' > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'clear' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            echo 'minikube service --all' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-            #
-            # Kubernetes MicroK8S Minikube demo MySQL 
-            # mysql-pv is persistant volume
-            # mysql-deployment is deployment van mysql met gebruik van persistant volume claim 
-            echo '#! /bin/bash' > /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'clear' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-pv.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-deployment.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'kubectl describe deployment mysql' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'kubectl describe pvc mysql-pv-claim' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            echo 'kubectl get pods -l app=mysql' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-            # K8S IO website demos
-            # MySQL 
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
-            curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
-            # NGINX
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
-            curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
-            #
-            # Docker moet wel er zijn voor minikube !!! 
-            #
-            # Check if Docker is installed
-            if ! [ -x "$(command -v docker)" ]; then
-                echo 'Commando DOCKER geeft GEEN resultaat' >&2
-                # Installatie DOCKER-CE 
-                # Call the function to install Docker
-                install_docker
-            fi
-            # Docker is installed 
-            #
-            # Directory TMP check 
-            if [ ! -d "/home/$SUDO_USER/tmp" ]; then
-                mkdir -p /home/$SUDO_USER/tmp
-                chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
-            fi 
-            # Installatie Minikube 
-            if ! [ -x "$(command -v minikube)" ]; then
-                echo 'Minikube niet aangetroffen. Installatie gestart ...' >&2
-                curl -o /home/$SUDO_USER/tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-                dpkg -i /home/$SUDO_USER/tmp/minikube_latest_amd64.deb > /dev/null 2>&1
-                rm /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
-            fi 
-            # Installatie kubeadm
-            if ! [ -x "$(command -v kubeadm)" ]; then
-                echo 'Installatie kubeadm gestart ...' >&2
-                snap install kubeadm --classic --channel=latest > /dev/null 2>&1
-            fi
-            # Installatie kubectl 
-            if ! [ -x "$(command -v kubectl)" ]; then
-                echo 'Installatie kubectl gestart ...' >&2
-                snap install kubectl --classic --channel=latest > /dev/null 2>&1
-            fi
-            # Minikube configuratie uitvoeren 
-            minikube_config
+            echo "Optie 5 - Gekozen ..." 
             ;;
         6)
-            echo "Optie 6 - Installatie GNOME gestart ..."
-            # Installate GNOME GUI (https://phoenixnap.com/kb/how-to-install-a-gui-on-ubuntu) 
-            # Functie bijwerken ubuntu 
-            ubuntu_update
-            # Installatie GNOME 
-            apt install ubuntu-desktop -y
-            shutdown -r now 
-            #
-            # # Check if GNOME is installed
-            # if ! [ -x "$(command -v gnome-shell)" ]; the
-            #  echo 'GNOME is not installed. Installing GNOME...' >&2
-            #  sudo apt-get update
-            #  sudo apt-get install gnome-shell
-            # else
-            #  echo 'GNOME is already installed.'
-            # fi
-            #
-            #
-            # IT Fundamentals 
-            # GNU Compiler C 
-            apt install gcc -y
-            # JAVA JDK 
-            apt install openjdk-17-jdk -y
-            # Image metadata tool 
-            apt install exif -y
-            # RAW files editor 
-            apt install okteta -y
-            # Data image hider 
-            apt install steghide -y
+            clear
+            echo "Optie 6 - Gekozen ..."
+
             ;;
         7)
             clear
-            echo "Optie 7 - Installatie Ansible inclusief demo omgeving gestart ..."
+            echo "Optie 7 - Gekozen ..."
             #
-            #
-            # MASTER
-            # ######
-            #
-            #
-            # Haal de hostname op
-            hostname=$(hostname)
-            #
-            # Hostname ulx-s-2204-L-A-001 is Ansible Controller 
-            if [ "$hostname" == "ulx-s-2204-l-a-001" ]; then
-                #
-                # Stap 1 Installatie
-                    # Aanpassen Ubuntu Standaard Repository naar Nederland 
-                    change_ubuntu_repo
-                    # Upgraden Ubuntu naar laatste stand van zaken 
-                    ubuntu_update
-                    # Ansible Repo toevoegen 
-                    apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
-                    # Upgraden Ubuntu naar laatste stand van zaken
-                    ubuntu_update
-                    # Installeren ANSIBLE latest
-                    apt install ansible -y > /dev/null 2>&1
-                    echo "Stap 1 Installatie Ansible gereed"
-                # 
-                # Stap 2 Aanpassen etc hosts bestand 
-                    # vullen variable hostname
-                    hostname=$(hostname)
-                    # Haal het IP-adres van eth1 op
-                    eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-                    # Voeg 1 toe aan het IP-adres van eth1
-                    IFS=. read -r a b c d <<< "$eth1_ip"
-                    eth1_plus1_ip="$a.$b.$c.$((d+1))"
-                    # Sla de IP-adressen op in afzonderlijke variabelen
-                    eth1_ip_var="eth1_ip=$eth1_ip"
-                    eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
-                    # Aanpassen hosts bestand 
-                    if grep -q "$eth1_ip" /etc/hosts; then
-                       echo "$hostname already exists in /etc/hosts"
-                    else
-                       # Add the hostname and IP address to /etc/hosts
-                       echo "$eth1_ip ulx-s-2204-l-a-001" | sudo tee -a /etc/hosts > /dev/null
-                       echo "$eth1_plus1_ip ulx-s-2204-l-a-010" | sudo tee -a /etc/hosts > /dev/null
-                       echo "Hostname $hostname added to /etc/hosts"
-                    fi
-                    #
-                    echo "Aanpassen Ubuntu Hosts bestand gereed"
-                #
-                # Stap 3 Inventory ophalen van GitHUB  
-                   mkdir -p /etc/ansible/inventory 
-                   curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
-                   # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
-                   # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
-                   # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
-                   # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
-                   echo "Ophalen Inventory vanaf GitHub gereed"
-                # 
-                # Stap 4 aanpassen ansible config met Inventory 
-                    if grep -q "defaults" /etc/ansible/ansible.cfg; then
-                        echo "Ansible Configuratiebestand reeds voorzien van Inventory"
-                    else
-                        # Add the hostname and IP address to /etc/hosts
-                        echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
-                        echo "inventory = inventory/" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
-                        echo "Ansible Configuratiebestand voorzien van Inventory"
-                    fi
-                    echo "Aanpassen Ansible CFG gereed" 
-                #
-                # Stap 5 Playbooks ophalen van GitHUB
-                    mkdir -p /home/$SUDO_USER/playbooks
-                    chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
-                    curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Playbooks/Linux/ansible_demo_playbook.yml
-                    echo "Ophalen Ansible Playbooks vanaf GitHUB gereed"
-                #
-                # Stap 6 SSH verbinden script maken 
-                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
-                chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
-                # 
-                # Stap 7
-				# https://docs.semui.co/administration-guide/installations
-				# 
-				snap install semaphore
-                snap stop semaphore
-				semaphore user add --admin --login labadmin --name=LABAdmin --email=labadmin@labadmin.local --password=labadmin
-				snap start semaphore
-				# Aanpassen standaard poort 3000 naar 4444
-				snap set semaphore port=4444
-				# Herstarten com nieuwe poort actief te maken 
-				snap restart semaphore
-            fi
-            #
-            #
-            # SLAVE
-            # ######
-            #
-            # 
-            # Haal de hostname op
-            hostname=$(hostname)
-            #
-            # Hostname ulx-s-2204-L-A-010 is slaaf 1 voor ansible controller 
-            if [ "$hostname" == "ulx-s-2204-l-a-010" ]; then
-                # Stap 1 Installatie
-                    # Aanpassen Ubuntu Standaard Repository naar Nederland 
-                    change_ubuntu_repo
-                    # Upgraden Ubuntu naar laatste stand van zaken 
-                    ubuntu_update
-                #
-                # Stap 2 Installatie SSHPASS
-                # 
-                    # Starten installatie sshpass
-                    apt install sshpass -y
-                #
-                # Stap 3 Aanpassen etc hosts bestand
-                #
-                    # vullen variable hostname
-                    hostname=$(hostname)
-                    # Haal het IP-adres van eth1 op
-                    eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
-                    # Voeg 1 toe aan het IP-adres van eth1
-                    IFS=. read -r a b c d <<< "$eth1_ip"
-                    eth1_min1_ip="$a.$b.$c.$((d-1))"
-                    # Sla de IP-adressen op in afzonderlijke variabelen
-                    eth1_ip_var="eth1_ip=$eth1_ip"
-                    eth1_min1_ip_var="eth1_min1_ip=$eth1_min1_ip"
-                    if grep -q "$eth1_ip" /etc/hosts; then
-                        echo "$hostname already exists in /etc/hosts"
-                    else
-                        # Add the hostname and IP address to /etc/hosts
-                        echo "$eth1_ip ulx-s-2204-l-a-010" | sudo tee -a /etc/hosts > /dev/null
-                        echo "$eth1_min1_ip ulx-s-2204-l-a-001" | sudo tee -a /etc/hosts > /dev/null
-                        echo "Hostname $hostname added to /etc/hosts"
-                    fi                
-                #
-                # Stap 4 SSH verbinden script maken 
-                echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-001' > /home/$SUDO_USER/ansible_cntrl_ssh.sh 
-                chmod +x /home/$SUDO_USER/ansible_cntrl_ssh.sh 
-                #
-                # Stap x  
-                #
-           fi
-        ;;
+            ;;
         9)
             echo "U heeft gekozen om het menu te verlaten."
             exit 0
@@ -1468,8 +949,161 @@ while true; do
         *)
             echo "Ongeldige keuze. Probeer opnieuw."
             ;;
-    esac
-done
+        esac
+    done
+#
+}
+#
+#
+#
+#
+# ################################################################################
+#
+# COMPONENT 3
+#
+# VARIABELEN
+#
+# VULLEN
+#
+# ################################################################################
+#
+#
+#
+#
+PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
+NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
+VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
+VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
+#
+#
+# Wat is het resultaat 
+#
+# PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
+# resultaat Ubuntu 24.04 LTS
+#
+# NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
+# resultaat Ubuntu
+#
+# VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
+# resultaat 24.04 LTS (Noble Numbat)
+#
+# VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+# resultaat 24.04
+#
+# VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
+# resultaat noble 
+#
+#
+GH_JATUTERT_RAW="https://raw.githubusercontent.com/jatutert/"
+#
+#
+#
+#
+# ################################################################################
+#
+# HOOFDPROGRAMMA
+#
+# ALLE LINUX DISTROS
+#
+# ################################################################################
+#
+#
+#
+#
+$distro=$(echo "$NAME" | tr '[:upper:]' '[:lower:]')
+#
+#
+#
+# ALPINE
+#
+#
+if [ $distro == "alpine" ]; then
+#
+# Bepaal de actie op basis van de parameter
+actie=$1
+#
+fi
+#
+# DEBIAN 
+#
+#
+if [ $distro == "debian" ]; then
+#
+# Bepaal de actie op basis van de parameter
+actie=$1
+#
+fi
+#
+# UBUNTU
+#
+#
+if [ $distro == "ubuntu" ]; then
+    #
+    # Bepaal de actie op basis van de parameter
+    actie=$1 
+    #
+    #
+    if [ $actie == "update" ]; then
+        #
+        # UBUNTU OPTIE 1
+        #
+        ulx_os_change_repo_nl
+        ulx_os_timezone_change
+        ulx_os_update_apt
+        exit 1
+        elif [ $actie == "docker" ]; then
+            #
+            # UBUNTU OPTIE 2
+            #
+            ulx_install_docker
+            maak_directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ulx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
+            exit 1
+        elif [ $actie == "scripts" ]; then
+            #
+            # UBUNTU OPTIE 3
+            #
+            echo "Ansible-actie geselecteerd."
+        # UBUNTU OPTIE 4
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 5 
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 6 
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 7
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 8
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 9
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+    # Onjuiste parameter
+    else
+        echo "Onjuiste parameter: $actie. Gebruik 'docker' of 'ansible'."
+        exit 1
+    fi
+fi
 #
 # Thats all folks 
 #
