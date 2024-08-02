@@ -757,9 +757,7 @@ function ulx_it-funda_tooling () {
 # Virtualisatie
 #
 #
-function ulx_virtualisatie_scripts () {
-   # LEEG
-}
+#
 #
 #
 #
