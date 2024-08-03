@@ -1,10 +1,14 @@
 #! /bin/bash
 #
 #
+#
+#
 # Configuratiescript Linux 
-# Versie: 3.0.0 ALPHA 2
+# Versie: 3.0.0 ALPHA 3
 # ONLY FOR TESTING PURPOSES 
-# Auteur: John Tutert
+# Author: John Tutert
+#
+#
 #
 #
 # ######################
@@ -45,6 +49,8 @@
 # Opdelen script in compomenten in plaats van keuzes via menu
 # Opdelen script in functies die aangeroepen kunnen worden 
 #
+# 02aug24 Eerst uitvoerbare versie script
+# 03aug24 parameters aanpassen en uitbreiden 
 #
 #
 #
@@ -82,6 +88,33 @@ fi
 #
 # COMPONENT 2
 #
+# VARIABELEN
+#
+# VULLEN
+#
+# ################################################################################
+#
+#
+#
+#
+PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
+NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
+VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
+VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
+#
+#
+#
+#
+GH_JATUTERT_RAW="https://raw.githubusercontent.com/jatutert/"
+#
+#
+#
+#
+# ################################################################################
+#
+# COMPONENT 3
+#
 # DECLARATIE FUNCTIES 
 #
 # ################################################################################
@@ -91,7 +124,7 @@ fi
 #
 # ################################################################################
 #
-# COMPONENT 2
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -115,7 +148,7 @@ function alx_vm_tools () {
 } 
 # ################################################################################
 #
-# COMPONENT 2
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -141,7 +174,7 @@ function dbn_vm_tools () {
 #
 # ################################################################################
 #
-# COMPONENT 2
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -155,8 +188,18 @@ function dbn_vm_tools () {
 #
 # UBUNTU OS FUNCTIES ## Functie Change Repo Ubuntu 
 #
+#
+# TO DO
+#
+# Functie werkt alleen op Ubuntu 22
+# Ubuntu 24 heeft bestand andere naam en locatie gekregen
+#
+#
 function ulx_os_change_repo_nl () {
-    clear
+    #
+    VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+    #
+    # if $VERSION_ID == "22" ; then 
     echo "Aanpassen Ubuntu Repository"
     if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
         sed "s@mirrors.edge.kernel.org@nl.archive.ubuntu.com@" -i /etc/apt/sources.list
@@ -336,6 +379,12 @@ function ulx_install_ansible_cntrl () {
     # Inventory ophalen van GitHUB
     echo "Stap 4 - Ophalen Inventory bestanden vanaf GitHUB JATUTERT gestart ..."
     mkdir -p /etc/ansible/inventory 
+    #
+    #
+    # TO DO
+    #
+    # GH_JATUTERT_RAW variable nog werken
+    #
     curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
     # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
     # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
@@ -447,6 +496,9 @@ function ulx_install_ansible_semaphore () {
 #
 #
 function ulx_docker_images_pull () {
+    #
+    # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
+    #
     # docker pull hello-world
     docker pull alpine
     docker pull debian
@@ -508,10 +560,6 @@ function ulx_docker_minikube_init () {
         snap install kubectl --classic --channel=latest > /dev/null 2>&1
     fi
     #
-    # Minikube configuratie uitvoeren 
-    ram=$(free --mega | grep 'Mem' | awk '{print $7/4}') | minikube config set memory $ram 
-    cpu_aantal=$(nproc) | minikube config set cpus $cpu_aantal  
-    minikube config set driver docker
 }
 #
 #
@@ -566,11 +614,11 @@ function ulx_maak_docker_scripts () {
     # echo echo Hello World    >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
     # Operating Systems 
-    echo echo Alpine Linux   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
+    echo echo Alpine Linux                           >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull alpine > /dev/null 2>&1'       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-    echo echo Debian Linux   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
+    echo echo Debian Linux                           >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull debian > /dev/null 2>&1'       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
-    echo echo Ubuntu 20 04 LTS >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
+    echo echo Ubuntu 20 04 LTS                       >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull ubuntu:20.04 > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #
     # Docker Services
@@ -580,7 +628,7 @@ function ulx_maak_docker_scripts () {
     #
     # General Services
     #
-    echo echo prakhar1989 static-site >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
+    echo echo prakhar1989 static-site                >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     echo 'docker pull prakhar1989/static-site > /dev/null 2>&1' >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
     #	
     echo echo MariaDB DBMS   >> /home/$SUDO_USER/scripts/docker/pull-images/docker-pull-images.sh
@@ -876,7 +924,7 @@ function maak_directories () {
 # Function menu 
 #
 #
-function menu () {
+function config_menu () {
 #
 #
 #
@@ -923,12 +971,42 @@ function menu () {
             echo "Optie 3 - Gekozen ..."
             ;;
         4)
+            # Docker
             clear
             echo "Optie 4 - Gekozen ..."
+            ulx_os_timezone_change
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            ulx_install_docker
+            # ulx_docker_portainer_create
+            # Docker voorzien van images
+            ulx_docker_images_pull
+            # 
+            maak_directories
+            # Maak demo omgeving binnen directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ukx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
             ;;
         5)
+            # MiniKube
             clear
             echo "Optie 5 - Gekozen ..." 
+            ulx_os_timezone_change
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            ulx_install_docker
+            # ulx_docker_portainer_create
+            # Installatie MiniKube met docker als driver
+            ulx_docker_minikube_init
+            ulx_docker_minikube_config
+            maak_directories
+            # Maak demo omgeving binnen directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ukx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
             ;;
         6)
             clear
@@ -953,30 +1031,6 @@ function menu () {
 #
 #
 #
-#
-# ################################################################################
-#
-# COMPONENT 3
-#
-# VARIABELEN
-#
-# VULLEN
-#
-# ################################################################################
-#
-#
-#
-#
-PRETTY_NAME=$(grep -oP '(?<=^PRETTY_NAME=).+' /etc/os-release | tr -d '"')
-NAME=$(grep -oP '(?<=^NAME=).+' /etc/os-release | tr -d '"')
-VERSION=$(grep -oP '(?<=^VERSION=).+' /etc/os-release | tr -d '"')
-VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
-VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
-#
-#
-#
-#
-GH_JATUTERT_RAW="https://raw.githubusercontent.com/jatutert/"
 #
 #
 #
@@ -1029,7 +1083,9 @@ if [ $distro == "ubuntu" ]; then
         ulx_os_timezone_change
         ulx_os_change_repo_nl
         ulx_os_update_apt
+        ulx_install_vm_tools
         ulx_os_upgrade_os
+        ulx_install_pwrshell
         exit 1
         elif [ $actie == "docker" ]; then
             #
@@ -1038,28 +1094,45 @@ if [ $distro == "ubuntu" ]; then
             ulx_os_timezone_change
             ulx_os_change_repo_nl
             ulx_os_update_apt
+            ulx_install_vm_tools
             ulx_install_docker
             # ulx_docker_portainer_create
+            # Docker voorzien van images
+            ulx_docker_images_pull
+            # 
+            maak_directories
+            # Maak demo omgeving binnen directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ukx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
             exit 1
-        elif [ $actie == "dockerdemo" ]; then
+        elif [ $actie == "minikube" ]; then
             #
             # UBUNTU OPTIE 3
             #
+            ulx_os_timezone_change
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            ulx_install_vm_tools
+            ulx_install_docker
+            # ulx_docker_portainer_create
+            # Installatie MiniKube met docker als driver
+            ulx_docker_minikube_init
+            ulx_docker_minikube_config
             maak_directories
+            # Maak demo omgeving binnen directories
             ulx_maak_docker_scripts
             ulx_maak_docker_voorbeelden
             ukx_maak_compose_scripts
             ulx_maak_compose_voorbeelden
         # UBUNTU OPTIE 4
         elif [ $actie == "ansible" ]; then
-            # Voer hier uw Ansible-commando's uit
-            echo "Ansible-actie geselecteerd."
-            ansible-playbook playbook.yml
+            ulx_install_ansible_cntrl
+            ulx_install_ansible_slave_1
         # UBUNTU OPTIE 5 
-        elif [ $actie == "scripts" ]; then
-            # Voer hier uw Ansible-commando's uit
-            echo "Ansible-actie geselecteerd."
-            ansible-playbook playbook.yml
+        elif [ $actie == "onderwijs" ]; then
+            ulx_intro_infra_scripts
         # UBUNTU OPTIE 6 
         elif [ $actie == "scripts" ]; then
             # Voer hier uw Ansible-commando's uit
@@ -1076,13 +1149,17 @@ if [ $distro == "ubuntu" ]; then
             echo "Ansible-actie geselecteerd."
             ansible-playbook playbook.yml
         # UBUNTU OPTIE 9
-        elif [ $actie == "scripts" ]; then
-            # Voer hier uw Ansible-commando's uit
-            echo "Ansible-actie geselecteerd."
-            ansible-playbook playbook.yml
+        elif [ $actie == "menu" ]; then
+            config_menu 
     # Onjuiste parameter
     else
-        echo "Onjuiste parameter: $actie. Gebruik 'docker' of 'ansible'."
+        echo "Onjuiste parameter: $actie. Gebruik 'upgrade' 'docker' 'minikube' 'ansible'."
+        echo "Beschikbare parameters:"
+        echo "upgrade    voor bijwerken naar laatste versie van distro"
+        echo "docker     voor installatie docker met demo omgeving"
+        echo "minikube   voor installatie minikube met worker nodes op docker"
+        echo "ansible    voor demo omgeving Ansible"
+        echo "onderwijs  voor demo omgeving onderwijs"
         exit 1
     fi
 fi
