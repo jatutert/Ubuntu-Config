@@ -105,7 +105,6 @@ VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
 VERSION_CODENAME=$(grep -oP '(?<=^VERSION_CODENAME=).+' /etc/os-release | tr -d '"')
 #
 #
-hostname=$(hostname) 
 #
 #
 GH_JATUTERT_RAW="https://raw.githubusercontent.com/jatutert/"
@@ -250,31 +249,36 @@ function ulx_os_upgrade_os () {
 #
 # UBUNTU OS FUNCTIES ## Functie Change Timezone 
 #
-function ulx_os_config_timezone () {
+function ulx_os_timezone_change () {
     timedatectl set-timezone Europe/Amsterdam
 } 
 #
-# UBUNTU OS FUNCTIES ## Functie NIC Config
-#
-function ulx_os_config_nic () {
-#
-# Vervangen standaard netcfg bestand
-# NIC1 eth0 wordt gezet op DHCP met specifieke DNS
-# NIC2 eth1 wordt gezet op DHCP met specifieke DNS
-#
-# Functie ulx_os_dns_change is overbodig voor deze yaml file 
-#
-    curl -o /etc/netplan/01-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/Docker/Guest/Ubuntu/Netplan/eth/sec-nic-eth-01-netcfg-dhcp-dns.yaml
-} 
-
-
-#
 # UBUNTU OS FUNCTIES ## Functie Change DNS
 #
-function ulx_os_config_dns () {
+function ulx_os_dns_change () {
 #
-# Niet uitvoeren na ulx_os_nic_config daar zit namelijk al in 
 #
+# 07 aug 2024 ## TO DO
+#
+# DOWNLOAD netcfg vanaf github invoegen omdat standaard op dhcp staat en dns servers leeg zijn
+#
+# Onderstaande functie werkt dus niet bij standaard
+#
+#
+
+Docker 
+LET OP! bestandsnaam is anders ! moet 01-netcfg.yaml zijn in Ubuntu 24.x
+https://raw.githubusercontent.com/jatutert/demos/main/Docker/Guest/Ubuntu/Netplan/00-installer-config.yaml
+
+OSTicket DBMS
+https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Databaseserver/01-netcfg.yaml
+
+OSTicket WEBServer
+https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Webserver/01-netcfg.yaml
+
+
+
+
     sed "s@4.2.2.1@145.76.2.75@" -i /etc/netplan/01-netcfg.yaml
     sed "s@4.2.2.2@145.76.2.85@" -i /etc/netplan/01-netcfg.yaml
     sed "s@208.67.220.220@145.2.14.10, 8.8.8.8, 8.8.4.4@" -i /etc/netplan/01-netcfg.yaml
@@ -424,11 +428,11 @@ function ulx_install_ansible_cntrl () {
     #
     # GH_JATUTERT_RAW variable nog werken
     #
-    curl -s -o /etc/ansible/inventory/ansible_demo     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
-    # curl -s -o /etc/ansible/inventory/db_servers     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
+    curl -s -o /etc/ansible/inventory/ansible_demo https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/ansible_demo
+    # curl -s -o /etc/ansible/inventory/db_servers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
     # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
-    # curl -s -o /etc/ansible/inventory/webservers     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
-    # curl -s -o /etc/ansible/inventory/werkstations   https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
+    # curl -s -o /etc/ansible/inventory/webservers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
+    # curl -s -o /etc/ansible/inventory/werkstations https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
     echo "Ophalen Inventory vanaf GitHub gereed"
     #
     # STAP 5
@@ -812,66 +816,16 @@ function ulx_maak_compose_voorbeelden () {
 # Introductie Infrastructuren
 #
 #
-function ulx_intro_infra_netcfg () {
-    #
-    if [ $hostname == "u24-lts-s-dbms-001" ] ; then
-        curl -o /etc/netplan/01-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Databaseserver/eth/eth-sec-nic-01-netcfg-dbms.yaml
-        netplan apply 
-    fi
-    #
-    if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
-        curl -o /etc/netplan/01-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Webserver/eth/eth-sec-nic-01-netcfg-wsrv.yaml
-        netplan apply 
-    fi
-}
-#
-function ulx_intro_infra_install () {
-    #
-    if [ $hostname == "u24-lts-s-dbms-001" ] ; then
-       apt install mysql-server -y
-       #setup mysql server
-       #accept sql queries from all hosts (0.0.0.0)
-       sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mysql/mysql.conf.d
-       # create database for osticket
-       mysql -e "CREATE DATABASE osticket;"
-       mysql -e "CREATE USER 'admin'@'%' IDENTIFIED BY 'password';"
-       mysql -e "GRANT ALL PRIVILEGES ON osticket.* TO 'admin'@'%';"
-       mysql -e "FLUSH PRIVILEGES;"
-       systemctl restart mysql
-    fi
-    #
-    if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
-       apt install git -y
-       apt install apache2 -y
-       apt install php libapache2-mod-php -y
-       apt install php-{gd,imap,xml,json,mbstring,mysql,intl,apcu,zip} -y
-       #install and setup osTicket
-       #for ubuntu 22.04 and higher
-       mkdir /var/tmp/osticket
-       git clone https://github.com/osTicket/osTicket /var/tmp/osticket
-       # Onderstaande commando werkt nog niet ! 
-       php manage.php deploy --setup /var/www/html/osticket
-       #
-       cp /var/www/html/osticket/include/ost-sampleconfig.php /var/www/html/osticket/include/ost-config.php
-       chmod 0666 /var/www/html/osticket/include/ost-config.php
-       #enable user websites
-       mkdir -p -v /etc/skel/public_html
-       a2enmod userdir
-       echo "Restarting apache2 webserver...."
-       systemctl restart apache2
-    fi
-    #
+function ulx_intro_infra_scripts () {
     curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-mysqlserver.sh
     curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-webserver.sh
     curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-webserver-v2.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-webserver-v2.sh
     curl -s -o /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh https://raw.githubusercontent.com/msiekmans/linux-server-scripts/main/install-sftpserver.sh
-    #
     chmod +x /home/$SUDO_USER/scripts/intro_infra/install-mysqlserver.sh
     chmod +x /home/$SUDO_USER/scripts/intro_infra/install-webserver.sh
     chmod +x /home/$SUDO_USER/scripts/intro_infra/install-webserver-v2.sh
     chmod +x /home/$SUDO_USER/scripts/intro_infra/install-sftpserver.sh
 }
-#
 #
 #
 # IT Fundamentals 
@@ -1159,36 +1113,6 @@ fi
 # UBUNTU
 #
 #
-# Beschikbare functies 
-#
-# ulx_os_change_repo_nl
-# ulx_os_update_apt
-# ulx_os_upgrade_os
-# ulx_os_config_timezone
-# ulx_os_config_nic
-# ulx_os_config_dns
-# ulx_os_gnome_install
-# ulx_install_vm_tools
-# ulx_install_pwrshell
-# ulx_install_cockpit
-# ulx_install_docker
-# ulx_install_ansible_cntrl
-# ulx_install_ansible_slave_1
-# ulx_install_ansible_semaphore
-# ulx_docker_images_pull
-# ulx_docker_minikube_init
-# ulx_docker_minikube_config
-# ulx_docker_portainer_create
-# ulx_docker_portainer_remove
-# ulx_maak_docker_scripts
-# ulx_maak_docker_voorbeelden
-# ulx_maak_compose_scripts
-# ulx_maak_compose_voorbeelden
-# ulx_intro_infra_scripts
-# ulx_it-funda_tooling
-# maak_directories
-# config_menu
-#
 if [ $distro == "ubuntu" ]; then
     #
     # Bepaal de actie op basis van de parameter
@@ -1200,8 +1124,8 @@ if [ $distro == "ubuntu" ]; then
         # UBUNTU OPTIE 1
         #
         # Configuratie 
-        ulx_os_config_timezone
-        ulx_os_config_nic
+        ulx_os_timezone_change
+        ulx_os_dns_change
         ulx_os_change_repo_nl
         ulx_os_update_apt
         # Bijwerken 
@@ -1215,24 +1139,17 @@ if [ $distro == "ubuntu" ]; then
             #
             # UBUNTU OPTIE 2
             #
-            # Configuratie 
-            ulx_os_config_timezone
-            ulx_os_config_nic
+            ulx_os_timezone_change
             ulx_os_change_repo_nl
             ulx_os_update_apt
-            # Bijwerken 
-            ulx_os_upgrade_os
-            # Installatie 
             ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            # DOCKER
             ulx_install_docker
-            ulx_docker_portainer_create
+            # ulx_docker_portainer_create
+            # Docker voorzien van images
             ulx_docker_images_pull
             # 
-            # DEMO omgeving maken 
             maak_directories
+            # Maak demo omgeving binnen directories
             ulx_maak_docker_scripts
             ulx_maak_docker_voorbeelden
             ukx_maak_compose_scripts
@@ -1242,97 +1159,47 @@ if [ $distro == "ubuntu" ]; then
             #
             # UBUNTU OPTIE 3
             #
-            # Configuratie 
-            ulx_os_config_timezone
-            ulx_os_config_nic
+            ulx_os_timezone_change
             ulx_os_change_repo_nl
             ulx_os_update_apt
-            # Bijwerken 
-            ulx_os_upgrade_os
-            # Installatie 
             ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            # DOCKER
             ulx_install_docker
-            ulx_docker_portainer_create
-            ulx_docker_images_pull
-            # 
-            # DEMO omgeving maken 
+            # ulx_docker_portainer_create
+            # Installatie MiniKube met docker als driver
+            ulx_docker_minikube_init
+            ulx_docker_minikube_config
             maak_directories
+            # Maak demo omgeving binnen directories
             ulx_maak_docker_scripts
             ulx_maak_docker_voorbeelden
             ukx_maak_compose_scripts
             ulx_maak_compose_voorbeelden
-            # MiniKube 
-            ulx_docker_minikube_init
-            ulx_docker_minikube_config
+        # UBUNTU OPTIE 4
         elif [ $actie == "ansible" ]; then
-            #
-            # UBUNTU OPTIE 4
-            #
-            # Configuratie 
-            ulx_os_config_timezone
-            ulx_os_config_nic
-            ulx_os_change_repo_nl
-            ulx_os_update_apt
-            # Bijwerken 
-            ulx_os_upgrade_os
-            # Installatie 
-            ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            # Ansible 
             ulx_install_ansible_cntrl
             ulx_install_ansible_slave_1
-        elif [ $actie == "introinfra" ]; then
-            #
-            # UBUNTU OPTIE 5
-            #
-            # Configuratie 
-            ulx_os_config_timezone
-            ulx_os_config_nic
-            ulx_os_change_repo_nl
-            ulx_os_update_apt
-            # Bijwerken 
-            ulx_os_upgrade_os
-            # Installatie 
-            ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            # OSTicket 
-            ulx_intro_infra_netcfg
-            ulx_intro_infra_install
-        elif [ $actie == "itfunda" ]; then
-            #
-            # UBUNTU OPTIE 6
-            # 
-            # Configuratie 
-            ulx_os_config_timezone
-            ulx_os_config_nic
-            ulx_os_config_dns
-            ulx_os_change_repo_nl
-            ulx_os_update_apt
-            # Bijwerken 
-            ulx_os_upgrade_os
-            # Installatie 
-            ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            #
+        # UBUNTU OPTIE 5 
+        elif [ $actie == "onderwijs" ]; then
+            ulx_intro_infra_scripts
+        # UBUNTU OPTIE 6 
         elif [ $actie == "scripts" ]; then
-            #
-            # UBUNTU OPTIE 7
-            # 
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 7
         elif [ $actie == "scripts" ]; then
-            #
-            # UBUNTU OPTIE 8
-            # 
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 8
+        elif [ $actie == "scripts" ]; then
+            # Voer hier uw Ansible-commando's uit
+            echo "Ansible-actie geselecteerd."
+            ansible-playbook playbook.yml
+        # UBUNTU OPTIE 9
         elif [ $actie == "menu" ]; then
-            #
-            # UBUNTU OPTIE 9
-            # 
-            config_menu
+            config_menu 
+    # Onjuiste parameter
     else
         echo "Onjuiste parameter: $actie. Gebruik 'upgrade' 'docker' 'minikube' 'ansible'."
         echo "Beschikbare parameters:"
