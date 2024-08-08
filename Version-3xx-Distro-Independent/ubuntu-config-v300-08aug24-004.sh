@@ -53,6 +53,7 @@
 # 02aug24 Eerst uitvoerbare versie script
 # 03aug24 parameters aanpassen en uitbreiden 
 # 07aug24 DNS 
+# 08aug24 Powershell 
 #
 #
 #
@@ -320,12 +321,71 @@ function ulx_install_vm_tools () {
 # UBUNTU OS Install Software Functies ## Functie Installatie OS Powershell
 #
 #
+# https://learn.microsoft.com/en-us/powershell/scripting/install/install-ubuntu?view=powershell-7.4
+#
+# Starten met pwsh commando
+#
 function ulx_install_pwrshell () {
-    apt-get update -qq
-    curl -o /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.2/powershell_7.4.2-1.deb_amd64.deb
-    dpkg -i /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
-    apt-get install -f
-    rm /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+    #
+    # Manier 1 Microsoft
+    #
+    # 08 aug werk niet 
+    #
+    # apt-get update
+    # apt-get install -y wget apt-transport-https software-properties-common
+    # source /etc/os-release
+    # wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
+    # dpkg -i packages-microsoft-prod.deb
+    # rm packages-microsoft-prod.deb
+    # sudo apt-get update
+    # sudo apt-get install -y powershell
+    #
+    # Manier 2 Microsoft
+    #
+    # 08 aug werkt niet
+    #
+    # apt-get update
+    # apt-get install -y wget
+    # wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.4/powershell_7.4.4-1.deb_amd64.deb
+    # dpkg -i powershell_7.4.4-1.deb_amd64.deb
+    # apt-get install -f
+    # rm powershell_7.4.4-1.deb_amd64.deb
+    #
+    # Manier 3 EIGEN 
+    #
+    # 08 aug WERKT
+    #
+    # apt-get update -qq
+    # apt-get install wget2 -y
+    #
+    # wget2 /tmp/libicu72_72.1-3ubuntu3_amd64.deb https://mirror.it.ubc.ca/ubuntu/pool/main/i/icu/libicu72_72.1-3ubuntu3_amd64.deb
+    # dpkg -i /tmp/libicu72_72.1-3ubuntu3_amd64.deb
+    #
+    # wget2 /tmp/powershell_7.4.4-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.4/powershell_7.4.4-1.deb_amd64.deb
+    # dpkg -i /tmp/powershell_7.4.4-1.deb_amd64.deb
+    #
+    #
+    # rm -f /tmp/libicu72_72.1-3ubuntu3_amd64.deb
+    # rm -f /tmp/powershell_7.4.4-1.deb_amd64.deb
+    #
+    # Manier 4 EIGEN
+    #
+    #  08 aug WERKT NIET
+    #
+    # apt-get update -qq
+    # apt install wget2 -y
+    # wget2 /tmp/powershell_7.4.4-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.4/powershell_7.4.4-1.deb_amd64.deb
+    # dpkg -i /tmp/powershell_7.4.4-1.deb_amd64.deb
+    # verwijderen powershell
+    # apt-get install -f
+    # rm /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+    #
+    # Manier 5
+    #
+    # 08 aug WERKT  
+    #
+    snap install powershell --classic
+    #
 }
 #
 #
@@ -335,6 +395,7 @@ function ulx_install_pwrshell () {
 function ulx_install_cockpit () {
     apt install -qq -y cockpit > /dev/null 2>&1
     systemctl enable --now cockpit.socket
+    rm -f /tmp/listen.conf
     echo '[Socket]' > /tmp/listen.conf
     echo 'ListenStream=' >> /tmp/listen.conf
     echo 'ListenStream=1234' >> /tmp/listen.conf
@@ -580,8 +641,8 @@ function ulx_docker_minikube_init () {
     # Installatie Minikube 
     if ! [ -x "$(command -v minikube)" ]; then
         echo 'Minikube niet aangetroffen. Installatie gestart ...' >&2
-        curl -o /home/$SUDO_USER/tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
-        dpkg -i /home/$SUDO_USER/tmp/minikube_latest_amd64.deb > /dev/null 2>&1
+        curl -o /tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+        dpkg -i /tmp/minikube_latest_amd64.deb > /dev/null 2>&1
         rm /home/$SUDO_USER/tmp/minikube_latest_amd64.deb
     fi 
     #
