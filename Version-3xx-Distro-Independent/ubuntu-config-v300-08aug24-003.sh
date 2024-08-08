@@ -1332,11 +1332,13 @@ if [ $distro == "ubuntu" ]; then
             #
             # UBUNTU OPTIE 8
             #
+            exit 1
         elif [ $actie == "menu" ]; then
             #
             # UBUNTU OPTIE 9
             #
             config_menu
+            exit 1
     else
         echo "Onjuiste parameter: $actie. Gebruik 'upgrade' 'docker' 'minikube' 'ansible'."
         echo "Beschikbare parameters:"
