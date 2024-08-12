@@ -1380,8 +1380,8 @@ if [ $distro == "ubuntu" ]; then
         # Configuratie 
         echo "Step 1 of 3 Making Preperations"
         ulx_os_config_timezone
-        ulx_os_config_nic
-        # ulx_os_change_repo_nl
+        # ulx_os_config_nic
+        ulx_os_change_repo_nl
         ulx_os_update_apt
         # Bijwerken 
         echo "Step 2 of 3 Upgrading OS"
