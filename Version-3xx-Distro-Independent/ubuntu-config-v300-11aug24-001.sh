@@ -139,8 +139,9 @@ GH_JATUTERT_RAW="https://raw.githubusercontent.com/jatutert/"
 # Function Bijwerken ALPINE
 #
 function alx_update_os () {
-    apk update -qq
-    apk upgrade -qq -y 
+    apk update -q
+    apk upgrade -q
+    apk fix -d -q
     apk add open-vm-tools 
 } 
 #
@@ -265,7 +266,7 @@ function ulx_os_config_nic () {
 #
 # Functie ulx_os_dns_change is overbodig voor deze yaml file 
 #
-    curl -o /etc/netplan/01-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/Docker/Guest/Ubuntu/Netplan/eth/sec-nic-eth-01-netcfg-dhcp-dns.yaml
+    curl -s -o /etc/netplan/01-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/Docker/Guest/Ubuntu/Netplan/eth/sec-nic-eth-01-netcfg-dhcp-dns.yaml
 }
 
 
@@ -629,7 +630,7 @@ function ulx_docker_minikube_init () {
         echo 'Commando DOCKER geeft GEEN resultaat' >&2
         # Installatie DOCKER-CE 
         # Call the function to install Docker
-        install_docker
+        ulx_install_docker
     fi
     # Docker is installed 
     #
@@ -1260,13 +1261,16 @@ if [ $distro == "ubuntu" ]; then
         # UBUNTU OPTIE 1
         #
         # Configuratie 
+        echo "Step 1 of 3 Making Preperations"
         ulx_os_config_timezone
         ulx_os_config_nic
         ulx_os_change_repo_nl
         ulx_os_update_apt
         # Bijwerken 
+        echo "Step 2 of 3 Upgrading OS"
         ulx_os_upgrade_os
         # Installatie 
+        echo "Step 3 of 3 Installing OS Tools"
         ulx_install_vm_tools
         ulx_install_pwrshell
         ulx_install_cockpit
@@ -1276,26 +1280,31 @@ if [ $distro == "ubuntu" ]; then
             # UBUNTU OPTIE 2
             #
             # Configuratie 
+            echo "Step 1 of 5 Making Preperations"
             ulx_os_config_timezone
             ulx_os_config_nic
             ulx_os_change_repo_nl
             ulx_os_update_apt
             # Bijwerken 
+            echo "Step 2 of 5 Upgrading OS"
             ulx_os_upgrade_os
             # Installatie 
+            echo "Step 3 of 5 Installing OS Tools"
             ulx_install_vm_tools
             ulx_install_pwrshell
             ulx_install_cockpit
             # DOCKER
+            echo "Step 4 of 5 Installation and configuration Docker CE"
             ulx_install_docker
             ulx_docker_portainer_create
             ulx_docker_images_pull
             # 
             # DEMO omgeving maken 
+            echo "Step 5 of 5 Creating demo environment"
             maak_directories
             ulx_maak_docker_scripts
             ulx_maak_docker_voorbeelden
-            ukx_maak_compose_scripts
+            ulx_maak_compose_scripts
             ulx_maak_compose_voorbeelden
             exit 1
         elif [ $actie == "minikube" ]; then
@@ -1322,7 +1331,7 @@ if [ $distro == "ubuntu" ]; then
             maak_directories
             ulx_maak_docker_scripts
             ulx_maak_docker_voorbeelden
-            ukx_maak_compose_scripts
+            ulx_maak_compose_scripts
             ulx_maak_compose_voorbeelden
             # MiniKube 
             ulx_docker_minikube_init
