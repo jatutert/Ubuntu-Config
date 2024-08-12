@@ -90,13 +90,6 @@ if [ $# -eq 0 ]; then
 fi
 #
 #
-# Controleer aanwezigheid tmp directory in gebruikersomgeving
-#
-#
-if [ ! -d "/home/$SUDO_USER/tmp" ]; then
-    mkdir -p /home/$SUDO_USER/tmp
-    chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
-fi 
 #
 #
 #
@@ -1064,6 +1057,11 @@ function ulx_it-funda_tooling () {
 #
 function maak_directories () {
     #
+    if [ ! -d "/home/$SUDO_USER/tmp" ]; then
+        mkdir -p /home/$SUDO_USER/tmp
+        chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
+    fi 
+    #
     if [ ! -d "/home/$SUDO_USER/scripts" ]; then
         mkdir -p /home/$SUDO_USER/scripts
         mkdir -p /home/$SUDO_USER/scripts/gui
@@ -1381,6 +1379,7 @@ if [ $distro == "ubuntu" ]; then
         # Configuratie 
         echo "Step 1 of 3 Making Preperations"
         ulx_os_config_timezone
+        maak_directories
         ulx_os_netplan_download
         ulx_os_change_repo_nl
         ulx_os_update_apt
@@ -1400,6 +1399,7 @@ if [ $distro == "ubuntu" ]; then
             # Configuratie 
             echo "Step 1 of 5 Making Preperations"
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1431,6 +1431,7 @@ if [ $distro == "ubuntu" ]; then
             #
             # Configuratie 
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1461,6 +1462,7 @@ if [ $distro == "ubuntu" ]; then
             #
             # Configuratie
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1479,6 +1481,7 @@ if [ $distro == "ubuntu" ]; then
             #
             # Configuratie
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1497,9 +1500,9 @@ if [ $distro == "ubuntu" ]; then
             # 
             # Configuratie
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
-            ulx_os_config_dns
-            # ulx_os_change_repo_nl
+            ulx_os_change_repo_nl
             ulx_os_update_apt
             # Bijwerken
             ulx_os_upgrade_os
@@ -1507,7 +1510,8 @@ if [ $distro == "ubuntu" ]; then
             ulx_install_vm_tools
             ulx_install_pwrshell
             ulx_install_cockpit
-            #
+            # IT Fundamentals 
+            ulx_it-funda_tooling
             exit 1
         elif [ $actie == "scripts" ]; then
             #
