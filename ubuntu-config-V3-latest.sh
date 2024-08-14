@@ -54,6 +54,7 @@
 # 07aug24 DNS 
 # 08aug24 Powershell 
 # 12aug24 IP Settings VM
+# 14aug24 Netplan en Maak Directories 
 #
 #
 #
@@ -90,13 +91,6 @@ if [ $# -eq 0 ]; then
 fi
 #
 #
-# Controleer aanwezigheid tmp directory in gebruikersomgeving
-#
-#
-if [ ! -d "/home/$SUDO_USER/tmp" ]; then
-    mkdir -p /home/$SUDO_USER/tmp
-    chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
-fi 
 #
 #
 #
@@ -252,7 +246,7 @@ function ulx_os_change_repo_nl () {
 #
 #
 function ulx_os_update_apt () {
-    apt update -qq
+    apt update -qq > /dev/null 2>&1
 }
 #
 #
@@ -260,9 +254,9 @@ function ulx_os_update_apt () {
 #
 #
 function ulx_os_upgrade_os () {
-    apt update -qq
+    apt update -qq > /dev/null 2>&1
     apt upgrade -qq -y > /dev/null 2>&1
-    apt autoremove -qq -y
+    apt autoremove -qq -y > /dev/null 2>&1
 }
 #
 # UBUNTU OS FUNCTIES ## Functie Change Timezone 
@@ -323,6 +317,19 @@ function ulx_os_netplan_download () {
     if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
         curl -s -o /home/$SUDO_USER/netplan/wsrv-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Webserver/eth/eth-sec-nic-01-netcfg-wsrv.yaml
     fi
+    #
+    echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth0-off.sh
+    echo 'sudo ip link set eth0 down' >> /home/$SUDO_USER/netplan/eth0-off.sh
+    chmod +x /home/$SUDO_USER/netplan/eth0-off.sh
+    echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth1-off.sh
+    echo 'sudo ip link set eth1 down' >> /home/$SUDO_USER/netplan/eth1-off.sh
+    chmod +x /home/$SUDO_USER/netplan/eth1-off.sh
+    echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth0-on.sh
+    echo 'sudo ip link set eth0 up' >> /home/$SUDO_USER/netplan/eth0-on.sh
+    chmod +x /home/$SUDO_USER/netplan/eth0-on.sh
+    echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth1-on.sh
+    echo 'sudo ip link set eth1 up' >> /home/$SUDO_USER/netplan/eth1-on.sh
+    chmod +x /home/$SUDO_USER/netplan/eth1-on.sh
 }
 #
 # UBUNTU OS FUNCTIES ## Functie Change DNS
@@ -1064,7 +1071,12 @@ function ulx_it-funda_tooling () {
 #
 function maak_directories () {
     #
-    if [ ! -d "/home/$SUDO_USER/scripts" ]; then
+    # if [ ! -d "/home/$SUDO_USER/tmp" ]; then
+        mkdir -p /home/$SUDO_USER/tmp
+        chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
+    # fi 
+    #
+    # if [ ! -d "/home/$SUDO_USER/scripts" ]; then
         mkdir -p /home/$SUDO_USER/scripts
         mkdir -p /home/$SUDO_USER/scripts/gui
         mkdir -p /home/$SUDO_USER/scripts/tmp
@@ -1083,9 +1095,9 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/scripts/intro_infra
         mkdir -p /home/$SUDO_USER/scripts/it-fundmtls
         chown -f -R $SUDO_USER /home/$SUDO_USER/scripts
-    fi
+    # fi
     #
-    if [ ! -d "/home/$SUDO_USER/docker" ]; then
+    # if [ ! -d "/home/$SUDO_USER/docker" ]; then
         mkdir -p /home/$SUDO_USER/docker
         mkdir -p /home/$SUDO_USER/docker/apache 
         mkdir -p /home/$SUDO_USER/docker/flask-demo
@@ -1102,9 +1114,9 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/docker/portainer
         mkdir -p /home/$SUDO_USER/docker/prometheus-grafana
         chown -f -R $SUDO_USER /home/$SUDO_USER/docker
-    fi 
+    # fi 
     #
-    if [ ! -d "/home/$SUDO_USER/docker-compose" ]; then
+    # if [ ! -d "/home/$SUDO_USER/docker-compose" ]; then
         mkdir -p /home/$SUDO_USER/docker-compose
         mkdir -p /home/$SUDO_USER/docker-compose/mysql
         mkdir -p /home/$SUDO_USER/docker-compose/nextcloud
@@ -1112,9 +1124,9 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/docker-compose/odoo
         mkdir -p /home/$SUDO_USER/docker-compose/prometheus-grafana 
         chown -f -R $SUDO_USER /home/$SUDO_USER/docker-compose
-    fi
+    # fi
     #
-    if [ ! -d "/home/$SUDO_USER/data" ]; then
+    # if [ ! -d "/home/$SUDO_USER/data" ]; then
         mkdir -p /home/$SUDO_USER/data
         mkdir -p /home/$SUDO_USER/data/minio
         mkdir -p /home/$SUDO_USER/data/nextcloud
@@ -1125,9 +1137,9 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/data/odoo/etc
         mkdir -p /home/$SUDO_USER/data/odoo/postgresql
         chown -f -R $SUDO_USER /home/$SUDO_USER/data
-    fi
+    # fi
     #
-    if [ ! -d "/home/$SUDO_USER/yaml" ]; then
+    # if [ ! -d "/home/$SUDO_USER/yaml" ]; then
         mkdir -p /home/$SUDO_USER/yaml
         mkdir -p /home/$SUDO_USER/yaml/docker-compose
         mkdir -p /home/$SUDO_USER/yaml/docker-compose/mysql
@@ -1144,9 +1156,9 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/yaml/kubernetes/prometheus-grafana
         mkdir -p /home/$SUDO_USER/yaml/kubernetes/wordpress
         chown -f -R $SUDO_USER /home/$SUDO_USER/yaml
-    fi
+    # fi
     #
-    if [ ! -d "/home/$SUDO_USER/k8s-demo" ]; then
+    # if [ ! -d "/home/$SUDO_USER/k8s-demo" ]; then
         mkdir -p /home/$SUDO_USER/k8s-demo 
         mkdir -p /home/$SUDO_USER/k8s-demo/mysql
         mkdir -p /home/$SUDO_USER/k8s-demo/nextcloud
@@ -1155,7 +1167,7 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/k8s-demo/nginx/replicas
         mkdir -p /home/$SUDO_USER/k8s-demo/odoo
         chown -f -R $SUDO_USER /home/$SUDO_USER/k8s-demo
-    fi 
+    # fi 
 }
 #
 #
@@ -1381,6 +1393,7 @@ if [ $distro == "ubuntu" ]; then
         # Configuratie 
         echo "Step 1 of 3 Making Preperations"
         ulx_os_config_timezone
+        maak_directories
         ulx_os_netplan_download
         ulx_os_change_repo_nl
         ulx_os_update_apt
@@ -1400,6 +1413,7 @@ if [ $distro == "ubuntu" ]; then
             # Configuratie 
             echo "Step 1 of 5 Making Preperations"
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1431,6 +1445,7 @@ if [ $distro == "ubuntu" ]; then
             #
             # Configuratie 
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1461,6 +1476,7 @@ if [ $distro == "ubuntu" ]; then
             #
             # Configuratie
             ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1478,7 +1494,31 @@ if [ $distro == "ubuntu" ]; then
             # UBUNTU OPTIE 5
             #
             # Configuratie
+            echo "Step 1 of 4 Configure Ubuntu"
             ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken
+            echo "Step 2 of 4 Upgrading Ubuntu"
+            ulx_os_upgrade_os
+            # Installatie
+            echo "Step 3 of 4 Installing Tools"
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # OSTicket
+            echo "Step 4 of 4 Installing OSTicket Environment"
+            ulx_intro_infra_install
+            exit 1
+        elif [ $actie == "itfunda" ]; then
+            #
+            # UBUNTU OPTIE 6
+            # 
+            # Configuratie
+            ulx_os_config_timezone
+            maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
@@ -1488,26 +1528,8 @@ if [ $distro == "ubuntu" ]; then
             ulx_install_vm_tools
             ulx_install_pwrshell
             ulx_install_cockpit
-            # OSTicket
-            ulx_intro_infra_install
-            exit 1
-        elif [ $actie == "itfunda" ]; then
-            #
-            # UBUNTU OPTIE 6
-            # 
-            # Configuratie
-            ulx_os_config_timezone
-            ulx_os_netplan_download
-            ulx_os_config_dns
-            # ulx_os_change_repo_nl
-            ulx_os_update_apt
-            # Bijwerken
-            ulx_os_upgrade_os
-            # Installatie
-            ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            #
+            # IT Fundamentals 
+            ulx_it-funda_tooling
             exit 1
         elif [ $actie == "scripts" ]; then
             #
