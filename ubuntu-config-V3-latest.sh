@@ -54,7 +54,8 @@
 # 07aug24 DNS 
 # 08aug24 Powershell 
 # 12aug24 IP Settings VM
-# 14aug24 Netplan en Maak Directories 
+# 14aug24 Netplan en Maak Directories
+# 17aug24 Minikube voorbeelden opgenomen uit V2 script
 #
 #
 #
@@ -376,7 +377,7 @@ function ulx_os_gnome_install () {
 #
 #
 function ulx_install_vm_tools () {
-    apt install -qq -y open-vm-tools 
+    apt install -qq -y open-vm-tools > /dev/null 2>&1
 }
 #
 #
@@ -694,17 +695,17 @@ function ulx_docker_images_pull () {
     #
     # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
     #
-    # docker pull hello-world
-    docker pull alpine
-    docker pull debian
+    docker pull -q hello-world
+    docker pull -q alpine:latest
+    docker pull -q debian:latest
     # docker pull ubuntu:20.04
-    docker pull ubuntu:22.04
-    docker pull registry
-    docker pull prakhar1989/static-site
+    docker pull -q ubuntu:22.04
+    docker pull -q registry
+    docker pull -q prakhar1989/static-site
     # docker pull mariadb:10.6
     # docker pull minio/minio
     # docker pull nextcloud
-    docker pull nginx
+    docker pull -q nginx
     # docker pull postgres:latest
     # docker pull wordpress
 }
@@ -770,7 +771,7 @@ function ulx_docker_minikube_config () {
 #
 #
 function ulx_docker_portainer_create () {
-    docker pull portainer/portainer-ce:latest
+    docker pull -q portainer/portainer-ce:latest
     docker volume create portainer_data
     docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
 }
@@ -958,6 +959,85 @@ function ulx_maak_compose_voorbeelden () {
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mysql/compose.yaml
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/nginx/nginx-flask-mongo.yml https://raw.githubusercontent.com/docker/awesome-compose/master/nginx-flask-mongo/compose.yaml
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/wordpress/wordpress-mysql.yml https://raw.githubusercontent.com/docker/awesome-compose/master/wordpress-mysql/compose.yaml
+}
+#
+# UBUNTU Maak Scripts Minikube Demos Voorbeelden
+#
+function ulx_maak_minikube_voorbeelden () {
+    #
+    #
+    # Kubernetes MicroK8S Minikube demo simple deployment NGINX
+    echo '#! /bin/bash'    > /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo '#'              >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'kubectl create deployment nginx-webserver --image=nginx' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'kubectl expose deployment nginx-webserver --type="NodePort" --port 80' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'kubectl describe deployment nginx-webserver' >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'kubectl get svc nginx-webserver'             >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    echo 'minikube service --all'                      >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
+    #
+    # Kubernetes MicroK8S Minikube demo deployment NGINX stap 1
+    # Stap 1 is deployment van omgeving met NGINX versie 14
+    echo '#! /bin/bash'    > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo '#'              >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    #
+    # Kubernetes MicroK8S Minikube demo deployment NGINX stap 2
+    # Stap 2 is updaten van NGINX van versie 14 naar versie 16
+    echo '#! /bin/bash'    > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo '#'              >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    #
+    # Kubernetes MicroK8S Minikube demo deployment NGINX stap 3
+    # Stap 3 is replicatecount van 2 naar 4 bijwerken 
+    echo '#! /bin/bash'    > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'clear'          >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    #
+    # Kubernetes MicroK8S Minikube demo MySQL 
+    # mysql-pv is persistant volume
+    # mysql-deployment is deployment van mysql met gebruik van persistant volume claim 
+    echo '#! /bin/bash'    > /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'clear'          >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-pv.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-deployment.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl describe deployment mysql'            >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl describe pvc mysql-pv-claim'          >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl get pods -l app=mysql'                >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    # K8S IO website demos
+    # MySQL 
+    curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
+    curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
+    # NGINX
+    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml        https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
+    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
+    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
+    #
 }
 #
 # UBUNTU Maak Scripts Onderwijsmodules
@@ -1281,6 +1361,7 @@ function config_menu () {
             # MiniKube 
             ulx_docker_minikube_init
             ulx_docker_minikube_config
+            ulx_maak_minikube_voorbeelden
             ;;
         4)
             #
@@ -1343,17 +1424,17 @@ function config_menu () {
 #
 #
 #
-echo "Linux Universal Configuration Tool"
+echo "Linux Universal Configuration Tool (LUCT)"
 echo "Version 1"
 echo "    "
-echo "Created by John Tutert"
+echo "Created by John Tutert for TutSOFT"
 echo "    "
 echo "For Personal or Educational use only !"
 echo "    "
 echo "Currently only Ubuntu Linux is supported"
 echo "Alpine and Debian are planned for future release"
 echo "    "
-echo "This version is a ALPHA version ! So not everything is tested by me ..."
+echo "This version is an ALPHA version ! So not everything is tested by me ..."
 echo "    "
 #
 #
@@ -1454,6 +1535,7 @@ if [ $distro == "alpine" ]; then
             # MiniKube 
             ulx_docker_minikube_init
             ulx_docker_minikube_config
+            ulx_maak_minikube_voorbeelden
             exit 1
         elif [ $actie == "ansible" ]; then
             #
@@ -1676,6 +1758,7 @@ if [ $distro == "ubuntu" ]; then
             # MiniKube 
             ulx_docker_minikube_init
             ulx_docker_minikube_config
+            ulx_maak_minikube_voorbeelden
             exit 1
         elif [ $actie == "ansible" ]; then
             #
