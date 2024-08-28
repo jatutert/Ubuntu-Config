@@ -188,7 +188,7 @@ function build_install_compose () {
     DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker} 
     mkdir -p $DOCKER_CONFIG/cli-plugins
     curl -SL https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-    chmod +x $DOCKER_CONFIG/cli-plugins/docker-composedd
+    chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 } 
 #
 #
@@ -817,11 +817,11 @@ function ulx_docker_portainer_create () {
     docker volume create portainer_data
     docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
     #
-    echo '#! /bin/bash'                                  > /home/$SUDO_USER/portainer_restart.sh
-    echo 'docker stop portainer'                        >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'docker start portainer'                       >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'Portainer is available on port 9443'          >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'Create user admin with password password1234' >> /home/$SUDO_USER/portainer_restart.sh
+    echo '#! /bin/bash'                                         > /home/$SUDO_USER/portainer_restart.sh
+    echo 'docker stop portainer'                               >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'docker start portainer'                              >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo "Portainer is available on port 9443"'          >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo "Create user admin with password password1234"' >> /home/$SUDO_USER/portainer_restart.sh
 }
 #
 #
