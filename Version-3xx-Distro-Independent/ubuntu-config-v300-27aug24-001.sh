@@ -338,7 +338,7 @@ function ulx_os_netplan_download () {
     # DBMS
     #
     # if [ $hostname == "u24-lts-s-dbms-001" ] ; then
-    if [ $hostname =~ "u24-lts-s-dbms" ] ; then
+    if [[ $hostname =~ "u24-lts-s-dbms" ]] ; then
         curl -s -o /home/$SUDO_USER/netplan/dbms-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Databaseserver/eth/eth-sec-nic-01-netcfg-dbms.yaml
     fi
     #
@@ -347,7 +347,7 @@ function ulx_os_netplan_download () {
     # WebServer
     #
     # if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
-    if [ $hostname =~ "u24-lts-s-wsrv" ] ; then
+    if [[ $hostname =~ "u24-lts-s-wsrv" ]] ; then
         curl -s -o /home/$SUDO_USER/netplan/wsrv-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Webserver/eth/eth-sec-nic-01-netcfg-wsrv.yaml
     fi
     #
