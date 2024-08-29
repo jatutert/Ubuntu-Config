@@ -200,8 +200,11 @@ function build_install_compose () {
 #
 function build_bash_config () {
     #
+    # Downloaden settings bestand
     curl -s -o /home/docker/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
-    #
+    # Downloaden bestand dat settings bestand automatisch activeert
+    curl -s -o /home/docker/.bash_profile https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bash_profile
+    # 
     # echo '#! /bin/bash' > /home/docker/bash_config.sh
     # echo 'source /etc/bash.bashrc' >> /home/docker/bash_config.sh
     # chmod a+x /home/docker/bash_config.sh
