@@ -200,7 +200,7 @@ function build_install_compose () {
 #
 function build_bash_config () {
     #
-    curl -s -o /home/vagrant/.bashrc 
+    curl -s -o /home/vagrant/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
     #
     # echo '#! /bin/bash' > /home/docker/bash_config.sh
     # echo 'source /etc/bash.bashrc' >> /home/docker/bash_config.sh
@@ -1717,6 +1717,7 @@ if [ $distro == "buildroot" ]; then
         #
         echo "Step 1 of 6 Configure Operating System"
         ulx_os_config_timezone
+        build_bash_config
         echo "Step 2 of 6 Creating Directories"
         maak_directories
         echo "Step 3 of 6 Starting Portainer Container Engine management"

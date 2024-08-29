@@ -198,6 +198,16 @@ function build_install_compose () {
 }
 #
 #
+function build_bash_config () {
+    #
+    curl -s -o /home/vagrant/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
+    #
+    # echo '#! /bin/bash' > /home/docker/bash_config.sh
+    # echo 'source /etc/bash.bashrc' >> /home/docker/bash_config.sh
+    # chmod a+x /home/docker/bash_config.sh
+} 
+#
+#
 #
 #
 # ################################################################################
@@ -737,20 +747,20 @@ function ulx_docker_images_pull () {
     #
     # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
     #
-    docker pull -q hello-world
+    docker pull -q hello-world > /dev/null 2>&1
     #
     # Operating Systems 
-    docker pull -q alpine:latest
-    docker pull -q alpine:3.5
-    docker pull -q debian:latest
-    docker pull -q ubuntu:20.04
-    docker pull -q ubuntu:22.04
+    docker pull -q alpine:latest > /dev/null 2>&1
+    docker pull -q alpine:3.5 > /dev/null 2>&1
+    docker pull -q debian:latest > /dev/null 2>&1
+    docker pull -q ubuntu:20.04 > /dev/null 2>&1
+    docker pull -q ubuntu:22.04 > /dev/null 2>&1
     # Middleware
-    docker pull -q registry
+    docker pull -q registry > /dev/null 2>&1
     # docker pull mariadb:10.6
     # docker pull minio/minio
     # docker pull nextcloud
-    docker pull -q nginx
+    docker pull -q nginx > /dev/null 2>&1
     # docker pull postgres:latest
     # docker pull wordpress
     #
@@ -1707,6 +1717,7 @@ if [ $distro == "buildroot" ]; then
         #
         echo "Step 1 of 6 Configure Operating System"
         ulx_os_config_timezone
+        build_bash_config
         echo "Step 2 of 6 Creating Directories"
         maak_directories
         echo "Step 3 of 6 Starting Portainer Container Engine management"
