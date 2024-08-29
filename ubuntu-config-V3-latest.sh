@@ -200,7 +200,7 @@ function build_install_compose () {
 #
 function build_bash_config () {
     #
-    curl -s -o /home/vagrant/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
+    curl -s -o /home/docker/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
     #
     # echo '#! /bin/bash' > /home/docker/bash_config.sh
     # echo 'source /etc/bash.bashrc' >> /home/docker/bash_config.sh
@@ -829,8 +829,8 @@ function ulx_docker_minikube_config () {
 #
 #
 function ulx_docker_portainer_create () {
-    docker pull -q portainer/portainer-ce:latest
-    docker volume create portainer_data
+    docker pull -q portainer/portainer-ce:latest > /dev/null 2>&1
+    docker volume create portainer_data          > /dev/null 2>&1
     docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
     #
     echo '#! /bin/bash'                                         > /home/$SUDO_USER/portainer_restart.sh
