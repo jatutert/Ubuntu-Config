@@ -1143,7 +1143,11 @@ function ulx_intro_infra_netcfg () {
 #
 function ulx_intro_infra_install () {
     #
-    if [ $hostname == "u24-lts-s-dbms-001" ] ; then
+    hostname=$(hostname)
+    #
+    if [[ $hostname == u24-lts-s-dbms* ]]; then
+       #
+       # if [ $hostname == "u24-lts-s-dbms-001" ] ; then
        apt install mysql-server -y
        #setup mysql server
        #accept sql queries from all hosts (0.0.0.0)
@@ -1156,7 +1160,12 @@ function ulx_intro_infra_install () {
        systemctl restart mysql
     fi
     #
-    if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
+    #
+    hostname=$(hostname)
+    #
+    if [[ $hostname == u24-lts-s-wsrv* ]]; then
+       #
+       # if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
        apt install git -y
        apt install apache2 -y
        # Installatie PHP 8.3
