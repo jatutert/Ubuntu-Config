@@ -4,7 +4,7 @@
 #
 #
 # Configuratiescript Linux 
-# Versie: 3.0.0 ALPHA 3
+# Versie: 3.0.0 ALPHA 4
 # ONLY FOR TESTING PURPOSES 
 # Author: John Tutert
 #
@@ -59,6 +59,7 @@
 # 24aug24 Buildroot en nieuwe manier om distro op te halen (NAME)
 # 27aug24 S L en Xl implementatie van introductie Infrastructuren
 # 29aug24 Docker Compose Buildroot bugfixes
+# 26okt24 Images pull Docker aangepast 
 #
 #
 #
@@ -750,16 +751,22 @@ function ulx_docker_images_pull () {
     #
     # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
     #
-    docker pull -q hello-world > /dev/null 2>&1
+    # docker pull -q hello-world > /dev/null 2>&1
     #
     # Operating Systems 
     docker pull -q alpine:latest > /dev/null 2>&1
+    # Alpine 3.5 tbv Flask demo
     docker pull -q alpine:3.5 > /dev/null 2>&1
-    docker pull -q debian:latest > /dev/null 2>&1
-    docker pull -q ubuntu:20.04 > /dev/null 2>&1
-    docker pull -q ubuntu:22.04 > /dev/null 2>&1
+    docker pull -q amazonlinux:latest > /dev/null 2>&1
+    # Bash is eigenlijk Alpine Linux Image 
+    docker pull -q bash:latest > /dev/null 2>&1
+    docker pull -q ubuntu/apache2:latest > /dev/null 2>&1
+    docker pull -q clearlinux:latest > /dev/null 2>&1
+    # docker pull -q debian:latest > /dev/null 2>&1
+    # docker pull -q ubuntu:20.04 > /dev/null 2>&1
+    # docker pull -q ubuntu:22.04 > /dev/null 2>&1
     # Middleware
-    docker pull -q registry > /dev/null 2>&1
+    # docker pull -q registry > /dev/null 2>&1
     # docker pull mariadb:10.6
     # docker pull minio/minio
     # docker pull nextcloud
