@@ -913,8 +913,10 @@ function ulx_docker_portainer_create () {
     echo '#! /bin/bash'                                         > /home/$SUDO_USER/portainer_restart.sh
     echo 'docker stop portainer'                               >> /home/$SUDO_USER/portainer_restart.sh
     echo 'docker start portainer'                              >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'ip addr show eth0'                                   >> /home/$SUDO_USER/portainer_restart.sh
     echo 'echo "Portainer is available on port 9443"'          >> /home/$SUDO_USER/portainer_restart.sh
     echo 'echo "Create user admin with password password1234"' >> /home/$SUDO_USER/portainer_restart.sh
+    chmod +x /home/$SUDO_USER/portainer_restart.sh 
 }
 #
 #
