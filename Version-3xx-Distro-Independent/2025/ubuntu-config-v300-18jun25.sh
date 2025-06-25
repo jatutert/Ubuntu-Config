@@ -168,7 +168,7 @@ GH_JATUTERT_DEMO_ANSIBLE_VM="demos/main/Ansible/Guest"
 # ################################################################################
 #
 #
-# 3A Function Alpine Bijwerken
+# Function Bijwerken ALPINE
 #
 function alx_update_os () {
     apk update -q
@@ -177,7 +177,7 @@ function alx_update_os () {
     apk add open-vm-tools 
 } 
 #
-# 3A Function Alpine VM Tools Installatie 
+# Function Alpine VM Tools Installatie 
 #
 function alx_vm_tools () {
     apk add open-vm-tools 
@@ -197,7 +197,7 @@ function alx_vm_tools () {
 # ################################################################################
 #
 #
-# 3B Function BuildRoot Docker Compose Installation 
+# Function Docker Compose Installation 
 #
 function build_install_compose () {
     #
@@ -211,7 +211,7 @@ function build_install_compose () {
     # chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 }
 #
-# 3B Function BuildRoot BASH Configuratie Settings 
+# Function BASH Configuratie Settings 
 #
 function build_bash_config () {
     #
@@ -239,7 +239,7 @@ function build_bash_config () {
 # ################################################################################
 #
 #
-# 3D Function Debian Bijwerken
+# Function Bijwerken Debian
 #
 function dbn_update_os () {
     apk update -qq
@@ -247,7 +247,7 @@ function dbn_update_os () {
     apk add open-vm-tools 
 }
 #
-# 3D Function Debian VM Tools Installatie 
+# Function Bijwerken Debian
 #
 function dbn_vm_tools () {
     apk add open-vm-tools 
@@ -265,11 +265,12 @@ function dbn_vm_tools () {
 # ################################################################################
 #
 #
-# 3U1 CATEGORIE UBUNTU OS FUNCTIES
+# CATEGORIE UBUNTU OS FUNCTIES
 #
 #
-# 3U11 UBUNTU OS FUNCTIES ## Functie Change Repo Ubuntu
-#      Ubuntu Basis Config
+# UBUNTU OS FUNCTIES ## Functie Change Repo Ubuntu
+#
+#
 #
 #
 function ulx_os_change_repo_nl () {
@@ -317,7 +318,7 @@ function ulx_os_change_repo_nl () {
 }
 #
 #
-# 3U12 UBUNTU OS FUNCTIES ## Functie Update Ubuntu OS 
+# UBUNTU OS FUNCTIES ## Functie Update Ubuntu OS 
 #
 #
 function ulx_os_update_apt () {
@@ -325,7 +326,7 @@ function ulx_os_update_apt () {
 }
 #
 #
-# 3U13 UBUNTU OS FUNCTIES ## Functie Upgrade Ubuntu OS 
+# UBUNTU OS FUNCTIES ## Functie Upgrade Ubuntu OS 
 #
 #
 function ulx_os_upgrade_os () {
@@ -334,16 +335,13 @@ function ulx_os_upgrade_os () {
     apt autoremove -qq -y > /dev/null 2>&1
 }
 #
-#
-# 3U14 UBUNTU OS FUNCTIES ## Functie Change Timezone OS 
-#      Ubuntu Basis Config 
-#
+# UBUNTU OS FUNCTIES ## Functie Change Timezone 
 #
 function ulx_os_config_timezone () {
     timedatectl set-timezone Europe/Amsterdam
 } 
 #
-# 3U15 UBUNTU OS FUNCTIES ## Functie NIC Config OS
+# UBUNTU OS FUNCTIES ## Functie NIC Config
 #
 function ulx_os_netplan_download () {
     #
@@ -401,6 +399,7 @@ function ulx_os_netplan_download () {
     fi
     #
     # Introductie Infrastructuren
+    #
     # DBMS
     #
     # if [ $hostname == "u24-lts-s-dbms-001" ] ; then
@@ -409,6 +408,7 @@ function ulx_os_netplan_download () {
     fi
     #
     # Introductie Infrastructuren
+    #
     # WebServer
     #
     # if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
@@ -416,17 +416,12 @@ function ulx_os_netplan_download () {
         curl -s -o /home/$SUDO_USER/netplan/wsrv-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Webserver/eth/eth-sec-nic-01-netcfg-wsrv.yaml
     fi
     #
-    # Maken Script NIC uitzetten
-    #
     # echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth0-off.sh
     # echo 'sudo ip link set eth0 down' >> /home/$SUDO_USER/netplan/eth0-off.sh
     # chmod +x /home/$SUDO_USER/netplan/eth0-off.sh
     echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth1-off.sh
     echo 'sudo ip link set eth1 down' >> /home/$SUDO_USER/netplan/eth1-off.sh
     chmod +x /home/$SUDO_USER/netplan/eth1-off.sh
-    #
-    # Maken Script NIC aanzetten
-    #
     # echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth0-on.sh
     # echo 'sudo ip link set eth0 up' >> /home/$SUDO_USER/netplan/eth0-on.sh
     # chmod +x /home/$SUDO_USER/netplan/eth0-on.sh
@@ -435,7 +430,7 @@ function ulx_os_netplan_download () {
     chmod +x /home/$SUDO_USER/netplan/eth1-on.sh
 }
 #
-# 3U16 UBUNTU OS FUNCTIES ## Functie Change DNS OS
+# UBUNTU OS FUNCTIES ## Functie Change DNS
 #
 function ulx_os_config_dns () {
 #
@@ -447,7 +442,7 @@ function ulx_os_config_dns () {
     netplan apply 
 }
 #
-# 3U17 UBUNTU OS FUNCTIES ## GNOME GUI Install 
+# UBUNTU OS FUNCTIES ## GNOME GUI Install 
 #
 function ulx_os_gnome_install () {
     # Installate GNOME GUI (https://phoenixnap.com/kb/how-to-install-a-gui-on-ubuntu)
@@ -472,10 +467,10 @@ function ulx_os_gnome_install () {
 }
 #
 #
-# 3U2 CATEGORIE UBUNTU OS Install Software Functies
+# CATEGORIE UBUNTU OS Install Software Functies
 #
 #
-# 3U21 UBUNTU OS Install Software Functies ## Functie Installatie OS Open VM Tools
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Open VM Tools
 #
 #
 function ulx_install_vm_tools () {
@@ -492,7 +487,7 @@ function ulx_install_vm_tools () {
 }
 #
 #
-# 3U22 UBUNTU OS Install Software Functies ## Functie Installatie OS Powershell
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Powershell
 #
 #
 # https://learn.microsoft.com/en-us/powershell/scripting/install/install-ubuntu?view=powershell-7.4
@@ -514,7 +509,7 @@ function ulx_install_pwrshell () {
 }
 #
 #
-# 3U23 UBUNTU OS Install Software Functies ## Functie Installatie OS Python
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Python
 #
 #
 function ulx_install_python3 () {
@@ -524,7 +519,7 @@ function ulx_install_python3 () {
 }
 #
 #
-# 3U24 UBUNTU OS Install Software Functies ## Functie Installatie OS Cockpit
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Cockpit
 #
 #
 function ulx_install_cockpit () {
@@ -541,7 +536,7 @@ function ulx_install_cockpit () {
 }
 #
 #
-# 3U25 UBUNTU OS Install Software Functies ## Functie Installatie Docker
+# UBUNTU OS Install Software Functies ## Functie Installatie Docker
 #
 #
 function ulx_install_docker () {
@@ -561,7 +556,7 @@ function ulx_install_docker () {
 }
 #
 #
-# 3U26 UBUNTU OS Install Software Functies ## Functie Installatie Docker Compose Nieuwste versie  
+# UBUNTU OS Install Software Functies ## Functie Installatie Docker Compose Nieuwste versie  
 #
 #
 function ulx_install_docker_compose () {
@@ -591,7 +586,7 @@ function ulx_install_docker_compose () {
 }
 #
 #
-# 3U27 UBUNTU OS Install Software Functies ## Functie Installatie Podman
+# UBUNTU OS Install Software Functies ## Functie Installatie Podman
 #
 #
 function ulx_install_podman () {
@@ -609,7 +604,7 @@ function ulx_install_podman () {
 }
 #
 #
-# 3U28 UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible
+# UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible
 #
 #
 function ulx_install_ansible () {
@@ -782,7 +777,6 @@ function ulx_install_ansible () {
 }
 #
 #
-# 3U29 UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible Semaphore
 #
 #
 function ulx_install_ansible_semaphore () {
@@ -800,12 +794,15 @@ function ulx_install_ansible_semaphore () {
     # Herstarten com nieuwe poort actief te maken
     snap restart semaphore
 }
+#
+#
 
 #
 #
-# 3U30 UBUNTU OS Install Software Functies ## Functie Jenkins
+# UBUNTU OS Install Software Functies ## Functie Installatie Jenkins
 #
 #
+
 function ulx_install_jenkins () {
 
     # Add Jenkins repository key
@@ -831,9 +828,10 @@ function ulx_install_jenkins () {
 
 #
 #
-# 3U31 UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
+# UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins
 #
 #
+
 function ulx_jenkins_docker () {
 
     # Add jenkins user to docker group
@@ -846,12 +844,12 @@ function ulx_jenkins_docker () {
 
 #
 #
-# 3U4 CATEGORIE UBUNTU OS DOCKER Software Functies 
+# CATEGORIE UBUNTU OS DOCKER Software Functies 
 #
 #
 #
 #
-# 3U41 UBUNTU UBUNTU OS DOCKER Software Functies ## Images Pull
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Images Pull
 #
 #
 function ulx_docker_images_pull () {
@@ -887,7 +885,7 @@ function ulx_docker_images_pull () {
 #
 #
 #
-# 3U42 UBUNTU UBUNTU OS Podman Software Functies ## Images Pull
+# UBUNTU UBUNTU OS Podman Software Functies ## Images Pull
 #
 #
 function ulx_podman_images_pull () {
@@ -1010,12 +1008,12 @@ function ulx_docker_portainer_remove () {
     docker volume rm portainer_data
     docker system prune
 }
+
+#
+# CATEGORIE UBUNTU OS Maak Scripts Functies 
 #
 #
-# 3U5 CATEGORIE UBUNTU OS Maak Scripts Functies 
-#
-#
-# 3U51 UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
+# UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
 #
 #
 #
@@ -1276,11 +1274,9 @@ function ulx_maak_minikube_voorbeelden () {
     #
 }
 #
-# 3U6 UBUNTU Maak Scripts Onderwijsmodules
+# UBUNTU Maak Scripts Onderwijsmodules
 #
-#
-# 3U61 UBUNTU Maak Scripts Onderwijsmodules Introductie Infrastructuren
-#      Configuratie Netwerken
+# Introductie Infrastructuren
 #
 #
 function ulx_intro_infra_netcfg () {
@@ -1298,11 +1294,6 @@ function ulx_intro_infra_netcfg () {
         netplan apply 
     fi
 }
-#
-#
-# 3U62 UBUNTU Maak Scripts Onderwijsmodules Introductie Infrastructuren
-#      Installatie Software
-#
 #
 function ulx_intro_infra_install () {
     #
@@ -1361,7 +1352,8 @@ function ulx_intro_infra_install () {
 }
 #
 #
-# 3U63 UBUNTU Maak Scripts Onderwijsmodules IT Fundamentals
+#
+# IT Fundamentals
 #
 #
 function ulx_it-funda_tooling () {
@@ -1378,20 +1370,13 @@ function ulx_it-funda_tooling () {
 }
 #
 #
-# 3U63 UBUNTU Maak Scripts Onderwijsmodules Virtualisatie
-#
-# 
-# Geen inhoud 
-#
-# #############################################################
+# Virtualisatie
 #
 #
-# 3U7 CATEGORIE UBUNTU OS Nested Functions
 #
+
 #
-# 3U71 UBUNTU OS Nested Functions Basis Configuratie
-#
-#
+# UBUNTU Nested Functions 
 #
 function ulx_basis_config () {
     echo "UBUNTU - Step 1 of 3 Making Preperations"
@@ -1868,7 +1853,7 @@ function config_menu () {
 #
 #
 echo "Linux Universal Configuration Tool (LUCT)"
-echo "Version 3.1 Build 19 juni 2025 Nieuwe BRANCH"
+echo "Version 3.1 Build 24 mei 2025 Nieuwe BRANCH"
 echo "    "
 echo "Deze BUILD is opzet naar nieuwe manier van werken in dit script"
 echo "Script kan daarom niet stabiel zijn"
@@ -1900,51 +1885,51 @@ if [ $distro == "alpine" ]; then
     #
     if [ $actie == "upgrade" ]; then
         #
-        # ALPINE OPTIE 1
+        # UBUNTU OPTIE 1
         #
         # Configuratie 
-        echo "ALPINE Step 1 of 3 Making Preperations"
+        echo "Step 1 of 3 Making Preperations"
         ulx_os_config_timezone
         maak_directories
         # ulx_os_netplan_download
         # ulx_os_change_repo_nl
         # ulx_os_update_apt
         # Bijwerken 
-        echo "ALPINE Step 2 of 3 Upgrading OS"
+        echo "Step 2 of 3 Upgrading OS"
         alx_update_os
         # Installatie 
-        echo "ALPINE Step 3 of 3 Installing OS Tools"
+        echo "Step 3 of 3 Installing OS Tools"
         alx_vm_tools
         # ulx_install_pwrshell
         # ulx_install_cockpit
         exit 1
         elif [ $actie == "docker" ]; then
             #
-            # ALPINE OPTIE 2
+            # UBUNTU OPTIE 2
             #
             # Configuratie 
-            echo "ALPINE Step 1 of 5 Making Preperations"
+            echo "Step 1 of 5 Making Preperations"
             ulx_os_config_timezone
             maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
             ulx_os_update_apt
             # Bijwerken 
-            echo "ALPINE Step 2 of 5 Upgrading OS"
+            echo "Step 2 of 5 Upgrading OS"
             ulx_os_upgrade_os
             # Installatie 
-            echo "ALPINE Step 3 of 5 Installing OS Tools"
+            echo "Step 3 of 5 Installing OS Tools"
             ulx_install_vm_tools
             ulx_install_pwrshell
             ulx_install_cockpit
             # DOCKER
-            echo "ALPINE Step 4 of 5 Installation and configuration Docker CE"
+            echo "Step 4 of 5 Installation and configuration Docker CE"
             ulx_install_docker
             ulx_docker_portainer_create
             ulx_docker_images_pull
             # 
             # DEMO omgeving maken 
-            echo "ALPINE Step 5 of 5 Creating demo environment"
+            echo "Step 5 of 5 Creating demo environment"
             maak_directories
             ulx_maak_docker_scripts
             ulx_maak_docker_voorbeelden
@@ -1953,7 +1938,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "minikube" ]; then
             #
-            # ALPINE OPTIE 3
+            # UBUNTU OPTIE 3
             #
             # Configuratie 
             echo "Step 1 of 5 Making Preperations"
@@ -1987,7 +1972,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "ansible" ]; then
             #
-            # ALPINE OPTIE 4
+            # UBUNTU OPTIE 4
             #
             # Configuratie
             ulx_os_config_timezone
@@ -2006,7 +1991,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "introinfra" ]; then
             #
-            # ALPINE OPTIE 5
+            # UBUNTU OPTIE 5
             #
             # Configuratie
             echo "Step 1 of 4 Configure Ubuntu"
@@ -2029,7 +2014,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "itfunda" ]; then
             #
-            # ALPINE OPTIE 6
+            # UBUNTU OPTIE 6
             # 
             # Configuratie
             ulx_os_config_timezone
@@ -2048,17 +2033,17 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "scripts" ]; then
             #
-            # ALPINE OPTIE 7
+            # UBUNTU OPTIE 7
             #
             exit 1
         elif [ $actie == "scripts" ]; then
             #
-            # ALPINE OPTIE 8
+            # UBUNTU OPTIE 8
             #
             exit 1
         elif [ $actie == "menu" ]; then
             #
-            # ALPINE OPTIE 9
+            # UBUNTU OPTIE 9
             #
             config_menu
             exit 1
