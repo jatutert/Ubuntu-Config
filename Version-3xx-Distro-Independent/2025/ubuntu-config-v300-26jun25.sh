@@ -80,6 +80,17 @@
 # Ansible DEMO aanpassen
 #
 #
+#  
+#
+# Overzicht TCP Poorten
+#
+# 22   Inkomende poort Ansible host vanuit Controller 
+# 1234 Cockpit
+# 4444 Semaphore
+# 5555 Jenkins 
+# 9443 Portainer 
+#
+#
 # ################################################################################
 #
 # Fase 1 
@@ -244,19 +255,75 @@ function build_bash_config () {
 # ################################################################################
 #
 #
-# 3D Function Debian Bijwerken
+# 3D1 CATEGORIE Debian OS FUNCTIES
 #
-function dbn_update_os () {
-    apk update -qq
-    apk upgrade -qq -y 
+#
+# 3D11 Debian OS FUNCTIES ## Functie Change Repo Debian
+#      Debian Basis Config
+#
+function dbn_os_change_repo_nl () {
+    #
+} 
+#
+# 3D12 Debian OS FUNCTIES ## Functie Update Debian Repo
+#      Debian Basis Config
+function dbn_os_update_apk () {
+    apk update 
+}
+#
+# 3D13 Debian OS FUNCTIES ## Functie Upgrade Debian
+#      Debian Basis Config
+function dbn_os_upgrade_os () {
+    apk update 
+    apk upgrade
+}
+
+#
+#
+# 3U2 CATEGORIE Debian OS Install Software Functies
+#
+#
+# 3U21 Debian OS Install Software Functies ## Functie Installatie OS Open VM Tools
+#
+#
+function dbn_install_vm_tools () {
     apk add open-vm-tools 
 }
 #
-# 3D Function Debian VM Tools Installatie 
+# 3U21 Debian OS Install Software Functies ## Functie Installatie OS OpenMediaVault
 #
-function dbn_vm_tools () {
-    apk add open-vm-tools 
-}
+function dbn_install_omv () {
+
+    # CoPilot uitwerking copy paste 
+
+    echo "🔧 Stap 1: Installeren van vereiste pakketten..."
+    sudo apt update
+    sudo apt install --yes gnupg wget
+
+    echo "🔑 Stap 2: Importeren van de OpenMediaVault GPG-sleutel..."
+    wget -qO - https://packages.openmediavault.org/public/archive.key | gpg --dearmor --yes -o /usr/share/keyrings/openmediavault-archive-keyring.gpg
+
+    echo "📦 Stap 3: Toevoegen van de OpenMediaVault repository..."
+cat <<EOF | sudo tee /etc/apt/sources.list.d/openmediavault.list
+deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://packages.openmediavault.org/public sandworm main
+EOF
+
+     echo "🔄 Stap 4: Installeren van OpenMediaVault..."
+     export LANG=C.UTF-8
+     export DEBIAN_FRONTEND=noninteractive
+     export APT_LISTCHANGES_FRONTEND=none
+
+     sudo apt update
+     sudo apt install --yes openmediavault-keyring openmediavault
+
+     echo "⚙️ Stap 5: Initialiseren van de configuratiedatabase..."
+     sudo omv-confdbadm populate
+
+     echo "🧩 Stap 6: Configureren van het systeem..."
+     sudo omv-salt deploy run hosts
+     #
+} 
+
 #
 #
 # ################################################################################
@@ -829,10 +896,25 @@ function ulx_install_ansible_semaphore () {
 
 #
 #
-# 3U30 UBUNTU OS Install Software Functies ## Functie Jenkins
+# 3U30 UBUNTU OS Install Software Functies ## Functie JAVA JDK
+#
+#
+function ulx_install_java_jdk () {
+    #
+    apt install openjdk-17-jdk -y
+    #
+} 
+
+#
+#
+# 3U31 UBUNTU OS Install Software Functies ## Functie Jenkins
 #
 #
 function ulx_install_jenkins () {
+
+    # Het eigen gekozen poortnummer voor Jenkins
+    # Standaard is poort 8080
+    JENKINS_PORT=5555
 
     # Add Jenkins repository key
     curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
@@ -844,9 +926,15 @@ function ulx_install_jenkins () {
     apt update
     apt install -y jenkins
 
+    # Poortnummer aanpassen
+    sed -i "s/^HTTP_PORT=.*/HTTP_PORT=$JENKINS_PORT/" /etc/default/jenkins
+
     # Start and enable Jenkins
     systemctl enable jenkins
     systemctl start jenkins
+
+    # UWF poort openzetten indien van toepassing 
+    ufw allow $JENKINS_PORT
 
     # Get initial admin password
     cat /var/lib/jenkins/secrets/initialAdminPassword
@@ -857,7 +945,7 @@ function ulx_install_jenkins () {
 
 #
 #
-# 3U31 UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
+# 3U32 UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
 #
 #
 function ulx_jenkins_docker () {
@@ -1269,55 +1357,55 @@ function ulx_maak_minikube_voorbeelden () {
     #
     # Kubernetes MicroK8S Minikube demo deployment NGINX stap 1
     # Stap 1 is deployment van omgeving met NGINX versie 14
-    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo '#'                                            >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo '#! /bin/bash' > /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo '#' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'cd /home/$USER'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'clear' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'minikube service --all' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
     #
     # Kubernetes MicroK8S Minikube demo deployment NGINX stap 2
     # Stap 2 is updaten van NGINX van versie 14 naar versie 16
-    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo '#'                                            >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo '#! /bin/bash' > /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo '#'   >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'clear'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'minikube service --all'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
     #
     # Kubernetes MicroK8S Minikube demo deployment NGINX stap 3
     # Stap 3 is replicatecount van 2 naar 4 bijwerken 
-    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo '#! /bin/bash'   > /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'clear' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'minikube service --all'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
     #
     # Kubernetes MicroK8S Minikube demo MySQL 
     # mysql-pv is persistant volume
     # mysql-deployment is deployment van mysql met gebruik van persistant volume claim 
-    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-pv.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-deployment.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'kubectl describe deployment mysql'            >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'kubectl describe pvc mysql-pv-claim'          >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    echo 'kubectl get pods -l app=mysql'                >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
-    chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo '#! /bin/bash'> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'cd /home/$USER' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'clear' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-pv.yaml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-deployment.yaml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'kubectl describe deployment mysql' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'kubectl describe pvc mysql-pv-claim' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo 'kubectl get pods -l app=mysql' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
     # K8S IO website demos
     # MySQL 
     curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
@@ -1492,12 +1580,14 @@ function maak_directories () {
     # ###########################################################################
     # Structuur 2025
     # ###########################################################################
-    #
-    #
+        #
+        #
+        # DEMOS
+        #
         mkdir -p /home/$SUDO_USER/demos
-        #
-        # Docker
-        #
+            #
+            # Docker
+            #
             mkdir -p /home/$SUDO_USER/demos/docker
                 #
                 # Docker Algemeen
@@ -1541,9 +1631,9 @@ function maak_directories () {
                     mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/nginx
                     mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/odoo
                     mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/prometheus-grafana
-        #
-        # PodMan
-        #
+            #
+            # PodMan
+            #
             mkdir -p /home/$SUDO_USER/demos/podman
                 #
                 # PodMan Algemeen
@@ -1587,9 +1677,9 @@ function maak_directories () {
                     mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/nginx
                     mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/odoo
                     mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/prometheus-grafana
-        #
-        # Kubernetes
-        #
+            #
+            # Kubernetes
+            #
             mkdir -p /home/$SUDO_USER/demos/kubernetes
                 #
                 #  Kubernetes Algemeen 
@@ -1606,18 +1696,23 @@ function maak_directories () {
                     #  Kubernetes MySQL
                     #
                     mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/mysql
+                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/replicas
                     #
                     #  Kubernetes NextCLOUD
                     #
                     mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nextcloud
+                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nextcloud/replicas
                     #
                     #  Kubernetes NGINX
                     #
                     mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx
+                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas
+                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/simple
                     #
                     #  Kubernetes Odoo
                     #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/odoo
+                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/odoo
+                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/odoo/replicas
                 #
                 #  Kubernetes Minikube
                 #
@@ -1635,12 +1730,52 @@ function maak_directories () {
                 #
                 mkdir -p /home/$SUDO_USER/demos/kubernetes/scripts
 
+            # rechten met een commando instellen voor alle directories en bestanden
+            #
+            # min f is silent
+            # min R is recursief
+            #
+            chown -f -R "$SUDO_USER":"$SUDO_USER" /home/$SUDO_USER/demos 
+
+        #
+        # ONDERWIJS
+        #
+        mkdir -p /home/$SUDO_USER/onderwijs
+
+        #
+        # Introductie Infrastructuren
+        #
+            mkdir -p /home/$SUDO_USER/onderwijs/introinfra
+                #
+                # Docker Algemeen
+                #
+
+        #
+        # IT Fundamentals 
+        #
+            mkdir -p /home/$SUDO_USER/onderwijs/itfundamtls
+                #
+                # Docker Algemeen
+                #
+
+        #
+        # Virtualisatie 
+        #
+            mkdir -p /home/$SUDO_USER/onderwijs/Virtualisatie
+                #
+                # Docker Algemeen
+                #
+
+
         # rechten met een commando instellen voor alle directories en bestanden
         #
         # min f is silent
         # min R is recursief
         #
-        chown -f -R "$SUDO_USER":"$SUDO_USER" /home/$SUDO_USER/demos 
+        chown -f -R "$SUDO_USER":"$SUDO_USER" /home/$SUDO_USER/onderwijs 
+
+
+
 
     #
     #
@@ -1735,11 +1870,11 @@ function maak_directories () {
     #
     # if [ ! -d "/home/$SUDO_USER/k8s-demo" ]; then
         mkdir -p /home/$SUDO_USER/k8s-demo 
-        mkdir -p /home/$SUDO_USER/k8s-demo/mysql
+        mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/mysql
         mkdir -p /home/$SUDO_USER/k8s-demo/nextcloud
         mkdir -p /home/$SUDO_USER/k8s-demo/nginx
         mkdir -p /home/$SUDO_USER/k8s-demo/nginx/simple
-        mkdir -p /home/$SUDO_USER/k8s-demo/nginx/replicas
+        mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas
         mkdir -p /home/$SUDO_USER/k8s-demo/odoo
         chown -f -R $SUDO_USER /home/$SUDO_USER/k8s-demo
     # fi 
@@ -2263,17 +2398,21 @@ if [ $distro == "ubuntu" ]; then
         ulx_basis_config
         #
         # DOCKER
-        echo "Docker - Step 4 of 5 Installation and configuration Docker CE"
+        echo "Docker - Step 4 of x Installation and configuration Docker CE"
         ulx_install_docker
         ulx_docker_portainer_create
         ulx_docker_images_pull
-        echo "Docker - Step 5 of 6 Installation and configuration Docker Compose"
+        echo "Docker - Step 5 of x Installation and configuration Docker Compose"
         ulx_install_docker_compose
+        # JAVA JDK
+        echo "Docker - Step 6 of x Installation JAVA JDK"
+        ulx_install_java_jdk
         # JENKINS
+        echo "Docker - Step 7 of x Installation Jenkins"
         ulx_install_jenkins
         ulx_jenkins_docker
         # DEMO omgeving maken 
-        echo "Docker - Step 5 of 6 Creating demo environment"
+        echo "Docker - Step 8 of x Creating demo environment"
         maak_directories
         ulx_maak_docker_scripts
         ulx_maak_docker_voorbeelden
