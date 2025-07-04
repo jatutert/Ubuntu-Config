@@ -37,7 +37,7 @@ FOR /F "delims=" %%I IN ('DIR "%v2source%" /B /A:-D /O:-D') DO SET NewestFile=%%
 COPY "%v2source%\%NewestFile%" "%v2destination%\ubuntu-config-V2-latest.sh"
 
 :: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: Aanmaken latest voor Ubuntu Config (versie 3)
+:: Aanmaken latest voor LUCT (versie 3)
 :: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: Stel de bron- en doelmap in
@@ -50,3 +50,18 @@ FOR /F "delims=" %%I IN ('DIR "%v3source%" /B /A:-D /O:-D') DO SET NewestFile=%%
 
 :: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
 COPY "%v3source%\%NewestFile%" "%v3destination%\ubuntu-config-V3-latest.sh"
+
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Aanmaken latest voor LUCT (versie 4)
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:: Stel de bron- en doelmap in
+set v4source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-4xx\2025
+set v4destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config
+
+:: Zoek het nieuwste bestand in de bronmap
+FOR /F "delims=" %%I IN ('DIR "%v4source%" /B /A:-D /O:-D') DO SET NewestFile=%%I & GOTO Continue
+:Continue
+
+:: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
+COPY "%v4source%\%NewestFile%" "%v4destination%\LUCT-V4-latest.sh"
