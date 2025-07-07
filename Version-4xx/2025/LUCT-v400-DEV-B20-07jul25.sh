@@ -19,7 +19,7 @@
 #
 Major="4"
 Minor="0"
-Build="21"
+Build="20"
 Patch="0"
 #
 #
@@ -52,7 +52,7 @@ echo ''
 echo 'Alpine Linux support is planned for 2026'
 echo ''
 echo 'EDUROAM DNS SETTINGS KUNNEN FOUTIEF ZIJN'
-echo 'Sinds Build 21 is Minikube ook beschikbaar'
+echo 'DEZE BUILD NOG NIET GEBRUIKEN MET PARAMETER MINIKUBE'
 echo ''
 #
 #
@@ -203,9 +203,7 @@ echo ''
 # 07juli25 Melding OOBE stap 2 aangepast 
 # 07juli25 Netplan DNS settings functie gemaakt
 # 07juli25 TCP poorten 
-# 07juli25 Docker Compose if then lus aangepast
-# 07juli25 Minikube Docker configuratie functie weer actief gemaakt en voorzien van check op aanwezigheid Docker
-# 07juli25 if then lus bij mount vmware voor foutmelding 107
+#
 #
 #
 #
@@ -838,17 +836,8 @@ function ulx_install_vm_tools () {
         # Shared Folders
         mkdir -p /mnt/hgfs
         chmod 2777 /mnt/hgfs
-        # mount -t fuse.vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
-        if ! mount -t fuse.vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other; then
-            code=$?
-            if [ $code -eq 107 ]; then
-               echo "Fout 107: Geen instelling gedaan onder Options Shared Folders bij VM in Workstation Pro"
-            else
-               echo "Mount faalde met foutcode $code"
-            fi
-        else
-            echo "Mount succesvol"
-        fi
+        mount -t fuse.vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
+        echo "Foutmelding 107 is ontbreken van Shared Folders instelling in Workstation Pro"
     else
         echo "Geen VMware-omgeving gedetecteerd."
     fi
@@ -965,27 +954,27 @@ function ulx_install_docker () {
 #
 function ulx_install_docker_compose () {
     #
-    # echo "Controleren of Docker is geïnstalleerd..."
+    set -e
     #
-    if command -v docker &> /dev/null; then
-        #
-        # Maak de plugin directory aan als die nog niet bestaat
-        PLUGIN_DIR="/usr/local/lib/docker/cli-plugins"
-        mkdir -p "$PLUGIN_DIR"
-        #
-        # echo "Downloaden van Docker Compose plugin..."
-        curl -s -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o "$PLUGIN_DIR/docker-compose"
-        #
-        # echo "Rechten instellen..."
-        chmod +x "$PLUGIN_DIR/docker-compose"
-        # echo "Docker Compose plugin geïnstalleerd op: $PLUGIN_DIR/docker-compose"
-        #
-        # echo "Controleren of Docker Compose werkt..."
-        # docker compose version
-    else
-        echo "Docker is niet geïnstalleerd. Installeer Docker om verder te gaan."
+    # echo "Controleren of Docker is geïnstalleerd..."
+    if ! command -v docker &> /dev/null; then
+        echo "Docker is niet aanwezig en daarom kan Compose Plugin NIET toegevoegd worden"
+        exit 1
     fi
     #
+    # Maak de plugin directory aan als die nog niet bestaat
+    PLUGIN_DIR="/usr/local/lib/docker/cli-plugins"
+    mkdir -p "$PLUGIN_DIR"
+    #
+    # echo "Downloaden van Docker Compose plugin..."
+    curl -s -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o "$PLUGIN_DIR/docker-compose"
+    #
+    # echo "Rechten instellen..."
+    chmod +x "$PLUGIN_DIR/docker-compose"
+    echo "Docker Compose plugin geïnstalleerd op: $PLUGIN_DIR/docker-compose"
+    #
+    # echo "Controleren of Docker Compose werkt..."
+    # docker compose version
 }
 #
 #
@@ -1476,15 +1465,13 @@ function ulx_docker_minikube_init () {
 #
 #
 function ulx_docker_minikube_config () {
-   #
-   if command -v docker &> /dev/null; then
-        #
-        # sudo -u zorgt ervoor dat instelling wordt gedaan als gewone gebruiker en niet als root
-        sudo -u "$SUDO_USER" minikube config set driver docker
-    else
-        echo "Docker is niet geïnstalleerd. Installeer Docker om verder te gaan."
-    fi
     #
+    # Overbodig sinds versie 4
+    #
+    # functie mag niet bestaan uit alleen comments
+    # er MOET een commando in staan
+    # daarom commando echo met melding lege functie 
+    echo 'dit is een lege functie'
 }
 #
 #
@@ -2577,10 +2564,10 @@ if [ $distro == "debian" ]; then
         #
         # MiniKube 
         ulx_docker_minikube_init
-        ulx_docker_minikube_config
         #
         #
         # Functies die eerder gebruikt werden maar nu buiten gebruik zijn
+        # ulx_docker_minikube_config
         # ulx_maak_minikube_voorbeelden
         #
         #
@@ -2811,10 +2798,10 @@ if [ $distro == "ubuntu" ]; then
         #
         # MiniKube 
         ulx_docker_minikube_init
-        ulx_docker_minikube_config
         #
         #
         # Functies die eerder gebruikt werden maar nu buiten gebruik zijn
+        # ulx_docker_minikube_config
         # ulx_maak_minikube_voorbeelden
         #
         #
