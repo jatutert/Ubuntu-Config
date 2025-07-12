@@ -26,8 +26,9 @@
 #
 Major="4"
 Minor="0"
-Build="24"
+Build="25"
 Patch="0"
+Channel="Canary"
 #
 #
 #
@@ -44,7 +45,7 @@ Patch="0"
 clear
 echo 'Linux Universal Configuration Tool (LUCT)'
 echo "Version $Major.$Minor.$Build.$Patch"
-echo 'Channel Dev (Beta)'
+echo 'Channel $Channel'
 echo ''
 echo 'Created by John Tutert for TutSOFT'
 echo ''
@@ -59,7 +60,7 @@ echo ''
 echo 'Alpine Linux support is planned for 2026'
 echo ''
 echo 'New: Yacht Docker Container Management'
-echo '     NOT TESTED'
+echo 'New: Docker Management tools'
 echo ''
 #
 #
@@ -88,6 +89,7 @@ echo ''
 # 9001 NIET GEBRUIKEN
 # 9101 Portainer 
 # 9102 Yacht
+# 9103 Visual Studio Code Server
 #
 # 9200 NGINX
 # 9201 Simple Deployment
@@ -106,9 +108,6 @@ echo ''
 # TO DO
 # ######################
 #
-# Bestanden in de juiste mappen van demos directory zetten ## Overbodig door Git Clone 
-# VMware virtualisatie geeft nog melding  ## komt omdat shared folder niet aan staat in workstation 
-# Automatisch reboot aan het einde van het script ?? 
 # Netplan
 # Ansible DEMO aanpassen
 #
@@ -222,6 +221,8 @@ echo ''
 # 09juli25 NeoFetch SuperFetch
 # 09juli25 Snap Curl ipv Curl
 # 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
+# 12juli25 Docker Management Tools functie 
+# 12juli25 Visual Studio Code Server native en Docker 
 #
 #
 #
@@ -237,6 +238,7 @@ echo ''
 # ################################################################################
 # Fase 1 
 # Controle van de omstandigheden bij de start van het script 
+# Alle Distributies
 # ################################################################################
 #
 #
@@ -375,10 +377,6 @@ function build_install_compose () {
     /snap/bin/curl -s -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /home/$SUDO_USER/.docker/cli-plugins/docker-compose
     chmod a+x /home/$SUDO_USER/.docker/cli-plugins/docker-compose
     #
-    # DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker} 
-    # mkdir -p $DOCKER_CONFIG/cli-plugins
-    # curl -s -SL https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-    # chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 }
 #
 #
@@ -608,9 +606,12 @@ function ulx_os_default_apps () {
     apt install gzip -y > /dev/null 2>&1
     apt install nano -y > /dev/null 2>&1
     apt install neofetch -y > /dev/null 2>&1
+    apt install php libapache2-mod-php -y
+    apt install php-{gd,imap,xml,json,mbstring,mysql,intl,apcu,zip} -y
     apt install python3 -y > /dev/null 2>&1
     apt install screenfetch -y > /dev/null 2>&1
     apt install software-properties-common -y > /dev/null 2>&1
+    apt install tar -y > /dev/null 2>&1
     apt install ubuntu-drivers-common -y > /dev/null 2>&1
     apt install wget -y > /dev/null 2>&1
     apt install wget2 -y > /dev/null 2>&1
@@ -718,7 +719,7 @@ function ulx_os_netplan_download () {
 #
 #
 #   #######################
-#   3U16 UBUNTU OS FUNCTIES
+#   3U17 UBUNTU OS FUNCTIES
 #        Functie Change DNS OS
 #        Onderdeel van Ubuntu Nested OOBE Functie
 #   #######################
@@ -806,7 +807,7 @@ fi
 #
 #
 #   #######################
-#   3U17 UBUNTU OS FUNCTIES
+#   3U18 UBUNTU OS FUNCTIES
 #        GNOME GUI Install
 #   #######################
 #
@@ -1115,21 +1116,17 @@ function ulx_install_ansible () {
         #
         #
         # STAP 5
-        # Inventory ophalen van GitHUB
+        # Git Clone uitvoeren
+        #
+        # Git clone x y
+        #
+        # STAP 6 INVENTORY VULLEN
+        #
         mkdir -p /etc/ansible/inventory 
         #
+        # cp x y
         #
-        # TO DO
-        #
-        # GH_JATUTERT_RAW variable nog werken
-        #
-        curl -s -o /etc/ansible/inventory/ansible_demo     https://$GH_JATUTERT_RAW/demos/main/Ansible/Guest/Inventory/ansible_demo_12aug24
-        # curl -s -o /etc/ansible/inventory/db_servers     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
-        # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
-        # curl -s -o /etc/ansible/inventory/webservers     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
-        # curl -s -o /etc/ansible/inventory/werkstations   https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
-        #
-        # STAP 6
+        # STAP 7
         # Aanpassen ansible config met Inventory
         if grep -q "defaults" /etc/ansible/ansible.cfg; then
             echo "Ansible Configuratiebestand reeds voorzien van Inventory"
@@ -1140,13 +1137,16 @@ function ulx_install_ansible () {
             echo "Ansible Configuratiebestand voorzien van Inventory"
         fi
         #
-        # STAP 7
-        # Playbooks ophalen van GitHUB
+        # STAP 8
+        # Playbooks overzetten van Git Clone naar juiste locatie
         mkdir -p /home/$SUDO_USER/playbooks
         chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
-        curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://$GH_JATUTERT_RAW/demos/main/Ansible/Guest/Playbooks/Linux/ansible_demo_playbook.yml
         #
-        # STAP 8
+        #
+        # cp x y 
+        #
+        #
+        # STAP 9
         # SSH verbinden script maken 
         # Uitvoeren als user Vagrant en niet als Root anders krijg je SSH foutmelding bij Ansible 
         echo "Stap 7 - SSH Verbindingsscript maken gestart ..."
@@ -1282,21 +1282,34 @@ function ulx_install_jenkins () {
     # Jenkins is hierna bereikbaar via ip adres van de vm met ip poort 8000
     # Als wachtwoord moet je wachtwoord uit initialAdminPassword zoals hierboven invoeren 
 } 
-
 #
 #
-# 3U32 UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
+# 3U32 UBUNTU OS Install Software Functies ## Visual Studio Code Server
 #
 #
-function ulx_jenkins_docker () {
-
-    # Add jenkins user to docker group
-    usermod -aG docker jenkins
-
-    # Restart Jenkins
-    systemctl restart jenkins > /dev/null 2>&1
-
+function ulx_install_vscode_server () {
+    # Installatie 
+    /snap/bin/curl -fsSL https://code-server.dev/install.sh | sh
+    # Service aanmaken en starten 
+    systemctl enable --now code-server@$USER
+    systemctl start code-server@$USER
+    # Wachtwoord uitzetten
+    sudo -u "$SUDO_USER" sed -i.bak 's/auth: password/auth: none/' ~/.config/code-server/config.yaml
+    # Bind adres aanpassen
+    sed "s@:127.0.0.1@:0.0.0.0@" -i /home/$SUDO_USER/.config/code-server/config.yaml
+    # Poort aanpassen naar eigen voorkeurspoort
+    sed "s@:8080@:9103@" -i /home/$SUDO_USER/.config/code-server/config.yaml
+    # Herstarten
+    systemctl restart code-server@$USER
+    # 
+    # Visual Studio Code Server is nu beschikbaar op IP adres van VM met poort 9103
+    #
 }
+#
+#
+# ################################### EINDE INSTALLATIE ###############################
+#
+#
 #
 #
 # 3U4 CATEGORIE UBUNTU OS DOCKER Software Functies 
@@ -1471,6 +1484,24 @@ function ulx_docker_yacht_create () {
 }
 #
 #
+# 3U45 UBUNTU UBUNTU OS DOCKER Software Functies ## VS Code Server Create
+#
+#
+function ulx_docker_vscodesrv_create () {
+    #
+    sudo -u "$SUDO_USER" mkdir -p ~/.config
+    #
+    TARGET_USER=$SUDO_USER
+    USER_HOME=$(eval echo "~$TARGET_USER")
+    USER_ID=$(id -u "$TARGET_USER")
+    GROUP_ID=$(id -g "$TARGET_USER")
+    CURRENT_DIR=$(pwd)
+    #
+    docker run -d --name code-server --restart=always -p 9103:8080 -v "$USER_HOME/.local:/home/coder/.local" -v "$USER_HOME/.config:/home/coder/.config" -v "$CURRENT_DIR:/home/coder/project" -u "$USER_ID:$GROUP_ID" -e "DOCKER_USER=$TARGET_USER" codercom/code-server:latest
+    #
+}
+#
+#
 # 3U45 UBUNTU UBUNTU OS DOCKER Software Functies ## Docker Management Tools
 #
 #
@@ -1481,7 +1512,7 @@ function ulx_docker_mgmt_tools () {
     #
     # LazyDocker
     # https://github.com/jesseduffield/lazydocker
-    sudo curl -s -SL https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/in>sudo chmod +x /home/$SUDO_USER/install_lazydocker.sh
+    curl -s -SL https://raw.githubusercontent.com/jesseduffield/lazydocker/master/scripts/in>sudo chmod +x /home/$SUDO_USER/install_lazydocker.sh
     sudo -u "$SUDO_USER" /home/$SUDO_USER/install_lazydocker.sh
     #
     # Dive
@@ -1490,8 +1521,25 @@ function ulx_docker_mgmt_tools () {
     curl -fOL "https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb"
     apt install ./dive_${DIVE_VERSION}_linux_amd64.deb
     #
-    # Dockly https://github.com/lirantal/dockly
-    npm install -g dockly
+    # Dockly 
+    # https://github.com/lirantal/dockly
+    echo "docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock lirantal/dockly" > /home/$SUDO_USER/run_dockly.sh
+    chmod +x /home/$SUDO_USER/run_dockly.sh
+    # npm install -g dockly
+}
+#
+#
+# 3Uxx UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
+#
+#
+function ulx_jenkins_docker () {
+
+    # Add jenkins user to docker group
+    usermod -aG docker jenkins
+
+    # Restart Jenkins
+    systemctl restart jenkins > /dev/null 2>&1
+
 }
 #
 #
@@ -1571,7 +1619,7 @@ function ulx_docker_minikube_init () {
 }
 #
 #
-# 3U51 UBUNTU UBUNTU OS DOCKER Minikube Software Functies ## Minikube Config
+# 3U52 UBUNTU UBUNTU OS DOCKER Minikube Software Functies ## Minikube Config
 #
 #
 function ulx_docker_minikube_config () {
@@ -1654,14 +1702,8 @@ function ulx_podman_images_pull () {
     podman pull -q prakhar1989/static-site
 }
 #
-
-
-
 #
-#
-#
-#
-# UBUNTU UBUNTU OS Podman Software Functies ## Portainer Create  
+# 3U62 UBUNTU UBUNTU OS Podman Software Functies ## Portainer Create
 #
 #
 function ulx_podman_portainer_create () {
@@ -1708,24 +1750,8 @@ function ulx_podman_portainer_create () {
     #
 }
 #
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #
-#
-# UBUNTU UBUNTU OS Podman Software Functies ## Portainer Remove
+# 3U63 UBUNTU UBUNTU OS Podman Software Functies ## Portainer Remove
 #
 #
 function ulx_podman_portainer_remove () {
@@ -1735,37 +1761,12 @@ function ulx_podman_portainer_remove () {
     podman volume rm portainer_data
     podman system prune
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #
 #
-# 3U5 CATEGORIE UBUNTU OS Maak Scripts Functies 
+# 3U7 CATEGORIE UBUNTU OS Maak Scripts Functies 
 #
 #
-# 3U51 UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
+# 3U71 UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
 #
 #
 #
@@ -1779,7 +1780,7 @@ function ulx_maak_docker_scripts () {
     echo 'dit is een lege functie'
 }
 #
-# UBUNTU Maak Scripts DOCKER Voorbeelden
+# 72 UBUNTU Maak Scripts DOCKER Voorbeelden
 #
 function ulx_maak_docker_voorbeelden () {
     #
@@ -1791,7 +1792,7 @@ function ulx_maak_docker_voorbeelden () {
     echo 'dit is een lege functie'
 }
 #
-# UBUNTU Maak Scripts DOCKER COMPOSE
+# 73 UBUNTU Maak Scripts DOCKER COMPOSE
 #
 #
 # UBUNTU Maak Scripts DOCKER COMPOSE Demos
@@ -1825,18 +1826,26 @@ function ulx_maak_compose_voorbeelden () {
 #
 function ulx_maak_minikube_voorbeelden () {
     #
+    # Overbodig sinds versie 4
+    #
+    # functie mag niet bestaan uit alleen comments
+    # er MOET een commando in staan
+    # daarom commando echo met melding lege functie 
+    echo 'dit is een lege functie'
+    #
+    #
     # TO DO
     #
     # OVERZETTEN NAAR GIT
     #
     # K8S IO website demos
     # MySQL 
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
-    curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
+    # curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
     # NGINX
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml        https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml        https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
     #
 }
 #
@@ -1975,7 +1984,9 @@ function ulx_nested_oobe () {
     ulx_install_cockpit
     echo 'DEBIAN/UBUNTU - Step 6 of 8 Installing Microsoft Powershell 7 (latest version)'
     ulx_install_pwrshell
-    echo 'DEBIAN/UBUNTU - Step 7 of 8 Installing Python 3'
+    echo 'DEBIAN/UBUNTU - Step 7 of 8 Installing Microsoft Visual Studio Code Server (latest version)'
+    ulx_install_vscode_server
+    echo 'DEBIAN/UBUNTU - Step 8 of 8 Installing Python 3'
     ulx_install_python3
 }
 #
@@ -2005,7 +2016,12 @@ function ulx_nested_docker () {
     echo 'DOCKER - Step 4a of 5 Starting Portainer Container Management on Docker'
     ulx_docker_portainer_create
     echo 'DOCKER - Step 4b of 5 Starting Yacht Container Management on Docker'
-    ulx_docker_portainer_create
+    ulx_docker_yacht_create
+    echo 'DOCKER - Step 4c of 5 Starting Visual Studio Code Server on Docker'
+    # ulx_docker_vscodesrv_create
+    echo 'Skipped because Visual Studio Code Server is already installed native'
+    echo 'DOCKER - Step 4d of 5 Installing Docker Management tools'
+    ulx_docker_mgmt_tools
     echo 'DOCKER - Step 5 of 5 Starting Registry Container on Docker'
     docker run -d -p 5000:5000 --restart always --name registry registry
 }
