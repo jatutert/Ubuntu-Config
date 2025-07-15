@@ -26,7 +26,7 @@
 #
 Major="4"
 Minor="0"
-Build="24"
+Build="23"
 Patch="0"
 #
 #
@@ -58,8 +58,8 @@ echo '- Ubuntu on Windows Subsystem for Linux (WSL) version 2'
 echo ''
 echo 'Alpine Linux support is planned for 2026'
 echo ''
-echo 'New: Yacht Docker Container Management'
-echo '     NOT TESTED'
+echo 'Vanaf build 21 werkt EduRoam'
+echo 'Vanaf build 22 werkt Minikube'
 echo ''
 #
 #
@@ -83,18 +83,14 @@ echo ''
 # 8201 Jenkins 
 # 8300 Ansible
 # 8301 Semaphore 
-#
 # Containerpoorten 9000
 # 9001 NIET GEBRUIKEN
 # 9101 Portainer 
-# 9102 Yacht
-#
+# 9102 x
 # 9200 NGINX
 # 9201 Simple Deployment
 # 9202 Deployment step 1
-#
 # 9210 NextCloud
-#
 # 9220 
 #
 #
@@ -221,7 +217,6 @@ echo ''
 # 08juli25 Minikube configuratie
 # 09juli25 NeoFetch SuperFetch
 # 09juli25 Snap Curl ipv Curl
-# 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
 #
 #
 #
@@ -1316,52 +1311,51 @@ function ulx_docker_images_pull () {
     #
     # docker pull -q hello-world > /dev/null 2>&1
     #
-    # ## Operating Systems
+    # Operating Systems
     #
-    # ## Alpine
+    # Alpine Linux
     docker pull -q alpine:latest
     docker pull -q alpine:3.5
+    # Amazon Linux
+    docker pull -q amazonlinux:latest
     # Bash is eigenlijk Alpine Linux Image 
     # docker pull -q bash:latest
-    # 
-    docker pull -q amazonlinux:latest
-    #
+    # Clearlinux
     docker pull -q clearlinux:latest
-    # 
+    # Debian
     docker pull -q debian:latest
-    # 
+    # Photon
     docker pull -q photon:latest
-    # 
-    # ## Ubuntu
+    # Ubuntu 
     # docker pull -q ubuntu:20.04
     # docker pull -q ubuntu:22.04
     #
-    # ## Middleware
+    # Middleware
     #
-    # ### CMS
-    # docker pull -q wordpress
-    #
-    # ### DBMS
-    # docker pull -q mariadb:10.6
-    # docker pull -q postgres:latest
-    #
-    # ### Storage
-    # docker pull -q minio/minio
-    # docker pull -q nextcloud
-    #
-    # ### Webservers
+    # Apache2
     # docker pull -q ubuntu/apache2:latest
     docker pull -q httpd:latest
+    # MariaDB
+    # docker pull -q mariadb:10.6
+    # MinIO
+    # docker pull -q minio/minio
+    # NextCloud
+    # docker pull -q nextcloud
+    # NGINX
     docker pull -q nginx
-    docker pull -q prakhar1989/static-site
-    #
-    # ## Management 
+    # Portainer
     docker pull -q portainer/portainer-ce:latest
-    docker pull -q selfhostedpro/yacht:latest
-    #
-    # ## Registry
+    # PostGres
+    # docker pull -q postgres:latest
+    # Registry
     docker pull -q registry
+    # WordPress
+    # docker pull -q wordpress
     #
+    # Demo
+    #
+    # Prakhar1989 Static Site 
+    docker pull -q prakhar1989/static-site
 }
 #
 #
@@ -1566,52 +1560,6 @@ function ulx_docker_portainer_create () {
     chmod +x /home/$SUDO_USER/portainer_restart.sh
     #
 }
-
-#
-#
-# UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Create  
-#
-#
-function ulx_docker_yacht_create () {
-    #
-    # Docker Volume Aanmaken voor Yacht
-    docker volume create yacht_data > /dev/null 2>&1
-    #
-    # Docker Run Yacht
-    docker run -d -p 9102:8000 -v /var/run/docker.sock:/var/run/docker.sock -v yacht_data:/config --name yacht --restart=always selfhostedpro/yacht
-    #
-    # Bash Shell Script maken Portainer
-    echo '#! /bin/bash' > /home/$SUDO_USER/yacht_restart.sh
-    #
-    echo 'docker stop yacht' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'docker start yacht' >> /home/$SUDO_USER/yacht_restart.sh
-    #
-    echo 'echo "Yacht is beschikbaar op"' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
-    #
-    if ip link show ens33 > /dev/null 2>&1; then
-        echo 'IP=$(ip -4 addr show ens33 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/yacht_restart.sh
-        echo 'echo "https://$IP:9102"' >> /home/$SUDO_USER/yacht_restart.sh
-    fi
-    #
-    if ip link show eth0 > /dev/null 2>&1; then
-        echo 'IP=$(ip -4 addr show eth0 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/yacht_restart.sh
-        echo 'echo "https://$IP:9102"' >> /home/$SUDO_USER/yacht_restart.sh
-    fi
-    #
-    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
-    #
-    echo 'echo "Start Webbrowser op PC of Laptop en ga naar bovenstaand adres"' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'echo "Gebruik onderstaande gegevens op het eerste scherm"' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'echo "Gebruiker admin@yacht.local"' >> /home/$SUDO_USER/yacht_restart.sh
-    echo 'echo "Wachtwoord pass"' >> /home/$SUDO_USER/yacht_restart.sh
-    #
-    chmod +x /home/$SUDO_USER/yacht_restart.sh
-    #
-}
-#
 #
 #
 #
@@ -1883,7 +1831,7 @@ function ulx_it-funda_tooling () {
 #
 #
 function ulx_nested_oobe () {
-    echo 'DEBIAN/UBUNTU - Step 1 of 8 Configure APT Package Manager'
+    echo "DEBIAN/UBUNTU - Step 1 of 8 Configure APT Package Manager"
     ulx_os_config_timezone
     ulx_os_change_repo_nl
     ulx_os_update_apt
@@ -1892,15 +1840,15 @@ function ulx_nested_oobe () {
     echo 'DEBIAN/UBUNTU - Step 3 of 8 Changing Domain Name Service (DNS) settings'
     ulx_os_config_dns
     # ulx_os_netplan_download
-    echo 'DEBIAN/UBUNTU - Step 3 of 8 Installing Default Apps'
+    echo "DEBIAN/UBUNTU - Step 3 of 8 Installing Default Apps"
     ulx_os_default_apps
-    echo 'DEBIAN/UBUNTU - Step 4 of 8 Installing or updating of Open VM Tools'
+    echo "DEBIAN/UBUNTU - Step 4 of 8 Installing Open VM Tools"
     ulx_install_vm_tools
-    echo 'DEBIAN/UBUNTU - Step 5 of 8 Installing and configuration of Cockpit'
+    echo "DEBIAN/UBUNTU - Step 5 of 8 Installing Cockpit"
     ulx_install_cockpit
-    echo 'DEBIAN/UBUNTU - Step 6 of 8 Installing Microsoft Powershell 7 (latest version)'
+    echo "DEBIAN/UBUNTU - Step 6 of 8 Installing Microsoft Powershell 7"
     ulx_install_pwrshell
-    echo 'DEBIAN/UBUNTU - Step 7 of 8 Installing Python 3'
+    echo "DEBIAN/UBUNTU - Step 7 of 8 Installing Python 3"
     ulx_install_python3
 }
 #
@@ -1927,9 +1875,7 @@ function ulx_nested_docker () {
     ulx_install_docker_compose
     echo 'DOCKER - Step 3 of 5 Pull must used Docker images from Docker Hub'
     ulx_docker_images_pull
-    echo 'DOCKER - Step 4a of 5 Starting Portainer Container Management on Docker'
-    ulx_docker_portainer_create
-    echo 'DOCKER - Step 4b of 5 Starting Yacht Container Management on Docker'
+    echo 'DOCKER - Step 4 of 5 Starting Portainer Container Management on Docker'
     ulx_docker_portainer_create
     echo 'DOCKER - Step 5 of 5 Starting Registry Container on Docker'
     docker run -d -p 5000:5000 --restart always --name registry registry
@@ -2454,25 +2400,17 @@ if [ $distro == "buildroot" ]; then
         #
         # BUILDROOT OPTIE 1
         #
-        # 1
         echo "Step 1 of 6 Configure Operating System"
         ulx_os_config_timezone
         build_bash_config
-        # 2
         echo "Step 2 of 6 Creating Directories"
         maak_directories
-        # 3
-        echo "Step 3a of 6 Starting Portainer Container Engine management"
+        echo "Step 3 of 6 Starting Portainer Container Engine management"
         ulx_docker_portainer_create
-        echo "Step 3b of 6 Starting Yacht Container Engine management"
-        ulx_docker_yacht_create
-        # 4
         echo "Step 4 of 6 Getting Docker Images"
         ulx_docker_images_pull
-        # 5
         echo "Step 5 of 6 Installing Docker Compose plugin"
         build_install_compose
-        # 6
         echo "Step 6 of 6 Creating demo environment"
         echo ""
         echo "Stap 6a Maak Docker scripts"
