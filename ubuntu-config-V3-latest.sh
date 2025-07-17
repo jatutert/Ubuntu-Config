@@ -4,7 +4,7 @@
 #
 #
 # Configuratiescript Linux 
-# Versie: 3.2.0 BETA
+# Versie: 3.0.0 BETA
 # ONLY FOR TESTING PURPOSES 
 # Author: John Tutert
 #
@@ -63,39 +63,19 @@
 # 22mrt25 Podman en aangepaste installatie Powershell 
 # 14apr25 Status naar BETA gezet en Hostnamen aangepast demo VM
 # 26apr25 Github links herstel 
-# 23mei25 Minikube VM BuildRoot uitbreiding opties
-# 24mei25 Nieuwe manier sourcelist aanpassing # Nieuwe functie Docker Compose Ubuntu
-# 26mei25 Jenkins
-# 18juni25 Configuratie Open VM Tools Share richting VMware Worksstation of Fusion Hypervisor 
-# 18juni25 Introductie Ubuntu Basis config functie
-# 25juni25 Ubuntu Repository instellingen  
-# 25juni25 testrun Docker op Ubuntu
+#
 #
 # TO DO
 #
-# Bestanden in de juiste mappen van demos directory zetten
-# VMware virtualisatie geeft nog melding 
-# Automatisch reboot aan het einde van het script ?? 
 # Netplan
 # Ansible DEMO aanpassen
 #
 #
-#  
-#
-# Overzicht TCP Poorten
-#
-# 22   Inkomende poort Ansible host vanuit Controller 
-# 1234 Cockpit
-# 4444 Semaphore
-# 5555 Jenkins 
-# 9443 Portainer 
-#
-#
 # ################################################################################
 #
-# Fase 1 
+# COMPONENT 1
 #
-# Controle van de omstandigheden bij de start van het script 
+# CHECKS
 #
 # ################################################################################
 #
@@ -130,11 +110,11 @@ fi
 #
 # ################################################################################
 #
-# Fase 2
+# COMPONENT 2
 #
-# Vullen van de variabelen noodzakelijk voor het uitvoeren van dit script
+# VARIABELEN
 #
-# Alle distributies 
+# VULLEN
 #
 # ################################################################################
 #
@@ -164,18 +144,18 @@ GH_JATUTERT_DEMO_ANSIBLE_VM="demos/main/Ansible/Guest"
 #
 # ################################################################################
 #
-# Fase 3
+# COMPONENT 3
 #
-# DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES 
-#
-# ################################################################################
-#
-#
-#
+# DECLARATIE FUNCTIES 
 #
 # ################################################################################
 #
-# Fase 3A
+#
+#
+#
+# ################################################################################
+#
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -184,16 +164,16 @@ GH_JATUTERT_DEMO_ANSIBLE_VM="demos/main/Ansible/Guest"
 # ################################################################################
 #
 #
-# 3A Function Alpine Bijwerken
+# Function Bijwerken ALPINE
 #
 function alx_update_os () {
     apk update -q
     apk upgrade -q
     apk fix -d -q
     apk add open-vm-tools 
-}
+} 
 #
-# 3A Function Alpine VM Tools Installatie 
+# Function Bijwerken ALPINE
 #
 function alx_vm_tools () {
     apk add open-vm-tools 
@@ -204,7 +184,7 @@ function alx_vm_tools () {
 #
 # ################################################################################
 #
-# Fase 3B
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -213,7 +193,7 @@ function alx_vm_tools () {
 # ################################################################################
 #
 #
-# 3B Function BuildRoot Docker Compose Installation 
+# Function Bijwerken ALPINE
 #
 function build_install_compose () {
     #
@@ -227,7 +207,6 @@ function build_install_compose () {
     # chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 }
 #
-# 3B Function BuildRoot BASH Configuratie Settings 
 #
 function build_bash_config () {
     #
@@ -246,7 +225,7 @@ function build_bash_config () {
 #
 # ################################################################################
 #
-# Fase 3D
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -255,80 +234,24 @@ function build_bash_config () {
 # ################################################################################
 #
 #
-# 3D1 CATEGORIE Debian OS FUNCTIES
+# Function Bijwerken Debian
 #
-#
-# 3D11 Debian OS FUNCTIES ## Functie Change Repo Debian
-#      Debian Basis Config
-#
-function dbn_os_change_repo_nl () {
-    #
-} 
-#
-# 3D12 Debian OS FUNCTIES ## Functie Update Debian Repo
-#      Debian Basis Config
-function dbn_os_update_apk () {
-    apk update 
-}
-#
-# 3D13 Debian OS FUNCTIES ## Functie Upgrade Debian
-#      Debian Basis Config
-function dbn_os_upgrade_os () {
-    apk update 
-    apk upgrade
-}
-
-#
-#
-# 3U2 CATEGORIE Debian OS Install Software Functies
-#
-#
-# 3U21 Debian OS Install Software Functies ## Functie Installatie OS Open VM Tools
-#
-#
-function dbn_install_vm_tools () {
+function dbn_update_os () {
+    apk update -qq
+    apk upgrade -qq -y 
     apk add open-vm-tools 
 }
 #
-# 3U21 Debian OS Install Software Functies ## Functie Installatie OS OpenMediaVault
+# Function Bijwerken Debian
 #
-function dbn_install_omv () {
-
-    # CoPilot uitwerking copy paste 
-
-    echo "🔧 Stap 1: Installeren van vereiste pakketten..."
-    sudo apt update
-    sudo apt install --yes gnupg wget
-
-    echo "🔑 Stap 2: Importeren van de OpenMediaVault GPG-sleutel..."
-    wget -qO - https://packages.openmediavault.org/public/archive.key | gpg --dearmor --yes -o /usr/share/keyrings/openmediavault-archive-keyring.gpg
-
-    echo "📦 Stap 3: Toevoegen van de OpenMediaVault repository..."
-cat <<EOF | sudo tee /etc/apt/sources.list.d/openmediavault.list
-deb [signed-by=/usr/share/keyrings/openmediavault-archive-keyring.gpg] https://packages.openmediavault.org/public sandworm main
-EOF
-
-     echo "🔄 Stap 4: Installeren van OpenMediaVault..."
-     export LANG=C.UTF-8
-     export DEBIAN_FRONTEND=noninteractive
-     export APT_LISTCHANGES_FRONTEND=none
-
-     sudo apt update
-     sudo apt install --yes openmediavault-keyring openmediavault
-
-     echo "⚙️ Stap 5: Initialiseren van de configuratiedatabase..."
-     sudo omv-confdbadm populate
-
-     echo "🧩 Stap 6: Configureren van het systeem..."
-     sudo omv-salt deploy run hosts
-     #
-} 
-
+function dbn_vm_tools () {
+    apk add open-vm-tools 
+}
 #
 #
 # ################################################################################
 #
-# Fase 3U
+# COMPONENT 3
 #
 # FUNCTIONS
 #
@@ -337,11 +260,12 @@ EOF
 # ################################################################################
 #
 #
-# 3U1 CATEGORIE UBUNTU OS FUNCTIES
+# CATEGORIE UBUNTU OS FUNCTIES
 #
 #
-# 3U11 UBUNTU OS FUNCTIES ## Functie Change Repo Ubuntu
-#      Ubuntu Basis Config
+# UBUNTU OS FUNCTIES ## Functie Change Repo Ubuntu
+#
+#
 #
 #
 function ulx_os_change_repo_nl () {
@@ -365,9 +289,6 @@ function ulx_os_change_repo_nl () {
     fi
     #
     if [ $VERSION_ID == "24.04" ] ; then
-        #
-        # Optie 1 Kernel.org
-        #
         if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list.d/ubuntu.sources; then
             sed "s@mirrors.edge.kernel.org@nl.archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
         else
@@ -375,42 +296,17 @@ function ulx_os_change_repo_nl () {
             echo "Mirrors.edge.kernel.org is not an active repository and thus no action taken"
         fi
         #
-        # Optie 2 archive.ubuntu.com
-        #
-        # Archive.Ubuntu.com instellen als bron 
-        if grep -q "http://archive.ubuntu.com" /etc/apt/sources.list.d/ubuntu.sources; then
-            echo "Ubuntu Repository staat al op Algemeen"
+        if grep -q "nl.archive.ubuntu.com" /etc/apt/sources.list.d/ubuntu.sources; then
+            echo "Ubuntu Repository is set up correctly"
         else
-            # Vervang elke landcode voor archive.ubuntu.com naar archive.ubuntu.com
-            sed "s@http://es.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            sed "s@http://gb.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            sed "s@http://id.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            sed "s@http://in.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            sed "s@http://jp.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            sed "s@http://mx.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            sed "s@http://us.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
+            # Replace the value with nl.archive.ubuntu.com
+            sed "s@archive.ubuntu.com@nl.archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
         fi
-        #
-        # archive.ubuntu.com vervangen door NL bron  
-        #
-        # standaard is BIT BV dit is nl.archive.ubuntu.com
-        #
-        # Lijst beschikbaar op
-        # https://launchpad.net/ubuntu/+archivemirrors
-        #
-        if grep -q "http://nl.archive.ubuntu.com" /etc/apt/sources.list.d/ubuntu.sources; then
-            echo "Ubuntu Repository staat al op Nederlands"
-        else
-            # Stel DataPacket in als Bron  
-            sed "s@http://archive.ubuntu.com@http://mirror.nl.datapacket.com/ubuntu/@" -i /etc/apt/sources.list.d/ubuntu.sources
-            # sed "s@http://archive.ubuntu.com@http://nl.archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-        fi
-        #
     fi
 }
 #
 #
-# 3U12 UBUNTU OS FUNCTIES ## Functie Update Ubuntu OS 
+# UBUNTU OS FUNCTIES ## Functie Update Ubuntu OS 
 #
 #
 function ulx_os_update_apt () {
@@ -418,7 +314,7 @@ function ulx_os_update_apt () {
 }
 #
 #
-# 3U13 UBUNTU OS FUNCTIES ## Functie Upgrade Ubuntu OS 
+# UBUNTU OS FUNCTIES ## Functie Upgrade Ubuntu OS 
 #
 #
 function ulx_os_upgrade_os () {
@@ -427,16 +323,13 @@ function ulx_os_upgrade_os () {
     apt autoremove -qq -y > /dev/null 2>&1
 }
 #
-#
-# 3U14 UBUNTU OS FUNCTIES ## Functie Change Timezone OS 
-#      Ubuntu Basis Config 
-#
+# UBUNTU OS FUNCTIES ## Functie Change Timezone 
 #
 function ulx_os_config_timezone () {
     timedatectl set-timezone Europe/Amsterdam
-}
+} 
 #
-# 3U15 UBUNTU OS FUNCTIES ## Functie NIC Config OS
+# UBUNTU OS FUNCTIES ## Functie NIC Config
 #
 function ulx_os_netplan_download () {
     #
@@ -494,6 +387,7 @@ function ulx_os_netplan_download () {
     fi
     #
     # Introductie Infrastructuren
+    #
     # DBMS
     #
     # if [ $hostname == "u24-lts-s-dbms-001" ] ; then
@@ -502,6 +396,7 @@ function ulx_os_netplan_download () {
     fi
     #
     # Introductie Infrastructuren
+    #
     # WebServer
     #
     # if [ $hostname == "u24-lts-s-wsrv-001" ] ; then
@@ -509,17 +404,12 @@ function ulx_os_netplan_download () {
         curl -s -o /home/$SUDO_USER/netplan/wsrv-netcfg.yaml https://raw.githubusercontent.com/jatutert/demos/main/OSTicket/Guest/Ubuntu/Netplan/Webserver/eth/eth-sec-nic-01-netcfg-wsrv.yaml
     fi
     #
-    # Maken Script NIC uitzetten
-    #
     # echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth0-off.sh
     # echo 'sudo ip link set eth0 down' >> /home/$SUDO_USER/netplan/eth0-off.sh
     # chmod +x /home/$SUDO_USER/netplan/eth0-off.sh
     echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth1-off.sh
     echo 'sudo ip link set eth1 down' >> /home/$SUDO_USER/netplan/eth1-off.sh
     chmod +x /home/$SUDO_USER/netplan/eth1-off.sh
-    #
-    # Maken Script NIC aanzetten
-    #
     # echo '# /bin/bash' > /home/$SUDO_USER/netplan/eth0-on.sh
     # echo 'sudo ip link set eth0 up' >> /home/$SUDO_USER/netplan/eth0-on.sh
     # chmod +x /home/$SUDO_USER/netplan/eth0-on.sh
@@ -528,7 +418,7 @@ function ulx_os_netplan_download () {
     chmod +x /home/$SUDO_USER/netplan/eth1-on.sh
 }
 #
-# 3U16 UBUNTU OS FUNCTIES ## Functie Change DNS OS
+# UBUNTU OS FUNCTIES ## Functie Change DNS
 #
 function ulx_os_config_dns () {
 #
@@ -540,7 +430,7 @@ function ulx_os_config_dns () {
     netplan apply 
 }
 #
-# 3U17 UBUNTU OS FUNCTIES ## GNOME GUI Install 
+# UBUNTU OS FUNCTIES ## GNOME GUI Install 
 #
 function ulx_os_gnome_install () {
     # Installate GNOME GUI (https://phoenixnap.com/kb/how-to-install-a-gui-on-ubuntu)
@@ -565,27 +455,18 @@ function ulx_os_gnome_install () {
 }
 #
 #
-# 3U2 CATEGORIE UBUNTU OS Install Software Functies
+# CATEGORIE UBUNTU OS Install Software Functies
 #
 #
-# 3U21 UBUNTU OS Install Software Functies ## Functie Installatie OS Open VM Tools
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Open VM Tools
 #
 #
 function ulx_install_vm_tools () {
-    apt install dmidecode -y
-    if sudo dmidecode | grep -iq vmware; then
-        echo "VMware-omgeving gedetecteerd."
-        apt install -qq -y open-vm-tools > /dev/null 2>&1
-        mkdir -p /mnt/hgfs
-        chmod 2777 /mnt/hgfs
-        mount -t fuse.vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
-    else
-        echo "Geen VMware-omgeving gedetecteerd."
-    fi
+    apt install -qq -y open-vm-tools > /dev/null 2>&1
 }
 #
 #
-# 3U22 UBUNTU OS Install Software Functies ## Functie Installatie OS Powershell
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Powershell
 #
 #
 # https://learn.microsoft.com/en-us/powershell/scripting/install/install-ubuntu?view=powershell-7.4
@@ -593,6 +474,66 @@ function ulx_install_vm_tools () {
 # Starten met pwsh commando
 #
 function ulx_install_pwrshell () {
+    #
+    # Manier 1 Microsoft
+    #
+    # 08 aug werk niet 
+    #
+    # apt-get update
+    # apt-get install -y wget apt-transport-https software-properties-common
+    # source /etc/os-release
+    # wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
+    # dpkg -i packages-microsoft-prod.deb
+    # rm packages-microsoft-prod.deb
+    # sudo apt-get update
+    # sudo apt-get install -y powershell
+    #
+    # Manier 2 Microsoft
+    #
+    # 08 aug werkt niet
+    #
+    # apt-get update
+    # apt-get install -y wget
+    # wget https://github.com/PowerShell/PowerShell/releases/download/v7.4.4/powershell_7.4.4-1.deb_amd64.deb
+    # dpkg -i powershell_7.4.4-1.deb_amd64.deb
+    # apt-get install -f
+    # rm powershell_7.4.4-1.deb_amd64.deb
+    #
+    # Manier 3 EIGEN 
+    #
+    # 08 aug WERKT
+    #
+    # apt-get update -qq
+    # apt-get install wget2 -y
+    #
+    # wget2 -O /tmp/libicu72_72.1-3ubuntu3_amd64.deb https://mirror.it.ubc.ca/ubuntu/pool/main/i/icu/libicu72_72.1-3ubuntu3_amd64.deb
+    # dpkg -i /tmp/libicu72_72.1-3ubuntu3_amd64.deb
+    #
+    # wget2 -O /tmp/powershell_7.4.4-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.4/powershell_7.4.4-1.deb_amd64.deb
+    # dpkg -i /tmp/powershell_7.4.4-1.deb_amd64.deb
+    #
+    #
+    # rm -f /tmp/libicu72_72.1-3ubuntu3_amd64.deb
+    # rm -f /tmp/powershell_7.4.4-1.deb_amd64.deb
+    #
+    # Manier 4 EIGEN
+    #
+    #  08 aug WERKT NIET
+    #
+    # apt-get update -qq
+    # apt install wget2 -y
+    # wget2 -O /tmp/powershell_7.4.4-1.deb_amd64.deb https://github.com/PowerShell/PowerShell/releases/download/v7.4.4/powershell_7.4.4-1.deb_amd64.deb
+    # dpkg -i /tmp/powershell_7.4.4-1.deb_amd64.deb
+    # verwijderen powershell
+    # apt-get install -f
+    # rm /home/$SUDO_USER/powershell_7.4.2-1.deb_amd64.deb
+    #
+    # Manier 5
+    #
+    # 08 aug WERKT  
+    #
+    #  snap install powershell --classic
+    #
     #
     # Manier 6
     #
@@ -607,17 +548,7 @@ function ulx_install_pwrshell () {
 }
 #
 #
-# 3U23 UBUNTU OS Install Software Functies ## Functie Installatie OS Python
-#
-#
-function ulx_install_python3 () {
-    #
-    apt install python3
-    ln -s /usr/bin/python3 /usr/local/bin/python
-}
-#
-#
-# 3U24 UBUNTU OS Install Software Functies ## Functie Installatie OS Cockpit
+# UBUNTU OS Install Software Functies ## Functie Installatie OS Cockpit
 #
 #
 function ulx_install_cockpit () {
@@ -634,7 +565,7 @@ function ulx_install_cockpit () {
 }
 #
 #
-# 3U25 UBUNTU OS Install Software Functies ## Functie Installatie Docker
+# UBUNTU OS Install Software Functies ## Functie Installatie Docker
 #
 #
 function ulx_install_docker () {
@@ -654,37 +585,7 @@ function ulx_install_docker () {
 }
 #
 #
-# 3U26 UBUNTU OS Install Software Functies ## Functie Installatie Docker Compose Nieuwste versie  
-#
-#
-function ulx_install_docker_compose () {
-    #
-    set -e
-    #
-    # echo "Controleren of Docker is geïnstalleerd..."
-    if ! command -v docker &> /dev/null; then
-        echo "Docker is niet aanwezig en daarom kan Compose Plugin NIET toegevoegd worden"
-        exit 1
-    fi
-    #
-    # echo "Docker is geïnstalleerd."
-    # Maak de plugin directory aan als die nog niet bestaat
-    PLUGIN_DIR="/usr/local/lib/docker/cli-plugins"
-    mkdir -p "$PLUGIN_DIR"
-    #
-    # echo "Downloaden van Docker Compose plugin..."
-    curl -s -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o "$PLUGIN_DIR/docker-compose"
-    #
-    # echo "Rechten instellen..."
-    chmod +x "$PLUGIN_DIR/docker-compose"
-    echo "Docker Compose plugin geïnstalleerd op: $PLUGIN_DIR/docker-compose"
-    #
-    # echo "Controleren of Docker Compose werkt..."
-    # docker compose version
-}
-#
-#
-# 3U27 UBUNTU OS Install Software Functies ## Functie Installatie Podman
+# UBUNTU OS Install Software Functies ## Functie Installatie Podman
 #
 #
 function ulx_install_podman () {
@@ -700,9 +601,10 @@ function ulx_install_podman () {
         echo 'Podman is already installed.'
     fi
 }
+
 #
 #
-# 3U28 UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible
+# UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible
 #
 #
 function ulx_install_ansible () {
@@ -875,7 +777,6 @@ function ulx_install_ansible () {
 }
 #
 #
-# 3U29 UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible Semaphore
 #
 #
 function ulx_install_ansible_semaphore () {
@@ -893,79 +794,16 @@ function ulx_install_ansible_semaphore () {
     # Herstarten com nieuwe poort actief te maken
     snap restart semaphore
 }
-
-#
-#
-# 3U30 UBUNTU OS Install Software Functies ## Functie JAVA JDK
-#
-#
-function ulx_install_java_jdk () {
-    #
-    apt install openjdk-17-jdk -y
-    #
-} 
-
-#
-#
-# 3U31 UBUNTU OS Install Software Functies ## Functie Jenkins
-#
-#
-function ulx_install_jenkins () {
-
-    # Het eigen gekozen poortnummer voor Jenkins
-    # Standaard is poort 8080
-    JENKINS_PORT=5555
-
-    # Add Jenkins repository key
-    curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
-
-    # Add Jenkins repository
-    echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-
-    # Install Jenkins
-    apt update
-    apt install -y jenkins
-
-    # Poortnummer aanpassen
-    sed -i "s/^HTTP_PORT=.*/HTTP_PORT=$JENKINS_PORT/" /etc/default/jenkins
-
-    # Start and enable Jenkins
-    systemctl enable jenkins
-    systemctl start jenkins
-
-    # UWF poort openzetten indien van toepassing 
-    ufw allow $JENKINS_PORT
-
-    # Get initial admin password
-    cat /var/lib/jenkins/secrets/initialAdminPassword
-
-    # Jenkins is hierna bereikbaar via ip adres van de vm met ip poort 8000
-    # Als wachtwoord moet je wachtwoord uit initialAdminPassword zoals hierboven invoeren 
-} 
-
-#
-#
-# 3U32 UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
-#
-#
-function ulx_jenkins_docker () {
-
-    # Add jenkins user to docker group
-    usermod -aG docker jenkins
-
-    # Restart Jenkins
-    systemctl restart jenkins
-
-} 
-
-#
-#
-# 3U4 CATEGORIE UBUNTU OS DOCKER Software Functies 
 #
 #
 #
 #
-# 3U41 UBUNTU UBUNTU OS DOCKER Software Functies ## Images Pull
+# CATEGORIE UBUNTU OS DOCKER Software Functies 
+#
+#
+#
+#
+# UBUNTU UBUNTU OS DOCKER Software Functies ## Images Pull
 #
 #
 function ulx_docker_images_pull () {
@@ -1001,7 +839,7 @@ function ulx_docker_images_pull () {
 #
 #
 #
-# 3U42 UBUNTU UBUNTU OS Podman Software Functies ## Images Pull
+# UBUNTU UBUNTU OS Podman Software Functies ## Images Pull
 #
 #
 function ulx_podman_images_pull () {
@@ -1072,12 +910,8 @@ function ulx_docker_minikube_init () {
     # Installatie kubectl 
     #
     if ! [ -x "$(command -v kubectl)" ]; then
-        curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-        chmod +x kubectl
-        mv kubectl /usr/local/bin/
-        kubectl version --client
-        # # snap install kubectl --classic --channel=latest > /dev/null 2>&1
-        # snap install kubectl --classic --channel=latest
+        # snap install kubectl --classic --channel=latest > /dev/null 2>&1
+        snap install kubectl --classic --channel=latest
     fi
     #
 }
@@ -1087,12 +921,12 @@ function ulx_docker_minikube_init () {
 #
 #
 function ulx_docker_minikube_config () {
-    echo "ram=\$(free --mega | grep 'Mem' | awk '{print \$7/4}')" > /home/$SUDO_USER/scripts/minikube/minik8s_config.sh
-    echo "minikube config set memory \$ram" >> /home/$SUDO_USER/scripts/minikube/minik8s_config.sh 
-    echo "cpu_aantal=\$(nproc)" >> /home/$SUDO_USER/scripts/minikube/minik8s_config.sh
-    echo "minikube config set cpus \$cpu_aantal" >> /home/$SUDO_USER/scripts/minikube/minik8s_config.sh
-    echo "minikube config set driver docker" >> /home/$SUDO_USER/scripts/minikube/minik8s_config.sh
-    echo "minikube config view" >> /home/$SUDO_USER/scripts/minikube/minik8s_config.sh
+    ram=$(free --mega | grep 'Mem' | awk '{print $7/4}')
+    minikube config set memory $ram 
+    cpu_aantal=$(nproc)
+    minikube config set cpus $cpu_aantal  
+    minikube config set driver docker
+    minikube config view
 }
 #
 #
@@ -1124,12 +958,12 @@ function ulx_docker_portainer_remove () {
     docker volume rm portainer_data
     docker system prune
 }
+
+#
+# CATEGORIE UBUNTU OS Maak Scripts Functies 
 #
 #
-# 3U5 CATEGORIE UBUNTU OS Maak Scripts Functies 
-#
-#
-# 3U51 UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
+# UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
 #
 #
 #
@@ -1209,12 +1043,6 @@ function ulx_maak_docker_scripts () {
 #
 function ulx_maak_docker_voorbeelden () {
     #
-    #
-    # TO DO
-    #
-    # RESULTAAT VERPLAATSEN NAAR NIEUWE DIRECTORY STRUCTUUR
-    #
-    # 
     # VOORBEELD ## Dockerfile uit slides van lesweek 4 module virtualisatie 
     echo '# start with OS ubuntu' > /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
     echo 'FROM ubuntu:latest' >> /home/$SUDO_USER/docker/apache/ubtu-apache-dkr-file
@@ -1282,13 +1110,6 @@ function ulx_maak_docker_voorbeelden () {
 #
 function ulx_maak_compose_scripts () {
     #
-    #
-    # TO DO
-    #
-    # RESULTAAT VERPLAATSEN NAAR NIEUWE DIRECTORY STRUCTUUR
-    #
-    # 
-    #
     # Docker Compose demo script NextCloud
     echo '#! /bin/bash' > /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
     echo '#' >> /home/$SUDO_USER/scripts/docker-compose/nextcloud/docker-compose-nextcloud.sh
@@ -1313,13 +1134,6 @@ function ulx_maak_compose_scripts () {
 #
 function ulx_maak_compose_voorbeelden () {
     #
-    #
-    # TO DO
-    #
-    # RESULTAAT VERPLAATSEN NAAR NIEUWE DIRECTORY STRUCTUUR
-    #
-    # 
-    #
     # DOCKER COMPOSE YAML JTU bestanden ophalen
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/nextcloud/docker-compose.yml https://raw.githubusercontent.com/jatutert/demos/refs/heads/main/Docker/Compose-Plugin-Docker/YAML/NextCloud/docker-compose-nextcloud-vagrant.yml
     curl -s -o /home/$SUDO_USER/yaml/docker-compose/odoo/docker-compose.yml      https://raw.githubusercontent.com/jatutert/demos/refs/heads/main/Docker/Compose-Plugin-Docker/YAML/Odoo/docker-compose-odoo-vagrant.yml  
@@ -1336,13 +1150,6 @@ function ulx_maak_compose_voorbeelden () {
 function ulx_maak_minikube_voorbeelden () {
     #
     #
-    # TO DO
-    #
-    # RESULTAAT VERPLAATSEN NAAR NIEUWE DIRECTORY STRUCTUUR
-    #
-    # 
-    #
-    #
     # Kubernetes MicroK8S Minikube demo simple deployment NGINX
     echo '#! /bin/bash'                                 > /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
     echo '#'                                           >> /home/$SUDO_USER/k8s-demo/nginx/simple/k8s_simple_deployment_nginx.sh
@@ -1357,55 +1164,55 @@ function ulx_maak_minikube_voorbeelden () {
     #
     # Kubernetes MicroK8S Minikube demo deployment NGINX stap 1
     # Stap 1 is deployment van omgeving met NGINX versie 14
-    echo '#! /bin/bash' > /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo '#' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'cd /home/$USER'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'clear' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    echo 'minikube service --all' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
-    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo '#'                                            >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo "echo 'Stap 1 Deployment NGINX versie 14 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl expose deployment nginx-deployment --type=NodePort --port=8080' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_1.sh
     #
     # Kubernetes MicroK8S Minikube demo deployment NGINX stap 2
     # Stap 2 is updaten van NGINX van versie 14 naar versie 16
-    echo '#! /bin/bash' > /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo '#'   >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'cd /home/$USER' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'clear'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    echo 'minikube service --all'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
-    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo '#'                                            >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo "echo 'Stap 2 Updaten NGiNX van versie 14 naar versie 16 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-update.yml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_2.sh
     #
     # Kubernetes MicroK8S Minikube demo deployment NGINX stap 3
     # Stap 3 is replicatecount van 2 naar 4 bijwerken 
-    echo '#! /bin/bash'   > /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'cd /home/$USER' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'clear' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'kubectl get pods -l app=nginx' >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    echo 'minikube service --all'  >> /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
-    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo "echo 'Stap 3 Aanpassen aantal replicas van 2 naar 4 gestart ...'" >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/nginx/deployment-scale.yaml' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl describe deployment nginx-deployment' >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'kubectl get pods -l app=nginx'                >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    echo 'minikube service --all'                       >> /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/nginx/replicas/k8s_nginx_deployment_stap_3.sh
     #
     # Kubernetes MicroK8S Minikube demo MySQL 
     # mysql-pv is persistant volume
     # mysql-deployment is deployment van mysql met gebruik van persistant volume claim 
-    echo '#! /bin/bash'> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'cd /home/$USER' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'clear' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-pv.yaml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-deployment.yaml' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'kubectl describe deployment mysql' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'kubectl describe pvc mysql-pv-claim' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    echo 'kubectl get pods -l app=mysql' >> /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
-    chmod +x /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/k8s_mysql_single.sh
+    echo '#! /bin/bash'                                  > /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'cd /home/$USER'                               >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'clear'                                        >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-pv.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl apply -f /home/$USER/yaml/kubernetes/mysql/mysql-deployment.yaml' >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl describe deployment mysql'            >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl describe pvc mysql-pv-claim'          >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    echo 'kubectl get pods -l app=mysql'                >> /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
+    chmod +x /home/$SUDO_USER/k8s-demo/mysql/k8s_mysql_single.sh
     # K8S IO website demos
     # MySQL 
     curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
@@ -1417,11 +1224,9 @@ function ulx_maak_minikube_voorbeelden () {
     #
 }
 #
-# 3U6 UBUNTU Maak Scripts Onderwijsmodules
+# UBUNTU Maak Scripts Onderwijsmodules
 #
-#
-# 3U61 UBUNTU Maak Scripts Onderwijsmodules Introductie Infrastructuren
-#      Configuratie Netwerken
+# Introductie Infrastructuren
 #
 #
 function ulx_intro_infra_netcfg () {
@@ -1439,11 +1244,6 @@ function ulx_intro_infra_netcfg () {
         netplan apply 
     fi
 }
-#
-#
-# 3U62 UBUNTU Maak Scripts Onderwijsmodules Introductie Infrastructuren
-#      Installatie Software
-#
 #
 function ulx_intro_infra_install () {
     #
@@ -1502,7 +1302,8 @@ function ulx_intro_infra_install () {
 }
 #
 #
-# 3U63 UBUNTU Maak Scripts Onderwijsmodules IT Fundamentals
+#
+# IT Fundamentals
 #
 #
 function ulx_it-funda_tooling () {
@@ -1519,38 +1320,10 @@ function ulx_it-funda_tooling () {
 }
 #
 #
-# 3U63 UBUNTU Maak Scripts Onderwijsmodules Virtualisatie
-#
-# 
-# Geen inhoud 
-#
-# #############################################################
-#
-#
-# 3U7 CATEGORIE UBUNTU OS Nested Functions
-#
-#
-# 3U71 UBUNTU OS Nested Functions Basis Configuratie
+# Virtualisatie
 #
 #
 #
-function ulx_basis_config () {
-    echo "UBUNTU - Step 1 of 3 Making Preperations"
-    ulx_os_config_timezone
-    maak_directories
-    ulx_os_netplan_download
-    ulx_os_change_repo_nl
-    ulx_os_update_apt
-    # Bijwerken 
-    echo "UBUNTU - Step 2 of 3 Upgrading OS"
-    ulx_os_upgrade_os
-    # Installatie 
-    echo "UBUNTU - Step 3 of 3 Installing OS Tools"
-    ulx_install_vm_tools
-    ulx_install_cockpit
-    ulx_install_pwrshell
-    ulx_install_python3
-}
 #
 #
 #
@@ -1576,215 +1349,6 @@ function maak_directories () {
         chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
     # fi 
     #
-    #
-    # ###########################################################################
-    # Structuur 2025
-    # ###########################################################################
-        #
-        #
-        # DEMOS
-        #
-        mkdir -p /home/$SUDO_USER/demos
-            #
-            # Docker
-            #
-            mkdir -p /home/$SUDO_USER/demos/docker
-                #
-                # Docker Algemeen
-                #
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/apache 
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo/templates 
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo/deutsch 
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo/english 
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo/francais
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo/italiano 
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/flask-demo/nederlands 
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/mysql
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/nextcloud
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/nginx
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/odoo
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/portainer
-                mkdir -p /home/$SUDO_USER/demos/docker/algemeen/prometheus-grafana
-                #
-                # Docker Compose
-                #
-                mkdir -p /home/$SUDO_USER/demos/docker/compose
-                #
-                # Docker Scripts
-                #
-                mkdir -p /home/$SUDO_USER/demos/docker/scripts
-                    #
-                    # Docker Scripts Algemeen
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/algemeen
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/algemeen/alpine-run
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/algemeen/portainer
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/algemeen/pull-images
-                    # 
-                    # Docker Scripts Compose
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/mysql
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/nextcloud
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/nginx
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/odoo
-                    mkdir -p /home/$SUDO_USER/demos/docker/scripts/compose/prometheus-grafana
-            #
-            # PodMan
-            #
-            mkdir -p /home/$SUDO_USER/demos/podman
-                #
-                # PodMan Algemeen
-                #
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/apache 
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo/templates 
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo/deutsch 
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo/english 
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo/francais
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo/italiano 
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/flask-demo/nederlands 
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/mysql
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/nextcloud
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/nginx
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/odoo
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/portainer
-                mkdir -p /home/$SUDO_USER/demos/podman/algemeen/prometheus-grafana
-                #
-                # PodMan Compose
-                #
-                mkdir -p /home/$SUDO_USER/demos/podman/compose
-                #
-                # PodMan Scripts
-                #
-                mkdir -p /home/$SUDO_USER/demos/podman/scripts
-                    #
-                    # PodMan Scripts Algemeen
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/algemeen
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/algemeen/alpine-run
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/algemeen/portainer
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/algemeen/pull-images
-                    # 
-                    # PodMan Scripts Compose
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/mysql
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/nextcloud
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/nginx
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/odoo
-                    mkdir -p /home/$SUDO_USER/demos/podman/scripts/compose/prometheus-grafana
-            #
-            # Kubernetes
-            #
-            mkdir -p /home/$SUDO_USER/demos/kubernetes
-                #
-                #  Kubernetes Algemeen 
-                #  Algemeen is alleen voor K8S zelf en niet voor applicaties die draaien onder K8S
-                #
-                mkdir -p /home/$SUDO_USER/demos/kubernetes/algemeen
-                mkdir -p /home/$SUDO_USER/demos/kubernetes/algemeen/kubeadm
-                mkdir -p /home/$SUDO_USER/demos/kubernetes/algemeen/kubectl
-                #
-                #  Kubernetes Applicaties 
-                #
-                mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties
-                    #
-                    #  Kubernetes MySQL
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/mysql
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/mysql/replicas
-                    #
-                    #  Kubernetes NextCLOUD
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nextcloud
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nextcloud/replicas
-                    #
-                    #  Kubernetes NGINX
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/simple
-                    #
-                    #  Kubernetes Odoo
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/odoo
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/odoo/replicas
-                #
-                #  Kubernetes Minikube
-                #
-                mkdir -p /home/$SUDO_USER/demos/kubernetes/minikube
-                    #  
-                    # Kubernetes Minikube Algemeen
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/minikube/algemeen
-                    #  
-                    # Kubernets Minikube Configuratie
-                    #
-                    mkdir -p /home/$SUDO_USER/demos/kubernetes/minikube/configuratie
-                #
-                #  Kubernetes Scripts
-                #
-                mkdir -p /home/$SUDO_USER/demos/kubernetes/scripts
-
-            # rechten met een commando instellen voor alle directories en bestanden
-            #
-            # min f is silent
-            # min R is recursief
-            #
-            chown -f -R "$SUDO_USER":"$SUDO_USER" /home/$SUDO_USER/demos 
-
-        #
-        # ONDERWIJS
-        #
-        mkdir -p /home/$SUDO_USER/onderwijs
-
-        #
-        # Introductie Infrastructuren
-        #
-            mkdir -p /home/$SUDO_USER/onderwijs/introinfra
-                #
-                # Docker Algemeen
-                #
-
-        #
-        # IT Fundamentals 
-        #
-            mkdir -p /home/$SUDO_USER/onderwijs/itfundamtls
-                #
-                # Docker Algemeen
-                #
-
-        #
-        # Virtualisatie 
-        #
-            mkdir -p /home/$SUDO_USER/onderwijs/Virtualisatie
-                #
-                # Docker Algemeen
-                #
-
-
-        # rechten met een commando instellen voor alle directories en bestanden
-        #
-        # min f is silent
-        # min R is recursief
-        #
-        chown -f -R "$SUDO_USER":"$SUDO_USER" /home/$SUDO_USER/onderwijs 
-
-
-
-
-    #
-    #
-    # ###########################################################################
-    # Structuur 2024
-    # ###########################################################################
-    #
-    #
-
     # if [ ! -d "/home/$SUDO_USER/scripts" ]; then
         mkdir -p /home/$SUDO_USER/scripts
         mkdir -p /home/$SUDO_USER/scripts/gui
@@ -1800,7 +1364,6 @@ function maak_directories () {
         mkdir -p /home/$SUDO_USER/scripts/docker-compose/odoo
         mkdir -p /home/$SUDO_USER/scripts/docker-compose/prometheus-grafana
         mkdir -p /home/$SUDO_USER/scripts/kubernetes
-        mkdir -p /home/$SUDO_USER/scripts/minikube
         mkdir -p /home/$SUDO_USER/scripts/minio_scripts
         mkdir -p /home/$SUDO_USER/scripts/intro_infra
         mkdir -p /home/$SUDO_USER/scripts/it-fundmtls
@@ -1870,11 +1433,11 @@ function maak_directories () {
     #
     # if [ ! -d "/home/$SUDO_USER/k8s-demo" ]; then
         mkdir -p /home/$SUDO_USER/k8s-demo 
-        mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/mysql
+        mkdir -p /home/$SUDO_USER/k8s-demo/mysql
         mkdir -p /home/$SUDO_USER/k8s-demo/nextcloud
         mkdir -p /home/$SUDO_USER/k8s-demo/nginx
         mkdir -p /home/$SUDO_USER/k8s-demo/nginx/simple
-        mkdir -p /home/$SUDO_USER/demos/kubernetes/applicaties/nginx/replicas
+        mkdir -p /home/$SUDO_USER/k8s-demo/nginx/replicas
         mkdir -p /home/$SUDO_USER/k8s-demo/odoo
         chown -f -R $SUDO_USER /home/$SUDO_USER/k8s-demo
     # fi 
@@ -2043,7 +1606,6 @@ function config_menu () {
 #
 #
 #
-#
 # ################################################################################
 #
 # HOOFDPROGRAMMA
@@ -2056,10 +1618,7 @@ function config_menu () {
 #
 #
 echo "Linux Universal Configuration Tool (LUCT)"
-echo "Version 3.2 Build 25 juni 2025"
-echo "    "
-echo "Deze BUILD is opzet naar nieuwe manier van werken in dit script"
-echo "Script kan daarom niet stabiel zijn"
+echo "Version 1"
 echo "    "
 echo "Created by John Tutert for TutSOFT"
 echo "    "
@@ -2088,60 +1647,27 @@ if [ $distro == "alpine" ]; then
     #
     if [ $actie == "upgrade" ]; then
         #
-        # ALPINE OPTIE 1
+        # UBUNTU OPTIE 1
         #
         # Configuratie 
-        echo "ALPINE Step 1 of 3 Making Preperations"
+        echo "Step 1 of 3 Making Preperations"
         ulx_os_config_timezone
         maak_directories
         # ulx_os_netplan_download
         # ulx_os_change_repo_nl
         # ulx_os_update_apt
         # Bijwerken 
-        echo "ALPINE Step 2 of 3 Upgrading OS"
+        echo "Step 2 of 3 Upgrading OS"
         alx_update_os
         # Installatie 
-        echo "ALPINE Step 3 of 3 Installing OS Tools"
+        echo "Step 3 of 3 Installing OS Tools"
         alx_vm_tools
         # ulx_install_pwrshell
         # ulx_install_cockpit
         exit 1
         elif [ $actie == "docker" ]; then
             #
-            # ALPINE OPTIE 2
-            #
-            # Configuratie 
-            echo "ALPINE Step 1 of 5 Making Preperations"
-            ulx_os_config_timezone
-            maak_directories
-            ulx_os_netplan_download
-            ulx_os_change_repo_nl
-            ulx_os_update_apt
-            # Bijwerken 
-            echo "ALPINE Step 2 of 5 Upgrading OS"
-            ulx_os_upgrade_os
-            # Installatie 
-            echo "ALPINE Step 3 of 5 Installing OS Tools"
-            ulx_install_vm_tools
-            ulx_install_pwrshell
-            ulx_install_cockpit
-            # DOCKER
-            echo "ALPINE Step 4 of 5 Installation and configuration Docker CE"
-            ulx_install_docker
-            ulx_docker_portainer_create
-            ulx_docker_images_pull
-            # 
-            # DEMO omgeving maken 
-            echo "ALPINE Step 5 of 5 Creating demo environment"
-            maak_directories
-            ulx_maak_docker_scripts
-            ulx_maak_docker_voorbeelden
-            ulx_maak_compose_scripts
-            ulx_maak_compose_voorbeelden
-            exit 1
-        elif [ $actie == "minikube" ]; then
-            #
-            # ALPINE OPTIE 3
+            # UBUNTU OPTIE 2
             #
             # Configuratie 
             echo "Step 1 of 5 Making Preperations"
@@ -2152,6 +1678,37 @@ if [ $distro == "alpine" ]; then
             ulx_os_update_apt
             # Bijwerken 
             echo "Step 2 of 5 Upgrading OS"
+            ulx_os_upgrade_os
+            # Installatie 
+            echo "Step 3 of 5 Installing OS Tools"
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # DOCKER
+            echo "Step 4 of 5 Installation and configuration Docker CE"
+            ulx_install_docker
+            ulx_docker_portainer_create
+            ulx_docker_images_pull
+            # 
+            # DEMO omgeving maken 
+            echo "Step 5 of 5 Creating demo environment"
+            maak_directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ulx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
+            exit 1
+        elif [ $actie == "minikube" ]; then
+            #
+            # UBUNTU OPTIE 3
+            #
+            # Configuratie 
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken 
             ulx_os_upgrade_os
             # Installatie 
             ulx_install_vm_tools
@@ -2175,7 +1732,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "ansible" ]; then
             #
-            # ALPINE OPTIE 4
+            # UBUNTU OPTIE 4
             #
             # Configuratie
             ulx_os_config_timezone
@@ -2194,7 +1751,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "introinfra" ]; then
             #
-            # ALPINE OPTIE 5
+            # UBUNTU OPTIE 5
             #
             # Configuratie
             echo "Step 1 of 4 Configure Ubuntu"
@@ -2217,7 +1774,7 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "itfunda" ]; then
             #
-            # ALPINE OPTIE 6
+            # UBUNTU OPTIE 6
             # 
             # Configuratie
             ulx_os_config_timezone
@@ -2236,17 +1793,17 @@ if [ $distro == "alpine" ]; then
             exit 1
         elif [ $actie == "scripts" ]; then
             #
-            # ALPINE OPTIE 7
+            # UBUNTU OPTIE 7
             #
             exit 1
         elif [ $actie == "scripts" ]; then
             #
-            # ALPINE OPTIE 8
+            # UBUNTU OPTIE 8
             #
             exit 1
         elif [ $actie == "menu" ]; then
             #
-            # ALPINE OPTIE 9
+            # UBUNTU OPTIE 9
             #
             config_menu
             exit 1
@@ -2308,30 +1865,6 @@ if [ $distro == "buildroot" ]; then
         echo ""
         echo "Configuratie Buildroot omgeving is gereed"
         exit 1
-    elif [ $actie == "examples" ]; then
-        echo "Step 2 of 6 Creating Directories"
-        maak_directories
-        echo "Stap 6a Maak Docker scripts"
-        ulx_maak_docker_scripts
-        echo "Stap 6b Maak Docker voorbeelden"
-        ulx_maak_docker_voorbeelden
-        echo "Stap 6c Maak Docker Compose scripts"
-        ulx_maak_compose_scripts
-        echo "Stap 6d Maak Docker Compose voorbeelden"
-        ulx_maak_compose_voorbeelden
-        echo "Stap 6e Maak Minikube voorbeelden"
-        ulx_maak_minikube_voorbeelden
-        exit 1
-    elif [ $actie == "compose" ]; then
-        echo "Step 5 of 6 Installing Docker Compose plugin"
-        build_install_compose
-        exit 1
-    elif [ $actie == "portainer" ]; then
-        echo "Step 3 of 6 Starting Portainer Container Engine management"
-        ulx_docker_portainer_create
-        exit 1
-    else
-        exit 1
     fi
 fi
 #
@@ -2388,131 +1921,199 @@ if [ $distro == "ubuntu" ]; then
         #
         # UBUNTU OPTIE 1
         #
-        ulx_basis_config
-        #
-        exit 1
-    elif [ $actie == "docker" ]; then
-        #
-        # UBUNTU OPTIE 2
-        #
-        ulx_basis_config
-        #
-        # DOCKER
-        echo "Docker - Step 4 of x Installation and configuration Docker CE"
-        ulx_install_docker
-        ulx_docker_portainer_create
-        ulx_docker_images_pull
-        echo "Docker - Step 5 of x Installation and configuration Docker Compose"
-        ulx_install_docker_compose
-        # JAVA JDK
-        echo "Docker - Step 6 of x Installation JAVA JDK"
-        ulx_install_java_jdk
-        # JENKINS
-        echo "Docker - Step 7 of x Installation Jenkins"
-        ulx_install_jenkins
-        ulx_jenkins_docker
-        # DEMO omgeving maken 
-        echo "Docker - Step 8 of x Creating demo environment"
+        # Configuratie 
+        echo "UBUNTU - Step 1 of 3 Making Preperations"
+        ulx_os_config_timezone
         maak_directories
-        ulx_maak_docker_scripts
-        ulx_maak_docker_voorbeelden
-        ulx_maak_compose_scripts
-        ulx_maak_compose_voorbeelden
+        ulx_os_netplan_download
+        ulx_os_change_repo_nl
+        ulx_os_update_apt
+        # Bijwerken 
+        echo "UBUNTU - Step 2 of 3 Upgrading OS"
+        ulx_os_upgrade_os
+        # Installatie 
+        echo "UBUNTU - Step 3 of 3 Installing OS Tools"
+        ulx_install_vm_tools
+        ulx_install_cockpit
+        ulx_install_pwrshell
         exit 1
-    elif [ $actie == "podman" ]; then
-        #
-        # UBUNTU OPTIE 3
-        #
-        #
-        ulx_basis_config
-        #
-        # PodMan
-        echo "Step 4 of 5 Installation and configuration Podman"
-        ulx_install_podman
-        # ulx_install_docker
-        # ulx_docker_portainer_create
-        # ulx_docker_images_pull
-        ulx_podman_images_pull
-        # 
-        # DEMO omgeving maken 
-        echo "Step 5 of 5 Creating demo environment"
-        maak_directories
-        ulx_maak_docker_scripts
-        ulx_maak_docker_voorbeelden
-        ulx_maak_compose_scripts
-        ulx_maak_compose_voorbeelden
-        exit 1
-    elif [ $actie == "minikube" ]; then
-        #
-        # UBUNTU OPTIE 3
-        #
-        #
-        ulx_basis_config
-        #
-        # MiniKube
-        echo "Minikube Step 3 of 5 Installing OS Tools"
-        ulx_install_docker
-        ulx_docker_portainer_create
-        ulx_docker_images_pull
-        # 
-        # DEMO omgeving maken 
-        maak_directories
-        ulx_maak_docker_scripts
-        ulx_maak_docker_voorbeelden
-        ulx_maak_compose_scripts
-        ulx_maak_compose_voorbeelden
-        # MiniKube 
-        ulx_docker_minikube_init
-        ulx_docker_minikube_config
-        ulx_maak_minikube_voorbeelden
-        exit 1
-    elif [ $actie == "ansible" ]; then
-        #
-        # UBUNTU OPTIE 4
-        #
-        #
-        ulx_basis_config
-        #
-        # Ansible
-        ulx_install_ansible
-        exit 1
-    elif [ $actie == "introinfra" ]; then
-        #
-        # UBUNTU OPTIE 5
-        #
-        #
-        ulx_basis_config
-        #
-        # OSTicket
-        echo "Step 4 of 4 Installing OSTicket Environment"
-        ulx_intro_infra_install
-        exit 1
-    elif [ $actie == "itfunda" ]; then
-        #
-        # UBUNTU OPTIE 6
-        # 
-        #
-        ulx_basis_config
-        #
-        # IT Fundamentals 
-        ulx_it-funda_tooling
-        exit 1
-    elif [ $actie == "scripts" ]; then
-        #
-        # UBUNTU OPTIE 7
-        #
-        exit 1
-    elif [ $actie == "scripts" ]; then
-        #
-        # UBUNTU OPTIE 8
-        #
-        exit 1
-    elif [ $actie == "menu" ]; then
-        #
-        # UBUNTU OPTIE 9
-        #
-        config_menu
-        exit 1
+        elif [ $actie == "docker" ]; then
+            #
+            # UBUNTU OPTIE 2
+            #
+            # Configuratie 
+            echo "Docker - Step 1 of 5 Making Preperations"
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken 
+            echo "Docker - Step 2 of 5 Upgrading OS"
+            ulx_os_upgrade_os
+            # Installatie 
+            echo "Docker - Step 3 of 5 Installing OS Tools"
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # DOCKER
+            echo "Docker - Step 4 of 5 Installation and configuration Docker CE"
+            ulx_install_docker
+            ulx_docker_portainer_create
+            ulx_docker_images_pull
+            # 
+            # DEMO omgeving maken 
+            echo "Docker - Step 5 of 5 Creating demo environment"
+            maak_directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ulx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
+            exit 1
+        elif [ $actie == "podman" ]; then
+            #
+            # UBUNTU OPTIE 3
+            #
+            # Configuratie 
+            echo "Step 1 of 5 Making Preperations"
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken 
+            echo "Step 2 of 5 Upgrading OS"
+            ulx_os_upgrade_os
+            # Installatie 
+            echo "Step 3 of 5 Installing OS Tools"
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # DOCKER
+            echo "Step 4 of 5 Installation and configuration Podman"
+            ulx_install_podman
+            # ulx_install_docker
+            # ulx_docker_portainer_create
+            # ulx_docker_images_pull
+            ulx_podman_images_pull
+            # 
+            # DEMO omgeving maken 
+            echo "Step 5 of 5 Creating demo environment"
+            maak_directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ulx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
+            exit 1
+        elif [ $actie == "minikube" ]; then
+            #
+            # UBUNTU OPTIE 3
+            #
+            # Configuratie 
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken 
+            ulx_os_upgrade_os
+            # Installatie 
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # DOCKER
+            ulx_install_docker
+            ulx_docker_portainer_create
+            ulx_docker_images_pull
+            # 
+            # DEMO omgeving maken 
+            maak_directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ulx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
+            # MiniKube 
+            ulx_docker_minikube_init
+            ulx_docker_minikube_config
+            ulx_maak_minikube_voorbeelden
+            exit 1
+        elif [ $actie == "ansible" ]; then
+            #
+            # UBUNTU OPTIE 4
+            #
+            # Configuratie
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken
+            ulx_os_upgrade_os
+            # Installatie 
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # Ansible
+            ulx_install_ansible
+            exit 1
+        elif [ $actie == "introinfra" ]; then
+            #
+            # UBUNTU OPTIE 5
+            #
+            # Configuratie
+            echo "Step 1 of 4 Configure Ubuntu"
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken
+            echo "Step 2 of 4 Upgrading Ubuntu"
+            ulx_os_upgrade_os
+            # Installatie
+            echo "Step 3 of 4 Installing Tools"
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # OSTicket
+            echo "Step 4 of 4 Installing OSTicket Environment"
+            ulx_intro_infra_install
+            exit 1
+        elif [ $actie == "itfunda" ]; then
+            #
+            # UBUNTU OPTIE 6
+            # 
+            # Configuratie
+            ulx_os_config_timezone
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            ulx_os_update_apt
+            # Bijwerken
+            ulx_os_upgrade_os
+            # Installatie
+            ulx_install_vm_tools
+            ulx_install_pwrshell
+            ulx_install_cockpit
+            # IT Fundamentals 
+            ulx_it-funda_tooling
+            exit 1
+        elif [ $actie == "scripts" ]; then
+            #
+            # UBUNTU OPTIE 7
+            #
+            exit 1
+        elif [ $actie == "scripts" ]; then
+            #
+            # UBUNTU OPTIE 8
+            #
+            exit 1
+        elif [ $actie == "menu" ]; then
+            #
+            # UBUNTU OPTIE 9
+            #
+            config_menu
+            exit 1
     else
         echo "Onjuiste parameter: $actie. Gebruik 'upgrade' 'docker' 'minikube' 'ansible'."
         echo "Beschikbare parameters:"

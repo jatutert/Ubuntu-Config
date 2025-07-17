@@ -26,7 +26,7 @@
 #
 Major="4"
 Minor="0"
-Build="26"
+Build="31"
 Patch="0"
 Channel="Canary"
 #

@@ -40,8 +40,8 @@
 #
 Major="4"
 Minor="0"
-Build="26"
-Patch="0"
+Build="31"
+Patch="1"
 Channel="Canary"
 #
 #
