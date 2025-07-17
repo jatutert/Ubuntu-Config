@@ -4,7 +4,7 @@
 #
 #
 # Configuratiescript Linux 
-# Versie: 3.1.0 BETA
+# Versie: 4 Build 1 Patch 0
 # ONLY FOR TESTING PURPOSES 
 # Author: John Tutert
 #
@@ -65,6 +65,15 @@
 # 26apr25 Github links herstel 
 # 23mei25 Minikube VM BuildRoot uitbreiding opties
 # 24mei25 Nieuwe manier sourcelist aanpassing # Nieuwe functie Docker Compose Ubuntu
+#
+# #######################
+# Changelog V4
+# #######################
+#
+# Jenkins
+# Git Clone
+# Docker Management Tools
+# 
 # 26mei25 Jenkins
 #
 # TO DO

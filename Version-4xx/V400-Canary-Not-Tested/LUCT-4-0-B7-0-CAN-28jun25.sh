@@ -4,7 +4,7 @@
 #
 #
 # Configuratiescript Linux 
-# Versie: 4.x ALPHA 
+# Versie: 4 Build B7 Patch 0
 # ONLY FOR TESTING PURPOSES 
 # Author: John Tutert
 #
@@ -65,15 +65,15 @@
 # 26apr25 Github links herstel 
 # 23mei25 Minikube VM BuildRoot uitbreiding opties
 # 24mei25 Nieuwe manier sourcelist aanpassing # Nieuwe functie Docker Compose Ubuntu
+#
+# #######################
+# Changelog V4
+# #######################
 # 26mei25 Jenkins
 # 18juni25 Configuratie Open VM Tools Share richting VMware Worksstation of Fusion Hypervisor 
 # 18juni25 Introductie Ubuntu Basis config functie
 # 25juni25 Ubuntu Repository instellingen  
 # 25juni25 testrun Docker op Ubuntu
-#
-# #######################
-# Changelog V4
-# #######################
 # 27juni25 Eerste Implementatie Git Clone in plaats van directories aan te maken in dit script
 #
 # TO DO

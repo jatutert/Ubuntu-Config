@@ -19,7 +19,7 @@
 #
 Major="4"
 Minor="0"
-Build="19"
+Build="24"
 Patch="0"
 #
 #
