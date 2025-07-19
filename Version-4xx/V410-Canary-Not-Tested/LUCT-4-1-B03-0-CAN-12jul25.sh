@@ -25,9 +25,9 @@
 #
 #
 Major="4"
-Minor="0"
-Build="30"
-Patch="1"
+Minor="1"
+Build="03"
+Patch="0"
 Channel="Canary"
 #
 #
@@ -99,6 +99,10 @@ echo ''
 #
 # 9220 
 #
+#
+#    Overzicht openstaande poorten in Ubuntu
+#
+#    sudo lsof -i -P -n | grep LISTEN
 #
 #
 #
@@ -223,6 +227,7 @@ echo ''
 # 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
 # 12juli25 Docker Management Tools functie 
 # 12juli25 Visual Studio Code Server native en Docker 
+# 12juli25 Visual Studio Code Server sed bug fixed 
 #
 #
 #
@@ -923,14 +928,18 @@ function ulx_install_python3 () {
 #
 #
 function ulx_install_cockpit () {
+    #
     apt install -qq -y cockpit > /dev/null 2>&1
+    # Aanmaken Cockpit Service
     systemctl enable --now cockpit.socket
+    # Aanpassen Poort 
     rm -f /tmp/listen.conf
     echo '[Socket]' > /tmp/listen.conf
     echo 'ListenStream=' >> /tmp/listen.conf
     echo 'ListenStream=8101' >> /tmp/listen.conf
     mkdir -p /etc/systemd/system/cockpit.socket.d/
     cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
+    #
     systemctl daemon-reload
     systemctl restart cockpit.socket
 }
@@ -1243,10 +1252,6 @@ function ulx_install_java_jdk () {
 #
 #
 function ulx_install_jenkins () {
-
-    # Het eigen gekozen poortnummer voor Jenkins
-    # Standaard is poort 8080
-    JENKINS_PORT=8201
     #
     #
     #
@@ -1265,21 +1270,22 @@ function ulx_install_jenkins () {
     # Install Jenkins
     apt update -qq > /dev/null 2>&1
     apt install jenkins -y > /home/$SUDO_USER/luct_logs/luct_jenkins.log 2>&1
-
-    # Poortnummer aanpassen
-    sed -i "s/^HTTP_PORT=.*/HTTP_PORT=$JENKINS_PORT/" /etc/default/jenkins
-
+    #
+    # Poortnummer aanpassen van 8080 naar 8201
+    sed "s/^HTTP_PORT=.*/HTTP_PORT=8201/" -i /etc/default/jenkins
+    #
     # Start and enable Jenkins
     systemctl enable jenkins > /dev/null 2>&1
     systemctl start jenkins > /dev/null 2>&1
-
+    #
     # UWF poort openzetten indien van toepassing 
-    ufw allow $JENKINS_PORT
-
+    # ufw allow $JENKINS_PORT
+    #
     # Get initial admin password
-    cat /var/lib/jenkins/secrets/initialAdminPassword
-
-    # Jenkins is hierna bereikbaar via ip adres van de vm met ip poort 8000
+    # cat /var/lib/jenkins/secrets/initialAdminPassword
+    #
+    #
+    # Jenkins is hierna bereikbaar via ip adres van de vm met ip poort 8201 standaard poort 8080
     # Als wachtwoord moet je wachtwoord uit initialAdminPassword zoals hierboven invoeren 
 } 
 #
@@ -1288,16 +1294,22 @@ function ulx_install_jenkins () {
 #
 #
 function ulx_install_vscode_server () {
-    # Installatie 
+    # Installatie van code-server 
     /snap/bin/curl -fsSL https://code-server.dev/install.sh | sh
-    # Service aanmaken en starten 
+    #
+    # Service aanmaken 
     systemctl enable --now code-server@$USER
+    # Service starten 
     systemctl start code-server@$USER
+    #
     # Wachtwoord uitzetten
-    sudo -u "$SUDO_USER" sed -i.bak 's/auth: password/auth: none/' ~/.config/code-server/config.yaml
+    sed -i.bak 's/auth: password/auth: none/' /home/$SUDO_USER/.config/code-server/config.yaml
     # Bind adres aanpassen
     sed "s@:127.0.0.1@:0.0.0.0@" -i /home/$SUDO_USER/.config/code-server/config.yaml
     # Poort aanpassen naar eigen voorkeurspoort
+    #
+    # LET OP # Jenkins zit standaard ook op poort 8080
+    #
     sed "s@:8080@:9103@" -i /home/$SUDO_USER/.config/code-server/config.yaml
     # Herstarten
     systemctl restart code-server@$USER
@@ -1308,7 +1320,7 @@ function ulx_install_vscode_server () {
 #
 # Foutmeldingen
 # 
-# sed: can't read /root/.config/code-server/config.yaml: Permission denied
+# [Fixed] sed: can't read /root/.config/code-server/config.yaml: Permission denied
 # sed: can't read /home/ubuntu/.config/code-server/config.yaml: No such file or directory
 # sed: can't read /home/ubuntu/.config/code-server/config.yaml: No such file or directory
 #

@@ -217,7 +217,7 @@ echo ''
 # 05juli25 Nested Podman functie 
 # 05juli25 Podman functies aangemaakt gelijk aan Docker Behalve Compose
 # 05juli25 Comments Ubuntu Nested OOBE bij functies 
-# 06juli25 Developer blok toegevoegd 
+# 06juli25 Build 20 Developer blok toegevoegd 
 # 06juli25 Powershell installatie stil gemaakt 
 # 06juli25 Docker installatie stil gemaakt 
 # 06juli25 Jenkins installatie stil gemaakt 
@@ -232,7 +232,7 @@ echo ''
 # 08juli25 Minikube configuratie
 # 09juli25 NeoFetch SuperFetch
 # 09juli25 Snap Curl ipv Curl
-# 15juli25 Channel toegevoegd en Versienummer naar B23 Patch 1 
+# 15juli25 Channel toegevoegd en Versienummer naar B28 Patch 1 
 #
 #
 #
