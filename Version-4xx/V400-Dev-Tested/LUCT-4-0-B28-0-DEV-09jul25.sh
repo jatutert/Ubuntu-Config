@@ -202,7 +202,7 @@ echo ''
 # 05juli25 Nested Podman functie 
 # 05juli25 Podman functies aangemaakt gelijk aan Docker Behalve Compose
 # 05juli25 Comments Ubuntu Nested OOBE bij functies 
-# 06juli25 Developer blok toegevoegd 
+# 06juli25 Build 20 Developer blok toegevoegd 
 # 06juli25 Powershell installatie stil gemaakt 
 # 06juli25 Docker installatie stil gemaakt 
 # 06juli25 Jenkins installatie stil gemaakt 

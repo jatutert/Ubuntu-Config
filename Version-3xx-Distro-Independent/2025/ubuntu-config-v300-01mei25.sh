@@ -4,7 +4,7 @@
 #
 #
 # Configuratiescript Linux 
-# Versie: 3.0.0 BETA
+# Version 3 # This is the final build of Version 3 
 # ONLY FOR TESTING PURPOSES 
 # Author: John Tutert
 #
@@ -1617,8 +1617,8 @@ function config_menu () {
 #
 #
 #
-echo "Linux Universal Configuration Tool (LUCT)"
-echo "Version 1"
+echo "Ubuntu Config Version 3"
+echo "Final Build"
 echo "    "
 echo "Created by John Tutert for TutSOFT"
 echo "    "

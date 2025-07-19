@@ -223,7 +223,7 @@ echo ''
 # 05juli25 Nested Podman functie 
 # 05juli25 Podman functies aangemaakt gelijk aan Docker Behalve Compose
 # 05juli25 Comments Ubuntu Nested OOBE bij functies 
-# 06juli25 Developer blok toegevoegd 
+# 06juli25 Build 20 Developer blok toegevoegd 
 # 06juli25 Powershell installatie stil gemaakt 
 # 06juli25 Docker installatie stil gemaakt 
 # 06juli25 Jenkins installatie stil gemaakt 
@@ -242,8 +242,8 @@ echo ''
 # 12juli25 Docker Management Tools functie 
 # 12juli25 Visual Studio Code Server native en Docker 
 # 12juli25 Visual Studio Code Server sed bug fixed 
-# 18juli25 Jenkins als Container in plaats van native install
-# 18juli25 Visual Studio Code Server als Container in plaats van native install 
+# 18juli25 Build 32 Jenkins als Container in plaats van native install
+# 18juli25 Build 32 Visual Studio Code Server als Container in plaats van native install 
 #
 #
 #

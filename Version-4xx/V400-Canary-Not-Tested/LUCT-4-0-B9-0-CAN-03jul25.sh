@@ -4,7 +4,7 @@
 #
 #
 # Configuratiescript Linux 
-# Versie: 4.x ALPHA 
+# Versie: 4 Build B9 Patch 0
 # ONLY FOR TESTING PURPOSES 
 # Author: John Tutert
 #

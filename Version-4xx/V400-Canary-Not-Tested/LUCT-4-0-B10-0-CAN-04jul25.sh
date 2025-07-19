@@ -1,6 +1,8 @@
 #! /bin/bash
 #
 #
+# Version 4 Build 10 Patch 0
+#
 #
 #
 # ################################################################################
@@ -144,9 +146,10 @@ echo "    "
 # 01juli25 Jenkins repo toevoegen aangepast en Java installatie van jdk naar jre en versie 17 naar 21
 # 03juli25 Installatie OpenMediaVault binnen Debian op nieuwe manier 
 # 03juli25 nieuwe functie ulx_os_default_apps
+# 04juli25 Introductie Blokken in script 
+# 04juli25 Openingstekst script naar bovenin het script
 #
 #
-
 #
 #
 # ################################################################################
