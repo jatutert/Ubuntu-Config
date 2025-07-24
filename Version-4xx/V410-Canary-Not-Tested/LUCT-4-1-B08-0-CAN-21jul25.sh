@@ -2,11 +2,23 @@
 #
 #
 #
-#   #    #  # #### #####  #   #
-#   #    #  # #      #    #   #
-#   #    #  # #      #    #####
-#   #    #  # #      #        #
-#   #### #### ####   #        #
+#   #    #  # #### #####  #   #      ####  #####
+#   #    #  # #      #    #   #         #  #
+#   #    #  # #      #    #####         #  #
+#   #    #  # #      #        #         #  #
+#   #### #### ####   #        #  ##     #  #####
+#
+#
+#
+# Ophalen van Canary Latest versie van dit script in externe omgeving
+# 
+# curl -L -o $HOME/luctv4.sh https://edu.nl/treah
+#
+# Hierna
+#
+# chmod +x $HOME/luctv4.sh 
+# sudo $HOME/luctv4.sh docker 
+# sudo $HOME/luctv4.sh minikube 
 #
 #
 #
@@ -24,11 +36,21 @@
 # A patch or build number increment (e.g., from 1.2.1 to 1.2.2) usually signifies bug fixes, minor updates, or performance improvements
 #
 #
-Major="4"
-Minor="0"
-Build="28"
-Patch="0"
+# Canary Channel
+# Try the latest NOT TESTED features
+# 
+# Dev Channel
+# Try the latest TESTED features # Tested by a few people
 #
+# Stable Channel
+# Try the latest TESTED features # Tested by a large group of people 
+# 
+#
+Major="4"
+Minor="1"
+Build="8"
+Patch="0"
+Channel="Canary"
 #
 #
 #
@@ -44,9 +66,9 @@ Patch="0"
 clear
 echo 'Linux Universal Configuration Tool (LUCT)'
 echo "Version $Major.$Minor.$Build.$Patch"
-echo 'Channel Dev (Beta)'
+echo "Channel $Channel"
 echo ''
-echo 'Created by John Tutert for TutSOFT'
+echo "Created by John Tutert(TutSOFT) for Bachelor IT Saxion UAS"
 echo ''
 echo 'For Personal or Educational use only !'
 echo ''
@@ -58,8 +80,7 @@ echo '- Ubuntu on Windows Subsystem for Linux (WSL) version 2'
 echo ''
 echo 'Alpine Linux support is planned for 2026'
 echo ''
-echo 'Vanaf build 21 werkt EduRoam'
-echo 'Vanaf build 22 werkt Minikube'
+echo '##### Not extensively tested ######'
 echo ''
 #
 #
@@ -69,30 +90,58 @@ echo ''
 # Overzicht TCP Poorten
 # ######################
 #
+#
+# Inkomende Poorten
+# #####################################################
 # 22   Inkomende poort Ansible host vanuit Controller 
-# 8001 Cockpit
-# 4444 Semaphore
-# 5555 Jenkins 
-# 9443 Portainer 
+# 9001 Inkomende poort voor Portainer Agent naar Portainer Server
 #
-# 07 juli 
-# Managementpoorten 8000
-# 8100 Linux Management
+#
+# Uitgaande Poorten
+# #####################################################
+#
+#
+# Uitgaande Webserver poorten
+# 80 Apache Webserver
+#
+#
+# Uitgaand Linux Managementpoorten 8100
 # 8101 Cockpit 
-# 8200
-# 8201 Jenkins 
-# 8300 Ansible
-# 8301 Semaphore 
-# Containerpoorten 9000
-# 9001 NIET GEBRUIKEN
-# 9101 Portainer 
-# 9102 x
-# 9200 NGINX
-# 9201 Simple Deployment
-# 9202 Deployment step 1
-# 9210 NextCloud
-# 9220 
 #
+#
+# Uitgaand NotIsUse Managementpoorten 8200
+# 8201 NotInUse
+#
+#
+# Uitgaand Ansible Managementpoorten 8300
+# 8301 Semaphore 
+#
+#
+# Uitgaande Containerpoorten 9100 Docker Management Tools
+# 9101 Portainer 
+# 9102 Yacht
+# 9103 Visual Studio Code Server
+# 9104 Jenkins 
+# 9105 Registry
+#
+# Uitgaande Containerpoorten 9200 Docker Containers eigen
+# 9200 NGINX
+# 9201 K8S Demo Simple Deployment # k8s_simple_deployment_nginx.sh
+# 9202 K8S Demo Deployment step 1 # k8s_nginx_deployment_stap_1.sh
+#
+# 9205 Flask-demo # k8s-flask-demo-deployment.sh
+#
+# 9210 NextCloud
+# 9211 dc-nextcloud-mariadb.yml
+#
+# 9220 WordPress
+# 9221 mysql-deployment.yml
+# 9222 wordpress-deployment.yml
+#
+#
+#    Overzicht openstaande poorten in Ubuntu
+#
+#    sudo lsof -i -P -n | grep LISTEN
 #
 #
 #
@@ -102,9 +151,6 @@ echo ''
 # TO DO
 # ######################
 #
-# Bestanden in de juiste mappen van demos directory zetten ## Overbodig door Git Clone 
-# VMware virtualisatie geeft nog melding  ## komt omdat shared folder niet aan staat in workstation 
-# Automatisch reboot aan het einde van het script ?? 
 # Netplan
 # Ansible DEMO aanpassen
 #
@@ -217,7 +263,36 @@ echo ''
 # 08juli25 Minikube configuratie
 # 09juli25 NeoFetch SuperFetch
 # 09juli25 Snap Curl ipv Curl
+# 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
+# 12juli25 Docker Management Tools functie 
+# 12juli25 Visual Studio Code Server native en Docker 
+# 12juli25 Visual Studio Code Server sed bug fixed 
+# 18juli25 Build 32 Jenkins als Container in plaats van native install
+# 18juli25 Build 32 Visual Studio Code Server als Container in plaats van native install 
+# 19juli25 Edu link naar Canary latest opgenomen in kop van het script
 #
+# 20juli25 B5 PHP installatie output naar dev nul gezet
+# 20juli25 B5 Native installatie van Visual Studio code uitgezet stond nog aan 
+# 20juli25 B5 Docker Compose plugin installatie uitgezet wordt al gedaan bij installatie van Docker CE
+# 20juli25 B5 Docker Compose installatie functie opmerkingen erbij gezet
+# 20juli25 B5 Docker pull van Jenkins image gelijk aan gebruikte image stond op latest en lts 
+# 20juli25 B5 Visual Studio Code Server als Docker container functie aangepast en werkend gemaakt
+# 20juli25 B5 Volgorde functies Docker Podman en Minikube aangepast 
+# 20juli25 B5 Namen containers met LUCT ervoor 
+# 20juli25 B5 Initieel wachtwoord Jenkins naar lokaal bestand 
+# 20juli25 B5 Dockly werkend 
+# 20juli25 B5 LazyDocker werkend
+# 20juli25 B5 Dry toevoeging
+# 20juli25 B5 7zip in plaats van 7z installatie bugfix 
+#
+# 21juli25 B6 Poorten overzicht bijgewerkt
+#
+# 21juli25 B7 Nummering stappen correctie
+# 21juli25 B7 Commando starten VS Code Server aangepast
+#
+# 21juli25 B8 Ansible eerste opzetje gemaakt start by scriptregel 1144
+#
+# xxjuli25 B9 Jenkins Wachtwoord bestand aanmaak fixen
 #
 #
 # ################################################################################
@@ -232,6 +307,7 @@ echo ''
 # ################################################################################
 # Fase 1 
 # Controle van de omstandigheden bij de start van het script 
+# Alle Distributies
 # ################################################################################
 #
 #
@@ -366,14 +442,10 @@ function alx_vm_tools () {
 #
 function build_install_compose () {
     #
-    mkdir -p /home/docker/.docker/cli-plugins
-    /snap/bin/curl -s -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /home/docker/.docker/cli-plugins/docker-compose
-    chmod a+x /home/docker/.docker/cli-plugins/docker-compose
+    mkdir -p /home/$SUDO_USER/.docker/cli-plugins
+    /snap/bin/curl -s -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /home/$SUDO_USER/.docker/cli-plugins/docker-compose
+    chmod a+x /home/$SUDO_USER/.docker/cli-plugins/docker-compose
     #
-    # DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker} 
-    # mkdir -p $DOCKER_CONFIG/cli-plugins
-    # curl -s -SL https://github.com/docker/compose/releases/download/v2.26.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-    # chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 }
 #
 #
@@ -509,14 +581,14 @@ function ulx_os_change_repo_nl () {
             sed "s@mirrors.edge.kernel.org@nl.archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
         else
             # Replace the value with nl.archive.ubuntu.com
-            echo 'Repository is anders dan Mirrors.edge.kernel.org'
+            echo 'Repository is different from Mirrors.edge.kernel.org'
         fi
         #
         # Optie 2 archive.ubuntu.com
         #
         # Archive.Ubuntu.com instellen als bron 
         if grep -q "http://archive.ubuntu.com" /etc/apt/sources.list.d/ubuntu.sources; then
-            echo 'Repository staat al ingesteld op Archive.Ubuntu.com'
+            echo 'Repository is already set to Archive.Ubuntu.com'
         else
             # Vervang elke landcode voor archive.ubuntu.com naar archive.ubuntu.com
             sed "s@http://es.archive.ubuntu.com@http://archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
@@ -542,7 +614,7 @@ function ulx_os_change_repo_nl () {
             # Stel DataPacket in als Bron  
             sed "s@http://archive.ubuntu.com@http://mirror.nl.datapacket.com/ubuntu/@" -i /etc/apt/sources.list.d/ubuntu.sources
             # sed "s@http://archive.ubuntu.com@http://nl.archive.ubuntu.com@" -i /etc/apt/sources.list.d/ubuntu.sources
-            echo 'Repository instelling aangepast naar DataPacket in NL'
+            echo 'Repository setting changed to DataPacket in the Netherlands'
         fi
         #
     fi
@@ -595,20 +667,29 @@ function ulx_os_upgrade_os () {
 #
 #
 function ulx_os_default_apps () {
-    apt install 7z -y > /dev/null 2>&1
+    #
+    # APT
+    #
+    apt install 7zip -y > /dev/null 2>&1
     apt install apt-transport-https -y > /dev/null 2>&1
     apt install dmidecode -y > /dev/null 2>&1
     apt install dpkg -y > /dev/null 2>&1
     apt install git -y > /dev/null 2>&1
     apt install gzip -y > /dev/null 2>&1
+    apt install mc -y > /dev/null 2>&1
     apt install nano -y > /dev/null 2>&1
     apt install neofetch -y > /dev/null 2>&1
+    apt install php libapache2-mod-php -y > /dev/null 2>&1
+    apt install php-{gd,imap,xml,json,mbstring,mysql,intl,apcu,zip} -y > /dev/null 2>&1
     apt install python3 -y > /dev/null 2>&1
     apt install screenfetch -y > /dev/null 2>&1
     apt install software-properties-common -y > /dev/null 2>&1
+    apt install tar -y > /dev/null 2>&1
     apt install ubuntu-drivers-common -y > /dev/null 2>&1
     apt install wget -y > /dev/null 2>&1
     apt install wget2 -y > /dev/null 2>&1
+    #
+    # SNAP
     #
     snap install curl > /dev/null 2>&1
     #
@@ -713,7 +794,7 @@ function ulx_os_netplan_download () {
 #
 #
 #   #######################
-#   3U16 UBUNTU OS FUNCTIES
+#   3U17 UBUNTU OS FUNCTIES
 #        Functie Change DNS OS
 #        Onderdeel van Ubuntu Nested OOBE Functie
 #   #######################
@@ -801,7 +882,7 @@ fi
 #
 #
 #   #######################
-#   3U17 UBUNTU OS FUNCTIES
+#   3U18 UBUNTU OS FUNCTIES
 #        GNOME GUI Install
 #   #######################
 #
@@ -848,7 +929,7 @@ function ulx_os_gnome_install () {
 function ulx_install_vm_tools () {
     #
     if sudo dmidecode | grep -iq vmware; then
-        echo "VMware-omgeving gedetecteerd."
+        echo 'Virtualized by VMware detected'
         apt install -qq -y open-vm-tools > /dev/null 2>&1
         apt autoremove -y
         # Shared Folders
@@ -863,10 +944,10 @@ function ulx_install_vm_tools () {
                echo "Mount faalde met foutcode $code"
             fi
         else
-            echo "Mount succesvol"
+            echo "Mount successful"
         fi
     else
-        echo "Geen VMware-omgeving gedetecteerd."
+        echo 'No virtualization by VMware detected'
     fi
     #
 }
@@ -886,7 +967,7 @@ function ulx_install_pwrshell () {
     # Vullen variable Version ID
     source /etc/os-release
     #
-    /snap/bin/curl  -s -SL "https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
+    /snap/bin/curl -s -SL "https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
     # wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
     dpkg -i /tmp/packages-microsoft-prod.deb > /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
     apt update -qq >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
@@ -917,14 +998,18 @@ function ulx_install_python3 () {
 #
 #
 function ulx_install_cockpit () {
+    #
     apt install -qq -y cockpit > /dev/null 2>&1
+    # Aanmaken Cockpit Service
     systemctl enable --now cockpit.socket
+    # Aanpassen Poort 
     rm -f /tmp/listen.conf
     echo '[Socket]' > /tmp/listen.conf
     echo 'ListenStream=' >> /tmp/listen.conf
     echo 'ListenStream=8101' >> /tmp/listen.conf
     mkdir -p /etc/systemd/system/cockpit.socket.d/
     cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
+    #
     systemctl daemon-reload
     systemctl restart cockpit.socket
 }
@@ -977,6 +1062,12 @@ function ulx_install_docker () {
 #
 #
 # 3U26 UBUNTU OS Install Software Functies ## Functie Installatie Docker Compose Nieuwste versie  
+#
+#
+# Overbodig want Docker doet al installatie van nieuwste versie van Docker Compose Plugin
+#
+#
+# 20 juli 2025 Docker Compose staat op heel andere locatie dan Plugin dir hieronder
 #
 #
 function ulx_install_docker_compose () {
@@ -1050,46 +1141,49 @@ function ulx_install_podman () {
 # 3U28 UBUNTU OS Install Software Functies ## Functie Installatie IAC Ansible
 #
 #
-function ulx_install_ansible () {
+function ulx_install_ansible_master () {
+    #
+    #
+    # ###########################
+    # ## Ansible               ##
+    # ## Automation Controller ##
+    # ###########################
+    #
     #
     # Haal de hostname op
     hostname=$(hostname)
     #
-    if [ "$hostname" == "U24-LTS-S-B-GC-LAC1" ]; then
-        #
-        #
-        #
-        #
-        # MASTER
-        # ######
-        #
-        #
-        #
-        # STAP 1
-        # Ansible toevoegen aan repository
-        #
-        # 1A Ansible Repo toevoegen 
-        apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
-        # 1B Updaten APT
-        apt update -qq
-        #
-        # STAP 2
-        # Installatie Ansible Controller
-        #
-        apt install ansible -y > /dev/null 2>&1
-        #
-        # Stap 3
-        # Installatie SSHPASS
-        # 
-        # Starten installatie sshpass
-        apt update -qq
-        apt install sshpass -y
-        #
-        # STAP 4
-        # Aanpassen etc hosts bestand
-        #
-        # 4a vullen variable hostname
-        hostname=$(hostname)
+    #
+    # Ansible Automation Controller step 1
+    # Ansible toevoegen aan repository
+    #
+    # 1A Ansible Repo toevoegen 
+    apt-add-repository ppa:ansible/ansible -y > /dev/null 2>&1
+    # 1B Updaten APT
+    apt update -qq
+    #
+    # Ansible Automation Controller step 2
+    # Installatie Ansible Controller
+    #
+    apt install ansible -y > /dev/null 2>&1
+    #
+    # Ansible Automation Controller step 3
+    # Installatie SSHPASS
+    # 
+    apt update -qq
+    apt install sshpass -y
+    #
+    # Ansible Automation Controller step 4
+    # Aanpassen etc hosts bestand
+    #
+    # 4a vullen variable hostname
+    hostname=$(hostname)
+
+    # hier moet zoek interface komen
+
+    # hier moet lus komen als eth aanwezig
+
+
         # 4b Haal het IP-adres van eth1 op
         eth1_ip=$(ip addr show eth1 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
         # 4c Voeg 1 toe aan het IP-adres van eth1
@@ -1098,62 +1192,80 @@ function ulx_install_ansible () {
         # 4d Sla de IP-adressen op in afzonderlijke variabelen
         eth1_ip_var="eth1_ip=$eth1_ip"
         eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
-        # 4e Aanpassen hosts bestand 
-        if grep -q "$eth1_ip" /etc/hosts; then
-            echo "$hostname already exists in /etc/hosts"
-        else
-            # Add the hostname and IP address to /etc/hosts
-            echo "$eth1_ip ansible_demo_ctrl_001" | sudo tee -a /etc/hosts > /dev/null
-            echo "$eth1_plus1_ip ansible_demo_host_001" | sudo tee -a /etc/hosts > /dev/null
-            echo "Hostname $hostname added to /etc/hosts"
-        fi
-        #
-        #
-        # STAP 5
-        # Inventory ophalen van GitHUB
-        mkdir -p /etc/ansible/inventory 
-        #
-        #
-        # TO DO
-        #
-        # GH_JATUTERT_RAW variable nog werken
-        #
-        curl -s -o /etc/ansible/inventory/ansible_demo     https://$GH_JATUTERT_RAW/demos/main/Ansible/Guest/Inventory/ansible_demo_12aug24
-        # curl -s -o /etc/ansible/inventory/db_servers     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/db_servers
-        # curl -s -o /etc/ansible/inventory/load_balancers https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/load_balancers
-        # curl -s -o /etc/ansible/inventory/webservers     https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/webservers
-        # curl -s -o /etc/ansible/inventory/werkstations   https://raw.githubusercontent.com/jatutert/demos/main/Ansible/Inventory/Old/werkstations
-        #
-        # STAP 6
-        # Aanpassen ansible config met Inventory
-        if grep -q "defaults" /etc/ansible/ansible.cfg; then
-            echo "Ansible Configuratiebestand reeds voorzien van Inventory"
-        else
-            # Add the hostname and IP address to /etc/hosts
-            echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
-            echo "inventory = inventory/" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
-            echo "Ansible Configuratiebestand voorzien van Inventory"
-        fi
-        #
-        # STAP 7
-        # Playbooks ophalen van GitHUB
-        mkdir -p /home/$SUDO_USER/playbooks
-        chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
-        curl -s -o /home/$SUDO_USER/playbooks/ansible_demo_playbook.yml https://$GH_JATUTERT_RAW/demos/main/Ansible/Guest/Playbooks/Linux/ansible_demo_playbook.yml
-        #
-        # STAP 8
-        # SSH verbinden script maken 
-        # Uitvoeren als user Vagrant en niet als Root anders krijg je SSH foutmelding bij Ansible 
-        echo "Stap 7 - SSH Verbindingsscript maken gestart ..."
-        echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
-        echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
-        chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
+
+
+    # hier moet lus komen als ens aanwezig
+
+
+        # 4b Haal het IP-adres van eth1 op
+        eth1_ip=$(ip addr show ens33 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)
+        # 4c Voeg 1 toe aan het IP-adres van eth1
+        IFS=. read -r a b c d <<< "$eth1_ip"
+        eth1_plus1_ip="$a.$b.$c.$((d+1))"
+        # 4d Sla de IP-adressen op in afzonderlijke variabelen
+        eth1_ip_var="eth1_ip=$eth1_ip"
+        eth1_plus1_ip_var="eth1_plus1_ip=$eth1_plus1_ip"
+
+
+
+    # 4e Aanpassen hosts bestand 
+    if grep -q "$eth1_ip" /etc/hosts; then
+        echo "$hostname already exists in /etc/hosts"
+    else
+        # Add the hostname and IP address to /etc/hosts
+        echo "$eth1_ip ansible_demo_ctrl_001" | sudo tee -a /etc/hosts > /dev/null
+        echo "$eth1_plus1_ip ansible_demo_host_001" | sudo tee -a /etc/hosts > /dev/null
+        echo "Hostname $hostname added to /etc/hosts"
     fi
     #
     #
+    # Ansible Automation Controller step 5
+    # Git Clone uitvoeren
+    #
+    # Git clone x y
+    #
+    # STAP 6 INVENTORY VULLEN
+    #
+    mkdir -p /etc/ansible/inventory 
+    #
+    # cp x y
+    #
+    # STAP 7
+    # Aanpassen ansible config met Inventory
+    if grep -q "defaults" /etc/ansible/ansible.cfg; then
+        echo "Ansible Configuratiebestand reeds voorzien van Inventory"
+    else
+        # Add the hostname and IP address to /etc/hosts
+        echo "[defaults]" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
+        echo "inventory = inventory/" | sudo tee -a /etc/ansible/ansible.cfg > /dev/null
+        echo "Ansible Configuratiebestand voorzien van Inventory"
+    fi
+    #
+    # STAP 8
+    # Playbooks overzetten van Git Clone naar juiste locatie
+    mkdir -p /home/$SUDO_USER/playbooks
+    chown -f -R $SUDO_USER /home/$SUDO_USER/playbooks
     #
     #
-    if [ "$hostname" == "U24-LTS-S-B-GC-LAS1" ]; then
+    # cp x y 
+    #
+    #
+    # STAP 9
+    # SSH verbinden script maken 
+    # Uitvoeren als user Vagrant en niet als Root anders krijg je SSH foutmelding bij Ansible 
+    echo "Stap 7 - SSH Verbindingsscript maken gestart ..."
+    echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
+    echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
+    chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
+    #
+} 
+
+function ulx_install_ansible_slave () {
+
+    #
+    #
+    #
+
         #
         #
         #
@@ -1198,7 +1310,7 @@ function ulx_install_ansible () {
         #
         # Stap x
         #
-    fi
+
 }
 #
 #
@@ -1220,7 +1332,6 @@ function ulx_install_ansible_semaphore () {
     # Herstarten com nieuwe poort actief te maken
     snap restart semaphore
 }
-
 #
 #
 # 3U30 UBUNTU OS Install Software Functies ## Functie JAVA 
@@ -1233,17 +1344,12 @@ function ulx_install_java_jdk () {
     #    apt install openjdk-17-jdk -y
     #
 }
-
 #
 #
 # 3U31 UBUNTU OS Install Software Functies ## Functie Jenkins
 #
 #
 function ulx_install_jenkins () {
-
-    # Het eigen gekozen poortnummer voor Jenkins
-    # Standaard is poort 8080
-    JENKINS_PORT=8201
     #
     #
     #
@@ -1262,39 +1368,67 @@ function ulx_install_jenkins () {
     # Install Jenkins
     apt update -qq > /dev/null 2>&1
     apt install jenkins -y > /home/$SUDO_USER/luct_logs/luct_jenkins.log 2>&1
-
-    # Poortnummer aanpassen
-    sed -i "s/^HTTP_PORT=.*/HTTP_PORT=$JENKINS_PORT/" /etc/default/jenkins
-
+    #
+    # Poortnummer aanpassen van 8080 naar 8201
+    sed "s/^HTTP_PORT=.*/HTTP_PORT=8201/" -i /etc/default/jenkins
+    #
     # Start and enable Jenkins
     systemctl enable jenkins > /dev/null 2>&1
     systemctl start jenkins > /dev/null 2>&1
-
+    #
     # UWF poort openzetten indien van toepassing 
-    ufw allow $JENKINS_PORT
-
+    # ufw allow $JENKINS_PORT
+    #
     # Get initial admin password
-    cat /var/lib/jenkins/secrets/initialAdminPassword
-
-    # Jenkins is hierna bereikbaar via ip adres van de vm met ip poort 8000
+    # cat /var/lib/jenkins/secrets/initialAdminPassword
+    #
+    #
+    # Jenkins is hierna bereikbaar via ip adres van de vm met ip poort 8201 standaard poort 8080
     # Als wachtwoord moet je wachtwoord uit initialAdminPassword zoals hierboven invoeren 
 } 
-
 #
 #
-# 3U32 UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
+# 3U32 UBUNTU OS Install Software Functies ## Visual Studio Code Server
 #
 #
-function ulx_jenkins_docker () {
-
-    # Add jenkins user to docker group
-    usermod -aG docker jenkins
-
-    # Restart Jenkins
-    systemctl restart jenkins > /dev/null 2>&1
-
+function ulx_install_vscode_server () {
+    # Installatie van code-server 
+    /snap/bin/curl -fsSL https://code-server.dev/install.sh | sh
+    #
+    # Service aanmaken 
+    systemctl enable --now code-server@$USER
+    # Service starten 
+    systemctl start code-server@$USER
+    #
+    # Wachtwoord uitzetten
+    sed -i.bak 's/auth: password/auth: none/' /home/$SUDO_USER/.config/code-server/config.yaml
+    # Bind adres aanpassen
+    sed "s@:127.0.0.1@:0.0.0.0@" -i /home/$SUDO_USER/.config/code-server/config.yaml
+    # Poort aanpassen naar eigen voorkeurspoort
+    #
+    # LET OP # Jenkins zit standaard ook op poort 8080
+    #
+    sed "s@:8080@:9103@" -i /home/$SUDO_USER/.config/code-server/config.yaml
+    # Herstarten
+    systemctl restart code-server@$USER
+    # 
+    # Visual Studio Code Server is nu beschikbaar op IP adres van VM met poort 9103
+    #
+#
+#
+# Foutmeldingen
+# 
+# [Fixed] sed: can't read /root/.config/code-server/config.yaml: Permission denied
+# sed: can't read /home/ubuntu/.config/code-server/config.yaml: No such file or directory
+# sed: can't read /home/ubuntu/.config/code-server/config.yaml: No such file or directory
+#
+#
 }
-
+#
+#
+# ################################### EINDE INSTALLATIE ###############################
+#
+#
 #
 #
 # 3U4 CATEGORIE UBUNTU OS DOCKER Software Functies 
@@ -1311,113 +1445,305 @@ function ulx_docker_images_pull () {
     #
     # docker pull -q hello-world > /dev/null 2>&1
     #
-    # Operating Systems
+    # ## Operating Systems
     #
-    # Alpine Linux
+    # ## Alpine
     docker pull -q alpine:latest
     docker pull -q alpine:3.5
-    # Amazon Linux
-    docker pull -q amazonlinux:latest
     # Bash is eigenlijk Alpine Linux Image 
     # docker pull -q bash:latest
-    # Clearlinux
+    # 
+    docker pull -q amazonlinux:latest
+    #
     docker pull -q clearlinux:latest
-    # Debian
+    # 
     docker pull -q debian:latest
-    # Photon
+    # 
     docker pull -q photon:latest
-    # Ubuntu 
+    # 
+    # ## Ubuntu
     # docker pull -q ubuntu:20.04
     # docker pull -q ubuntu:22.04
     #
-    # Middleware
+    # ## Middleware
     #
-    # Apache2
-    # docker pull -q ubuntu/apache2:latest
-    docker pull -q httpd:latest
-    # MariaDB
-    # docker pull -q mariadb:10.6
-    # MinIO
-    # docker pull -q minio/minio
-    # NextCloud
-    # docker pull -q nextcloud
-    # NGINX
-    docker pull -q nginx
-    # Portainer
-    docker pull -q portainer/portainer-ce:latest
-    # PostGres
-    # docker pull -q postgres:latest
-    # Registry
-    docker pull -q registry
-    # WordPress
+    # ### CMS
     # docker pull -q wordpress
     #
-    # Demo
+    # ### DBMS
+    # docker pull -q mariadb:10.6
+    # docker pull -q postgres:latest
     #
-    # Prakhar1989 Static Site 
+    # ### Storage
+    # docker pull -q minio/minio
+    # docker pull -q nextcloud
+    #
+    # ### Webservers
+    # docker pull -q ubuntu/apache2:latest
+    docker pull -q httpd:latest
+    docker pull -q nginx
     docker pull -q prakhar1989/static-site
+    #
+    # ## Management 
+    docker pull -q portainer/portainer-ce:latest
+    docker pull -q selfhostedpro/yacht:latest
+    docker pull -q codercom/code-server:latest
+    docker pull -q jenkins/jenkins:latest-jdk21
+    #
+    # ## Registry
+    docker pull -q registry
+    #
 }
 #
 #
+# 3U42 UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Create
 #
-# 3U42 UBUNTU UBUNTU OS Podman Software Functies ## Images Pull
 #
-#
-function ulx_podman_images_pull () {
+function ulx_docker_portainer_create () {
     #
-    # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
+    # Pull Image
+    # Wordt gedaan door de functie Pull Images
+    # docker pull -q portainer/portainer-ce:latest > /dev/null 2>&1
     #
-    # podman pull -q hello-world > /dev/null 2>&1
+    # Docker Volume Aanmaken voor Portainer
+    docker volume create portainer_data > /dev/null 2>&1
     #
-    # Operating Systems
+    # Docker Run Portainer
+    # HOST PORT / CONTAINER PORT
+    # Poorten
+    # Port 8000: Used for the TCP tunnel server, primarily for Edge Agent communication and is optional if not using Edge Compute features. 
+    # Port 9443: Used by the Portainer Server for accessing the user interface (UI) and API. This is the default HTTPS port for Portainer
+    # Port 9001: The default port used by the Portainer Agent to communicate with the Portainer Server. 
+    docker run -d -p 8000:8000 -p 9101:9443 --name LUCT_portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
     #
-    # Alpine Linux
-    podman pull -q alpine:latest
-    podman pull -q alpine:3.5
-    # Amazon Linux
-    podman pull -q amazonlinux:latest
-    # Bash is eigenlijk Alpine Linux Image 
-    # podman pull -q bash:latest
-    # Clearlinux
-    podman pull -q clearlinux:latest
-    # Debian
-    podman pull -q debian:latest
-    # Photon
-    podman pull -q photon:latest
-    # Ubuntu 
-    # podman pull -q ubuntu:20.04
-    # podman pull -q ubuntu:22.04
+    # Bash Shell Script maken Portainer
+    echo '#! /bin/bash' > /home/$SUDO_USER/portainer_restart.sh
     #
-    # Middleware
+    echo 'docker stop portainer' >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'docker start portainer' >> /home/$SUDO_USER/portainer_restart.sh
     #
-    # Apache2
-    # podman pull -q ubuntu/apache2:latest
-    podman pull -q httpd:latest
-    # MariaDB
-    # podman pull -q mariadb:10.6
-    # MinIO
-    # podman pull -q minio/minio
-    # NextCloud
-    # podman pull -q nextcloud
-    # NGINX
-    podman pull -q nginx
-    # Portainer
-    podman pull -q portainer/portainer-ce:latest
-    # PostGres
-    # podman pull -q postgres:latest
-    # Registry
-    podman pull -q registry
-    # WordPress
-    # podman pull -q wordpress
+    echo 'echo "Portainer is beschikbaar op"' >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo ""' >> /home/$SUDO_USER/portainer_restart.sh
     #
-    # Demo
+    if ip link show ens33 > /dev/null 2>&1; then
+        echo 'IP=$(ip -4 addr show ens33 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/portainer_restart.sh
+        echo 'echo "https://$IP:9101"' >> /home/$SUDO_USER/portainer_restart.sh
+    fi
     #
-    # Prakhar1989 Static Site 
-    podman pull -q prakhar1989/static-site
+    if ip link show eth0 > /dev/null 2>&1; then
+        echo 'IP=$(ip -4 addr show eth0 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/portainer_restart.sh
+        echo 'echo "https://$IP:9101"' >> /home/$SUDO_USER/portainer_restart.sh
+    fi
+    #
+    echo 'echo ""' >> /home/$SUDO_USER/portainer_restart.sh
+    #
+    echo 'echo "Start Webbrowser op PC of Laptop en ga naar bovenstaand adres"'          >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo ""'          >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo "Gebruik onderstaande gegevens op het eerste scherm"'          >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo ""'          >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo "Gebruiker admin"' >> /home/$SUDO_USER/portainer_restart.sh
+    echo 'echo "Wachtwoord password1234"' >> /home/$SUDO_USER/portainer_restart.sh
+    #
+    chmod +x /home/$SUDO_USER/portainer_restart.sh
+    #
 }
 #
 #
-# UBUNTU UBUNTU OS DOCKER Software Functies ## Minikube
+# 3U43 UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Remove
+#
+#
+function ulx_docker_portainer_remove () {
+    docker stop portainer
+    docker rm portainer
+    docker rmi portainer/portainer-ce:latest
+    docker volume rm portainer_data
+    docker system prune
+}
+#
+#
+# 3U44 UBUNTU UBUNTU OS DOCKER Software Functies ## Yacht Create
+#
+#
+function ulx_docker_yacht_create () {
+    #
+    # Docker Volume Aanmaken voor Yacht
+    docker volume create yacht_data > /dev/null 2>&1
+    #
+    # Docker Run Yacht
+    docker run -d -p 9102:8000 -v /var/run/docker.sock:/var/run/docker.sock -v yacht_data:/config --name LUCT_Yacht --restart=always selfhostedpro/yacht
+    #
+    # Bash Shell Script maken Yacht
+    echo '#! /bin/bash' > /home/$SUDO_USER/yacht_restart.sh
+    #
+    echo 'docker stop yacht' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'docker start yacht' >> /home/$SUDO_USER/yacht_restart.sh
+    #
+    echo 'echo "Yacht is beschikbaar op"' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
+    #
+    if ip link show ens33 > /dev/null 2>&1; then
+        echo 'IP=$(ip -4 addr show ens33 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/yacht_restart.sh
+        echo 'echo "https://$IP:9102"' >> /home/$SUDO_USER/yacht_restart.sh
+    fi
+    #
+    if ip link show eth0 > /dev/null 2>&1; then
+        echo 'IP=$(ip -4 addr show eth0 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/yacht_restart.sh
+        echo 'echo "https://$IP:9102"' >> /home/$SUDO_USER/yacht_restart.sh
+    fi
+    #
+    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
+    #
+    echo 'echo "Start Webbrowser op PC of Laptop en ga naar bovenstaand adres"' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'echo "Gebruik onderstaande gegevens op het eerste scherm"' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'echo ""' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'echo "Gebruiker admin@yacht.local"' >> /home/$SUDO_USER/yacht_restart.sh
+    echo 'echo "Wachtwoord pass"' >> /home/$SUDO_USER/yacht_restart.sh
+    #
+    chmod +x /home/$SUDO_USER/yacht_restart.sh
+    #
+    # Aanmaken bestand met inloggegeven Yacht
+    #
+    echo "Gebruiker admin@yacht.local" > /home/$SUDO_USER/yacht_credentials.txt 
+    echo "Wachtwoord pass" >> /home/$SUDO_USER/yacht_credentials.txt 
+    #
+}
+#
+#
+# 3U45 UBUNTU UBUNTU OS DOCKER Software Functies ## VS Code Server Create
+#
+#
+function ulx_docker_vscodesrv_create () {
+   #
+   # Definitie Configuratie Variabelen
+   # 
+   CONTAINER_NAME="LUCT_VSC_Server"
+   PROJECT_DIR="/home/$SUDO_USER/demos"
+   DOCKER_IMAGE="codercom/code-server:latest"
+   #
+   # Start Visual Studio Code Server als Container
+   #
+   docker run -d -p 9103:8080 -v "$PROJECT_DIR:/home/coder/project" --name "$CONTAINER_NAME" --restart=always "$DOCKER_IMAGE" --auth=none
+   #
+   # In Visual Studio Code Server is lokale omgeving zichtbaar onder Project
+   #
+}
+#
+#
+# 3U46 UBUNTU UBUNTU OS DOCKER Software Functies ## Jenkins Create
+#
+#
+function ulx_docker_jenkins_create () {
+    #
+    # Docker Volume Aanmaken voor Yacht
+    docker volume create jenkins_data > /dev/null 2>&1
+    #
+    # Docker Run Jenkins
+    docker run -d --name LUCT_Jenkins -p 9104:8080 -p 50000:50000 --restart=always -v jenkins_data:/var/jenkins_home jenkins/jenkins:latest-jdk21
+    #
+    # Kopie maken van Initieel Wachtwoord bestand vanaf Docker Volume naar lokale omgeving 
+    docker cp LUCT_Jenkins:/var/jenkins_home/secrets/initialAdminPassword /home/$SUDO_USER/Jenkins_Wachtwoord.txt
+    #
+}
+#
+#
+# 3U47 UBUNTU UBUNTU OS DOCKER Software Functies ## Docker Management Tools
+#
+#
+function ulx_docker_mgmt_tools () {
+    #
+    #
+    # Overzicht tools
+    # https://www.tecmint.com/docker-tools/
+    #
+    #
+    # ###########
+    # Dive
+    # https://github.com/wagoodman/dive
+    # ###########
+    #
+    # Alternatieve installatiewijze
+    # snap install dive 
+    #
+    DIVE_VERSION=$(curl -sL "https://api.github.com/repos/wagoodman/dive/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+    /snap/bin/curl -fL -o /home/$SUDO_USER/tmp/dive_${DIVE_VERSION}_linux_amd64.deb "https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_amd64.deb"
+    apt install /home/$SUDO_USER/tmp/dive_${DIVE_VERSION}_linux_amd64.deb
+    #
+    #
+    # ###########
+    # Dockly 
+    # https://github.com/lirantal/dockly
+    # ###########
+    #
+    # Alternatieve instalatiewijze 
+    # apt install npm -y
+    # npm install -g dockly
+    #
+    echo 'echo "Dockly wordt gestart als Container"' > /home/$SUDO_USER/run_dockly.sh
+    echo 'echo "Druk op q toets om Dockly te verlaten"' >> /home/$SUDO_USER/run_dockly.sh
+    echo 'echo read -p "Druk op Enter om verder te gaan..." dummy' >> /home/$SUDO_USER/run_dockly.sh
+    echo "docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock lirantal/dockly" >> /home/$SUDO_USER/run_dockly.sh
+    chmod +x /home/$SUDO_USER/run_dockly.sh
+    #
+    #
+    # ###########
+    # Dry
+    # https://github.com/moncho/dry
+    # ###########
+    #
+    echo "docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -e DOCKER_HOST=$DOCKER_HOST moncho/dry" > /home/$SUDO_USER/run_dry.sh
+    #
+    #
+    # ###########
+    # LazyDocker
+    # https://github.com/jesseduffield/lazydocker
+    # ###########
+    #
+    # Haal de nieuwste Lazydocker versie op
+    LAZYDOCKER_VERSIE_MET_V=$(/snap/bin/curl -s "https://api.github.com/repos/jesseduffield/lazydocker/releases/latest" | grep -Po '"tag_name": "\K[^"]*')
+    LAZYDOCKER_VERSIE_ZONDER_V="${LAZYDOCKER_VERSION#v}"
+    #
+    # Zet variabele Download URL met hulp van voorgaande variabelen
+    DOWNLOAD_URL="https://github.com/jesseduffield/lazydocker/releases/download/${LAZYDOCKER_VERSIE_MET_V}/lazydocker_${LAZYDOCKER_VERSIE_ZONDER_V}_Linux_x86_64.tar.gz"
+    #
+    # download nieuwste versie van LazyDocker
+    wget -O /home/$SUDO_USER/tmp/lazydocker.tar.gz $DOWNLOAD_URL
+    #
+    # Uitpakken 
+    7z x /home/$SUDO_USER/tmp/lazydocker.tar.gz -o/home/$SUDO_USER/tmp -y
+    7z x /home/$SUDO_USER/tmp/lazydocker.tar -o/home/$SUDO_USER/tmp -y
+    #
+    # Overzetten
+    mv /home/$SUDO_USER/tmp/lazydocker /usr/local/bin/lazydocker
+    #
+    # Uitvoerbaar maken 
+    chmod +x /usr/local/bin/lazydocker
+    #
+    echo 'sudo lazydocker' > /home/$SUDO_USER/lazydocker_run.sh
+    #
+}
+#
+#
+# 3Uxx UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
+#
+#
+function ulx_jenkins_docker () {
+
+    # Add jenkins user to docker group
+    usermod -aG docker jenkins
+
+    # Restart Jenkins
+    systemctl restart jenkins > /dev/null 2>&1
+
+}
+#
+#
+# 3U5 CATEGORIE UBUNTU OS DOCKER Minikube Software Functies 
+#
+#
+#
+#
+# 3U51 UBUNTU UBUNTU OS DOCKER Minikube Software Functies ## Minikube Init
 #
 #
 function ulx_docker_minikube_init () {
@@ -1488,7 +1814,7 @@ function ulx_docker_minikube_init () {
 }
 #
 #
-# UBUNTU UBUNTU OS DOCKER Software Functies ## Minikube CONFIG 
+# 3U52 UBUNTU UBUNTU OS DOCKER Minikube Software Functies ## Minikube Config
 #
 #
 function ulx_docker_minikube_config () {
@@ -1509,61 +1835,70 @@ function ulx_docker_minikube_config () {
 }
 #
 #
-# UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Create  
+# 3U6 CATEGORIE UBUNTU OS Podman Software Functies 
 #
 #
-function ulx_docker_portainer_create () {
+#
+#
+#
+# 3U61 UBUNTU UBUNTU OS Podman Software Functies ## Images Pull
+#
+#
+function ulx_podman_images_pull () {
     #
-    # Pull Image
-    # Wordt gedaan door de functie Pull Images
-    # docker pull -q portainer/portainer-ce:latest > /dev/null 2>&1
+    # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
     #
-    # Docker Volume Aanmaken voor Portainer
-    docker volume create portainer_data > /dev/null 2>&1
+    # podman pull -q hello-world > /dev/null 2>&1
     #
-    # Docker Run Portainer
-    # HOST PORT / CONTAINER PORT
-    # Poorten
-    # Port 8000: Used for the TCP tunnel server, primarily for Edge Agent communication and is optional if not using Edge Compute features. 
-    # Port 9443: Used by the Portainer Server for accessing the user interface (UI) and API. This is the default HTTPS port for Portainer
-    # Port 9001: The default port used by the Portainer Agent to communicate with the Portainer Server. 
-    docker run -d -p 8000:8000 -p 9101:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+    # Operating Systems
     #
-    # Bash Shell Script maken Portainer
-    echo '#! /bin/bash' > /home/$SUDO_USER/portainer_restart.sh
+    # Alpine Linux
+    podman pull -q alpine:latest
+    podman pull -q alpine:3.5
+    # Amazon Linux
+    podman pull -q amazonlinux:latest
+    # Bash is eigenlijk Alpine Linux Image 
+    # podman pull -q bash:latest
+    # Clearlinux
+    podman pull -q clearlinux:latest
+    # Debian
+    podman pull -q debian:latest
+    # Photon
+    podman pull -q photon:latest
+    # Ubuntu 
+    # podman pull -q ubuntu:20.04
+    # podman pull -q ubuntu:22.04
     #
-    echo 'docker stop portainer' >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'docker start portainer' >> /home/$SUDO_USER/portainer_restart.sh
+    # Middleware
     #
-    echo 'echo "Portainer is beschikbaar op"' >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'echo ""' >> /home/$SUDO_USER/portainer_restart.sh
+    # Apache2
+    # podman pull -q ubuntu/apache2:latest
+    podman pull -q httpd:latest
+    # MariaDB
+    # podman pull -q mariadb:10.6
+    # MinIO
+    # podman pull -q minio/minio
+    # NextCloud
+    # podman pull -q nextcloud
+    # NGINX
+    podman pull -q nginx
+    # Portainer
+    podman pull -q portainer/portainer-ce:latest
+    # PostGres
+    # podman pull -q postgres:latest
+    # Registry
+    podman pull -q registry
+    # WordPress
+    # podman pull -q wordpress
     #
-    if ip link show ens33 > /dev/null 2>&1; then
-        echo 'IP=$(ip -4 addr show ens33 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/portainer_restart.sh
-        echo 'echo "https://$IP:9101"' >> /home/$SUDO_USER/portainer_restart.sh
-    fi
+    # Demo
     #
-    if ip link show eth0 > /dev/null 2>&1; then
-        echo 'IP=$(ip -4 addr show eth0 | grep -oP "(?<=inet\s)\d+(\.\d+){3}")' >> /home/$SUDO_USER/portainer_restart.sh
-        echo 'echo "https://$IP:9101"' >> /home/$SUDO_USER/portainer_restart.sh
-    fi
-    #
-    echo 'echo ""' >> /home/$SUDO_USER/portainer_restart.sh
-    #
-    echo 'echo "Start Webbrowser op PC of Laptop en ga naar bovenstaand adres"'          >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'echo ""'          >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'echo "Gebruik onderstaande gegevens op het eerste scherm"'          >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'echo ""'          >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'echo "Gebruiker admin"' >> /home/$SUDO_USER/portainer_restart.sh
-    echo 'echo "Wachtwoord password1234"' >> /home/$SUDO_USER/portainer_restart.sh
-    #
-    chmod +x /home/$SUDO_USER/portainer_restart.sh
-    #
+    # Prakhar1989 Static Site 
+    podman pull -q prakhar1989/static-site
 }
 #
 #
-#
-# UBUNTU UBUNTU OS Podman Software Functies ## Portainer Create  
+# 3U62 UBUNTU UBUNTU OS Podman Software Functies ## Portainer Create
 #
 #
 function ulx_podman_portainer_create () {
@@ -1611,19 +1946,7 @@ function ulx_podman_portainer_create () {
 }
 #
 #
-# UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Remove
-#
-#
-function ulx_docker_portainer_remove () {
-    docker stop portainer
-    docker rm portainer
-    docker rmi portainer/portainer-ce:latest
-    docker volume rm portainer_data
-    docker system prune
-}
-#
-#
-# UBUNTU UBUNTU OS Podman Software Functies ## Portainer Remove
+# 3U63 UBUNTU UBUNTU OS Podman Software Functies ## Portainer Remove
 #
 #
 function ulx_podman_portainer_remove () {
@@ -1635,10 +1958,10 @@ function ulx_podman_portainer_remove () {
 }
 #
 #
-# 3U5 CATEGORIE UBUNTU OS Maak Scripts Functies 
+# 3U7 CATEGORIE UBUNTU OS Maak Scripts Functies 
 #
 #
-# 3U51 UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
+# 3U71 UBUNTU OS Maak Scripts Functies | Maak Docker Scripts functies
 #
 #
 #
@@ -1652,7 +1975,7 @@ function ulx_maak_docker_scripts () {
     echo 'dit is een lege functie'
 }
 #
-# UBUNTU Maak Scripts DOCKER Voorbeelden
+# 72 UBUNTU Maak Scripts DOCKER Voorbeelden
 #
 function ulx_maak_docker_voorbeelden () {
     #
@@ -1664,7 +1987,7 @@ function ulx_maak_docker_voorbeelden () {
     echo 'dit is een lege functie'
 }
 #
-# UBUNTU Maak Scripts DOCKER COMPOSE
+# 73 UBUNTU Maak Scripts DOCKER COMPOSE
 #
 #
 # UBUNTU Maak Scripts DOCKER COMPOSE Demos
@@ -1698,18 +2021,26 @@ function ulx_maak_compose_voorbeelden () {
 #
 function ulx_maak_minikube_voorbeelden () {
     #
+    # Overbodig sinds versie 4
+    #
+    # functie mag niet bestaan uit alleen comments
+    # er MOET een commando in staan
+    # daarom commando echo met melding lege functie 
+    echo 'dit is een lege functie'
+    #
+    #
     # TO DO
     #
     # OVERZETTEN NAAR GIT
     #
     # K8S IO website demos
     # MySQL 
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
-    curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/mysql/mysql-pv.yml          https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-pv.yml
+    # curl -s -o /home/$SUDO_USER/yanl/kubernetes/mysql/mysql-deployment.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/MySQL/mysql-deployment.yml
     # NGINX
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml        https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
-    curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment.yml        https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-scale.yml  https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-scale.yml
+    # curl -s -o /home/$SUDO_USER/yaml/kubernetes/nginx/deployment-update.yml https://raw.githubusercontent.com/jatutert/demos/main/Kubernetes/YAML/NGINX/deployment-update.yml
     #
 }
 #
@@ -1831,7 +2162,7 @@ function ulx_it-funda_tooling () {
 #
 #
 function ulx_nested_oobe () {
-    echo "DEBIAN/UBUNTU - Step 1 of 8 Configure APT Package Manager"
+    echo 'DEBIAN/UBUNTU - Step 1 of 8 Configure APT Package Manager'
     ulx_os_config_timezone
     ulx_os_change_repo_nl
     ulx_os_update_apt
@@ -1840,15 +2171,15 @@ function ulx_nested_oobe () {
     echo 'DEBIAN/UBUNTU - Step 3 of 8 Changing Domain Name Service (DNS) settings'
     ulx_os_config_dns
     # ulx_os_netplan_download
-    echo "DEBIAN/UBUNTU - Step 3 of 8 Installing Default Apps"
+    echo 'DEBIAN/UBUNTU - Step 4 of 8 Installing Default Apps'
     ulx_os_default_apps
-    echo "DEBIAN/UBUNTU - Step 4 of 8 Installing Open VM Tools"
+    echo 'DEBIAN/UBUNTU - Step 5 of 8 Installing or updating of Open VM Tools'
     ulx_install_vm_tools
-    echo "DEBIAN/UBUNTU - Step 5 of 8 Installing Cockpit"
+    echo 'DEBIAN/UBUNTU - Step 6 of 8 Installing and configuration of Cockpit'
     ulx_install_cockpit
-    echo "DEBIAN/UBUNTU - Step 6 of 8 Installing Microsoft Powershell 7"
+    echo 'DEBIAN/UBUNTU - Step 7 of 8 Installing Microsoft Powershell 7 (latest version)'
     ulx_install_pwrshell
-    echo "DEBIAN/UBUNTU - Step 7 of 8 Installing Python 3"
+    echo 'DEBIAN/UBUNTU - Step 8 of 8 Installing Python 3'
     ulx_install_python3
 }
 #
@@ -1869,16 +2200,24 @@ function ulx_nested_oobe () {
 #
 #
 function ulx_nested_docker () {
-    echo 'DOCKER - Step 1 of 5 Installation and configuration Docker CE'
+    echo 'DOCKER - Step 1 of 5 Installation and configuration Docker CE with Compose plugin'
     ulx_install_docker
-    echo 'DOCKER - Step 2 of 5 Installation and configuration Docker Compose Plugin'
-    ulx_install_docker_compose
-    echo 'DOCKER - Step 3 of 5 Pull must used Docker images from Docker Hub'
+    #
+    echo 'DOCKER - Step 2 of 5 Pull must used Docker images from Docker Hub'
     ulx_docker_images_pull
-    echo 'DOCKER - Step 4 of 5 Starting Portainer Container Management on Docker'
+    echo 'DOCKER - Step 3 of 8 Starting Registry'
+    docker run -d -p 9105:5000 --restart always --name registry registry
+    echo 'DOCKER - Step 4 of 8 Starting Portainer Container Management'
     ulx_docker_portainer_create
-    echo 'DOCKER - Step 5 of 5 Starting Registry Container on Docker'
-    docker run -d -p 5000:5000 --restart always --name registry registry
+    echo 'DOCKER - Step 5 of 8 Starting Yacht Container Management'
+    ulx_docker_yacht_create
+    echo 'DOCKER - Step 6 of 8 Starting Jenkins'
+    ulx_docker_jenkins_create
+    echo 'DOCKER - Step 7 of 8 Starting Visual Studio Code Server'
+    ulx_docker_vscodesrv_create
+    echo 'DOCKER - Step 8 of 8 Installing Docker Management tools'
+    ulx_docker_mgmt_tools
+    #
 }
 #
 #
@@ -1947,16 +2286,19 @@ function ulx_nested_jenkins () {
 #
 function maak_directories () {
     #
+    # Temporary
+    #
     if [ ! -d "/home/$SUDO_USER/tmp" ]; then
         mkdir -p /home/$SUDO_USER/tmp
         chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
     fi
     #
+    # LUCT Loggings 
+    #
     if [ ! -d "/home/$SUDO_USER/luct_logs" ]; then
         mkdir -p /home/$SUDO_USER/luct_logs
         chown -f -R $SUDO_USER /home/$SUDO_USER/luct_logs
     fi
-    #
 }
 #
 #
@@ -1974,11 +2316,11 @@ function git_clone_demos () {
     git clone --quiet https://github.com/docker/awesome-compose.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose
     #
     # GitHUB Onderwijs
-    echo 'GIT CLONE - Step 2 of 4 GitHub MSiekmans (Onderwijs)'
+    echo 'GIT CLONE - Step 4 of 4 GitHub MSiekmans (Onderwijs)'
     git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/Onderwijs
 
     # Alle Shell Scripts uitvoerbaar maken 
-    echo 'GIT CLONE - Step 3 of 4 Make all Shell Scriptfiles Executable'
+    echo 'GIT CLONE - Step 4 of 4 Make all Shell Scriptfiles Executable'
     find /home/$SUDO_USER/demos -type f -name "*.sh" -exec chmod +x {} \;
     #
 } 
@@ -2400,28 +2742,36 @@ if [ $distro == "buildroot" ]; then
         #
         # BUILDROOT OPTIE 1
         #
+        # 1
         echo "Step 1 of 6 Configure Operating System"
         ulx_os_config_timezone
         build_bash_config
+        # 2
         echo "Step 2 of 6 Creating Directories"
         maak_directories
-        echo "Step 3 of 6 Starting Portainer Container Engine management"
+        # 3
+        echo "Step 3a of 6 Starting Portainer Container Engine management"
         ulx_docker_portainer_create
+        echo "Step 3b of 6 Starting Yacht Container Engine management"
+        ulx_docker_yacht_create
+        # 4
         echo "Step 4 of 6 Getting Docker Images"
         ulx_docker_images_pull
+        # 5
         echo "Step 5 of 6 Installing Docker Compose plugin"
         build_install_compose
+        # 6
         echo "Step 6 of 6 Creating demo environment"
         echo ""
-        echo "Stap 6a Maak Docker scripts"
+        echo "Stap 6a Create Docker scripts"
         ulx_maak_docker_scripts
-        echo "Stap 6b Maak Docker voorbeelden"
+        echo "Stap 6b Create Docker examples"
         ulx_maak_docker_voorbeelden
-        echo "Stap 6c Maak Docker Compose scripts"
+        echo "Stap 6c Create Docker Compose scripts"
         ulx_maak_compose_scripts
-        echo "Stap 6d Maak Docker Compose voorbeelden"
+        echo "Stap 6d Create Docker Compose examples"
         ulx_maak_compose_voorbeelden
-        echo "Stap 6e Maak Minikube voorbeelden"
+        echo "Stap 6e Create Minikube examples"
         ulx_maak_minikube_voorbeelden
         echo ""
         echo "Correctie rechten voor Docker Build"
@@ -2720,12 +3070,21 @@ if [ $distro == "ubuntu" ]; then
         # Ubuntu OPTIE 1
         #
         #
+        #
         # Directories maken
+        # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
         maak_directories
         #
         # Debian/Ubuntu zo instellen zoals gewenst
+        # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
         ulx_nested_oobe
         #
+        clear
+        echo ''
+        echo 'Linux Universal Configuration Tool (LUCT) Version 4'
+        echo ''
+        #
+        shutdown -r now
         #
         exit 1
     elif [ $actie == "docker" ]; then
@@ -2735,20 +3094,19 @@ if [ $distro == "ubuntu" ]; then
         #
         #
         # Directories maken
+        # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
         maak_directories
         #
         # Debian/Ubuntu zo instellen zoals gewenst
+        # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
         ulx_nested_oobe
-        #
-        # Docker
-        # Docker Compose 
-        ulx_nested_docker
-        #
-        # Jenkins 
-        ulx_nested_jenkins 
         #
         # GitHub Clones maken
         git_clone_demos
+        #
+        # Docker en Docker omgeving inrichten
+        # Moet na de git clone omdat Visual Studio Code Server gebruikt maakt van demos directory
+        ulx_nested_docker
         #
         #
         # Functies die eerder gebruikt werden maar nu buiten gebruik zijn 
@@ -2759,8 +3117,16 @@ if [ $distro == "ubuntu" ]; then
         #
         #
         clear
+        echo 'Linux Universal Configuration Tool (LUCT)'
+        echo "Version $Major.$Minor.$Build.$Patch"
+        echo "Channel $Channel"
         echo ''
-        echo 'Linux Universal Configuration Tool (LUCT) Version 4'
+        echo ''
+        echo "I have finished my work. Just need to do a restart of the virtual machine."
+        echo ''
+        echo ''
+        echo "Found a bug ? Let me know by emailing me at j.a.tutert@saxion.nl"
+        echo ''
         echo ''
         #
         shutdown -r now
@@ -2773,19 +3139,19 @@ if [ $distro == "ubuntu" ]; then
         #
         #
         # Directories maken
+        # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
         maak_directories
         #
         # Debian/Ubuntu zo instellen zoals gewenst
+        # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
         ulx_nested_oobe
-        #
-        # Podman
-        ulx_nested_podman
-        #
-        # Jenkins 
-        ulx_nested_jenkins 
         #
         # GitHub Clones maken
         git_clone_demos
+        #
+        # Podman en Podman omgeving inrichten
+        # Moet na de git clone omdat Visual Studio Code Server gebruikt maakt van demos directory
+        ulx_nested_podman
         #
         #
         # Functies die eerder gebruikt werden maar nu buiten gebruik zijn 
@@ -2810,19 +3176,23 @@ if [ $distro == "ubuntu" ]; then
         #
         #
         # Directories maken
+        # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
         maak_directories
         #
         # Debian/Ubuntu zo instellen zoals gewenst
+        # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
         ulx_nested_oobe
-        #
-        # Docker
-        ulx_nested_docker
-        #
-        # Jenkins 
-        ulx_nested_jenkins 
         #
         # GitHub Clones maken
         git_clone_demos
+        #
+        # Docker en Docker omgeving inrichten
+        # Moet na de git clone omdat Visual Studio Code Server gebruikt maakt van demos directory
+        ulx_nested_docker
+        #
+        # MiniKube 
+        ulx_docker_minikube_init
+        ulx_docker_minikube_config
         #
         #
         # Functies die eerder gebruikt werden maar nu buiten gebruik zijn 
@@ -2832,14 +3202,6 @@ if [ $distro == "ubuntu" ]; then
         # ulx_maak_compose_scripts
         # ulx_maak_compose_voorbeelden
         #
-        #
-        #
-        # MiniKube 
-        ulx_docker_minikube_init
-        ulx_docker_minikube_config
-        #
-        #
-        # Functies die eerder gebruikt werden maar nu buiten gebruik zijn
         # ulx_maak_minikube_voorbeelden
         #
         #
@@ -2955,4 +3317,5 @@ fi
 #   So overdue, I owe them
 #   Swept away, I'm stolen
 #
+#   Adelle
 #

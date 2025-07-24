@@ -48,7 +48,7 @@
 #
 Major="4"
 Minor="1"
-Build="11"
+Build="10"
 Patch="0"
 Channel="Canary"
 #
@@ -299,9 +299,7 @@ echo ''
 # 23juli25 B10 Ansible Master Inventory 
 # 23juli25 B10 Uitbreiding logging 
 # 23juli25 B10 Aanpassen hostname op basis van eerst check gebruikersnaam
-# 24juli25 B11 Powershell installatie met snap in plaats van apt
-# 24juli25 B11 Markering functies die niet meer actief in gebruik zijn
-#
+# 
 # xxjuli25 Bxx Jenkins Wachtwoord bestand aanmaak fixen
 #
 #
@@ -735,17 +733,10 @@ function ulx_os_config_timezone () {
 #
 function ulx_os_netplan_download () {
     #
-    # ##################################################################
-    # Deze functie alleen uitvoeren als VM is voorzien van meerdere NIC
-    # ##################################################################
     #
+    # Ansible demo
     #
-    # ####################
-    # IP Plan NIC nummer 2
-    # ####################
-    #
-    #
-    # Ansible Controller
+    # Controller
     # VMNet4
     # 10.1.10.50
     #
@@ -981,18 +972,15 @@ function ulx_install_vm_tools () {
 #
 #
 function ulx_install_pwrshell () {
-    #    # Vullen variable Version ID
-    #    source /etc/os-release
-    #    #
-    #    /snap/bin/curl -s -SL "https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
-    #    # wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
-    #    dpkg -i /tmp/packages-microsoft-prod.deb > /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
-    #    apt update -qq >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
-    #    apt install powershell -y >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
-    #    rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    # Vullen variable Version ID
+    source /etc/os-release
     #
-    snap install powershell
-    #
+    /snap/bin/curl -s -SL "https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
+    # wget -q https://packages.microsoft.com/config/ubuntu/$VERSION_ID/packages-microsoft-prod.deb
+    dpkg -i /tmp/packages-microsoft-prod.deb > /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    apt update -qq >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    apt install powershell -y >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
 }
 #
 #
@@ -1355,9 +1343,6 @@ function ulx_install_ansible_semaphore () {
 #
 # 3U30 UBUNTU OS Install Software Functies ## Functie JAVA 
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_install_java_jdk () {
     #
@@ -1370,9 +1355,6 @@ function ulx_install_java_jdk () {
 #
 # 3U31 UBUNTU OS Install Software Functies ## Functie Jenkins
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_install_jenkins () {
     #
@@ -1415,9 +1397,6 @@ function ulx_install_jenkins () {
 #
 # 3U32 UBUNTU OS Install Software Functies ## Visual Studio Code Server
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_install_vscode_server () {
     # Installatie van code-server 
@@ -1579,9 +1558,6 @@ function ulx_docker_portainer_create () {
 #
 # 3U43 UBUNTU UBUNTU OS DOCKER Software Functies ## Portainer Remove
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_docker_portainer_remove () {
     docker stop portainer
@@ -1757,9 +1733,6 @@ function ulx_docker_mgmt_tools () {
 #
 # 3Uxx UBUNTU OS Install Software Functies ## Functie Configuratie Jenkins voor Docker
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_jenkins_docker () {
 
@@ -1982,9 +1955,6 @@ function ulx_podman_portainer_create () {
 #
 # 3U63 UBUNTU UBUNTU OS Podman Software Functies ## Portainer Remove
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_podman_portainer_remove () {
     podman stop portainer
@@ -2087,9 +2057,6 @@ function ulx_maak_minikube_voorbeelden () {
 # 3U61 UBUNTU Maak Scripts Onderwijsmodules Introductie Infrastructuren
 #      Configuratie Netwerken
 #
-# ##########################
-# ## NIET MEER IN GEBRUIK ##
-# ##########################
 #
 function ulx_intro_infra_netcfg () {
     #
