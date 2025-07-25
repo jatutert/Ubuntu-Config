@@ -49,7 +49,7 @@
 Major="4"
 Minor="1"
 Build="11"
-Patch="0"
+Patch="1"
 Channel="Canary"
 #
 #
