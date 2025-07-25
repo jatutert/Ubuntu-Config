@@ -48,8 +48,8 @@
 #
 Major="4"
 Minor="1"
-Build="12"
-Patch="1"
+Build="13"
+Patch="0"
 Channel="Canary"
 #
 #
@@ -1148,9 +1148,7 @@ function ulx_install_ansible_master () {
     # Ansible Automation Controller step 1
     # Ansible toevoegen aan repository
     #
-    # 1A Ansible Repo toevoegen 
     apt-add-repository ppa:ansible/ansible -y > /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
-    # 1B Updaten APT
     apt update -qq >> /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
     #
     # Ansible Automation Controller step 2
@@ -1161,7 +1159,6 @@ function ulx_install_ansible_master () {
     # Ansible Automation Controller step 3
     # Installatie SSHPASS
     # 
-    apt update -qq >> /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
     apt install sshpass -y >> /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
     #
     # Ansible Automation Controller step 4
@@ -1217,13 +1214,16 @@ function ulx_install_ansible_master () {
     if [[ "$SUDO_USER" == "ubuntu" || "$SUDO_USER" == "osboxes" ]]; then
         mkdir -p /etc/ansible/inventory 
         cp /demos/Ansible/Guest/Inventory/ansible-demo-inventory-LUCT-4 /etc/ansible/inventory
-        sed "s@gebruikersnaam@nl.archive.ubuntu.com@" -i /etc/ansible/inventory/ansible-demo-inventory-LUCT-4
 
-
-    WORD_TO_REPLACE="gebruikersnaam"
-    sed -i "s/$WORD_TO_REPLACE/$SUDO_USER/g" /etc/ansible/inventory/ansible-demo-inventory-LUCT-4
-
-
+        WORD_TO_REPLACE="gebruikersnaam"
+        sed -i "s/$WORD_TO_REPLACE/$SUDO_USER/g" /etc/ansible/inventory/ansible-demo-inventory-LUCT-4
+        #
+        WORD_TO_REPLACE="wachtwoord"
+        sed -i "s/$WORD_TO_REPLACE/$SUDO_USER/g" /etc/ansible/inventory/ansible-demo-inventory-LUCT-4
+        #
+        WORD_TO_REPLACE="machinenaam"
+        sed -i "s/$WORD_TO_REPLACE/$hostname/g" /etc/ansible/inventory/ansible-demo-inventory-LUCT-4
+        #
     fi
     #
     # vagrant omgeving 
@@ -1258,6 +1258,13 @@ function ulx_install_ansible_master () {
     echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
     echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
     chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
+    #
+    #
+    echo 'GIT CLONE - Step 1 of 1 GitHub Ansible DevOps'
+    if [ -d "/home/$SUDO_USER/ansible_devops" ]; then
+        rm -rf "/home/ubuntu/ansible_devops"
+    fi
+    git clone --quiet https://github.com/geerlingguy/ansible-for-devops.git /home/$SUDO_USER/ansible_devops
     #
 } 
 
@@ -2348,25 +2355,31 @@ function maak_directories () {
 #
 function git_clone_demos () {
     # Demos
-    echo 'GIT CLONE - Step 1 of 4 GitHub JATUTERT Demos'
+    echo 'GIT CLONE - Step 1 of 5 GitHub JATUTERT Demos'
     if [ -d "/home/$SUDO_USER/demos" ]; then
         rm -rf "/home/ubuntu/demos"
     fi
     git clone --quiet https://github.com/jatutert/demos.git /home/$SUDO_USER/demos
     # Awesome Compose 
-    echo 'GIT CLONE - Step 2 of 4 GitHub Docker Awesome Compose'
+    echo 'GIT CLONE - Step 2 of 5 GitHub Docker Awesome Compose'
     if [ -d "/home/$SUDO_USER/demos" ]; then
         rm -rf "/home/ubuntu/demos/Docker/Compose/Awesome-compose"
     fi
     git clone --quiet https://github.com/docker/awesome-compose.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose
     # Onderwijs
-    echo 'GIT CLONE - Step 3 of 4 GitHub MSiekmans (Onderwijs)'
+    echo 'GIT CLONE - Step 3 of 5 GitHub MSiekmans (Onderwijs)'
     if [ -d "/home/$SUDO_USER/onderwijs" ]; then
-        rm -rf "/home/ubuntu/demos"
+        rm -rf "/home/ubuntu/onderwijs"
     fi
     git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/onderwijs
+    # PowerShell
+    echo 'GIT CLONE - Step 4 of 5 GitHub Powershell is fun'
+    if [ -d "/home/$SUDO_USER/powershell" ]; then
+        rm -rf "/home/ubuntu/powershell"
+    fi
+    git clone --quiet https://github.com/HarmVeenstra/Powershellisfun.git /home/$SUDO_USER/powershell
     # Shell Scripts
-    echo 'GIT CLONE - Step 4 of 4 Make all Shell Scriptfiles Executable'
+    echo 'GIT CLONE - Step 5 of 5 Make all Shell Scriptfiles Executable'
     find /home/$SUDO_USER/demos -type f -name "*.sh" -exec chmod +x {} \;
     echo '##################################################'
     echo ''
