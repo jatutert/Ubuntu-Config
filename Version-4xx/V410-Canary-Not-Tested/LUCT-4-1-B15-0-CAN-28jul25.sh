@@ -49,7 +49,7 @@
 #
 Major="4"
 Minor="1"
-Build="16"
+Build="15"
 Patch="0"
 Channel="Canary"
 #
@@ -73,16 +73,13 @@ echo "Created by John Tutert(TutSOFT) for Bachelor IT Saxion UAS"
 echo ''
 echo 'For Personal or Educational use only !'
 echo ''
-echo 'Supported Linux distributions are:'
-echo '- BuildRoot (Virtual Machine used by Minikube)'
-echo '- Debian 12.00 (Stable) Bookworm'
-echo '- Ubuntu 24.04 (LTS) Noble Numbat'
-echo '- Ubuntu 24.04 (LTS) on Windows Subsystem for Linux (WSL) version 2'
+echo 'Supported Linux distributions are'
+echo '- Debian 12 Bookworm SBL'
+echo '- Ubuntu 24 Noble Numbat LTS'
+echo '- Alpine xx Doelstelling voor 2026'
 echo ''
-echo 'Not supported Linux distributions are:'
-echo '- Alpine'
-echo '- Fedora and RHEL'
-echo '- Slackware'
+echo '- BuildRoot (Virtual Machine used by Minikube)'
+echo '- Ubuntu on Windows Subsystem for Linux (WSL) version 2'
 echo ''
 echo 'Deadline 25 augustus naar Dev Channel'
 echo ''
@@ -308,7 +305,6 @@ echo ''
 # 26juli25 B14 Patch 3 volgorde fixes nested oobe nav eerste run op debian
 # 28juli25 B15 Succesvolle testrun op Debian gedaan melding apt repo add stil gemaakt en 7zz bij Debian
 # 28juli25 B15 Debian installatie Snap van Ubuntu toegevoegd Snap is dus nu ook beschikbaar op Debian
-# 28juli25 B16 Bepalen versienummer eerder in script verwijderd bij change repo ubuntu
 #
 # xxaug25 Bxx Ansible Master Controller en Ansible Slave Demo omgeving 
 #
@@ -375,7 +371,10 @@ fi
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     distro=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
-    versie=$(echo "$VERSION_ID" | tr '[:upper:]' '[:lower:]')
+else
+    # Fallback voor oudere systemen of afwijkende configuraties
+    # Dit is minder betrouwbaar en zou in de meeste gevallen niet nodig moeten zijn
+    distro=$(uname -s | tr '[:upper:]' '[:lower:]')
 fi
 #
 #
@@ -516,7 +515,7 @@ function build_bash_config () {
 #
 #   #######################
 #   3D10 Debian OS FUNCTIES
-#        Functie Laden BASH shell settings
+#        Functie Change Repo Debian
 #        Onderdeel van Debian Nested OOBE Functie 
 #   #######################
 #
@@ -588,7 +587,7 @@ function deb_os_add_repo_nl () {
 #
 #
 #   #######################
-#   3D20 Debian OS Install Software Functies
+#   3D21 Debian OS Install Software Functies
 #        Functie Installatie Open Media Vault 
 #        Debian OMV
 #   #######################
@@ -677,39 +676,39 @@ EOF
 #
 #
 #
-# 3D40 Debian OS Nested Functions Basis Configuratie
+# 3D41 Debian OS Nested Functions Basis Configuratie
 #
 #
 #
 function deb_nested_oobe () {
     # Operating System Updating #
-    echo 'DEBIAN/UBUNTU - Step 1 of 13 Set Timezone to Europe Amsterdam'
+    echo 'DEBIAN/UBUNTU - Step 1 of xx Set Timezone to Europe Amsterdam'
     debulx_config_timezone_ams
-    echo 'DEBIAN - Step 2 of 13 Change Debian Repository Settings'
+    echo 'DEBIAN - Step 2 of xx Change Debian Repository Settings'
     deb_os_change_repo_nl
-    echo 'DEBIAN/UBUNTU - Step 3 of 13 Updating APT Package Manager'
+    echo 'DEBIAN/UBUNTU - Step 3 of xx Updating APT Package Manager'
     debulx_os_update_apt
-    echo 'DEBIAN/UBUNTU- Step 4 of 13 Upgrading Operating System (Please be patient ... takes a while)'
+    echo 'DEBIAN/UBUNTU- Step 4 of xx Upgrading Operating System (Please be patient ... takes a while)'
     debulx_os_upgrade_packages
     # Installatie #
-    echo 'DEBIAN/UBUNTU - Step 5 of 13 Installing Default Apps'
+    echo 'DEBIAN/UBUNTU - Step 5 of xx Installing Default Apps'
     debulx_install_default_apps
-    echo 'DEBIAN/UBUNTU - Step 6 of 13 Installing and configuration of Cockpit'
+    echo 'DEBIAN/UBUNTU - Step 6 of xx Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo 'DEBIAN/UBUNTU - Step 7 of 13 Installing Microsoft Powershell 7 (latest version)'
+    echo 'DEBIAN/UBUNTU - Step 7 of xx Installing Microsoft Powershell 7 (latest version)'
     debulx_install_pwrshell
     # Configuratie #
-    echo 'DEBIAN - Step 8 of 13 Adding Debian Repository'
+    echo 'DEBIAN - Step 8 of xx Adding Debian Repository'
     deb_os_add_repo_nl
-    echo 'DEBIAN - Step 9 of 13 Changing Domain Name Service (DNS) settings'
+    echo 'DEBIAN - Step 9 of xx Changing Domain Name Service (DNS) settings'
     deb_config_dns_settings
-    echo 'DEBIAN/UBUNTU - Step 10 of 13 Installing or updating of Open VM Tools'
+    echo 'DEBIAN/UBUNTU - Step 10 of xx Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo 'DEBIAN - Step 11 of 13 Configure Network Interface Card 2'
+    echo 'DEBIAN - Step 11 of xx Configure Network Interface Card 2'
     # ulx_os_netplan_download
-    echo 'DEBIAN - Step 12 of 13 Configure BASH shell'
+    echo 'DEBIAN - Step 12 of xx Configure BASH shell'
     deb_os_bash_config
-    echo 'DEBIAN/UBUNTU - Step 13 of 13 Python compatible with lower versions'
+    echo 'DEBIAN/UBUNTU - Step 13 of xx Configure Python 3'
     debulx_python_compatible
     echo '##################################################'
     echo ''
@@ -1621,7 +1620,9 @@ function debulx_nested_podman_complete () {
 #
 function ulx_os_change_repo_nl () {
     #
-    if [ $versie == "22.04" ] ; then
+    VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+    #
+    if [ $VERSION_ID == "22.04" ] ; then
         if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
             sed "s@mirrors.edge.kernel.org@nl.archive.ubuntu.com@" -i /etc/apt/sources.list
         else
@@ -1637,7 +1638,7 @@ function ulx_os_change_repo_nl () {
         fi
     fi
     #
-    if [ $versie == "24.04" ] ; then
+    if [ $VERSION_ID == "24.04" ] ; then
         # Vervang tweede tekstregel door nieuwe inhoud 
         sed -i '2c\URIs: http://mirror.ams.macarne.com/ubuntu/' /etc/apt/sources.list.d/ubuntu.sources > /home/$SUDO_USER/luct_logs/add-apt-repository.log
         # Voeg nieuwe repo toe 
@@ -1657,7 +1658,10 @@ function ulx_os_change_repo_nl () {
 #   #######################
 #   3U20 UBUNTU OS Install Software Functies
 #        Functie Installatie Ansible Master
-#        Alleen beschikbaar maken en houden voor Ubuntu Linux 
+#        Ansible
+#
+#        Deze functie werkt ook op Debian 12
+#
 #   #######################
 #
 #
@@ -1672,12 +1676,16 @@ function ulx_install_ansible_master () {
     # ###########################
     #
     #
-    if [ $distro == "ubuntu" ]; then
-        apt-add-repository ppa:ansible/ansible -y > /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
-    fi
-    #
+    # if [ $distro == "ubuntu" ]; then
+    #    apt-add-repository ppa:ansible/ansible -y > /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
+    #    apt update -qq >> /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
+    # fi
     #
     apt install ansible -y >> /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
+    #
+    # Ansible Automation Controller step 3
+    # Installatie SSHPASS
+    # 
     apt install sshpass -y >> /home/$SUDO_USER/luct_logs/ulx_install_ansible_master.log 2>&1
     #
     # Ansible Automation Controller step 4
@@ -1847,7 +1855,10 @@ function ulx_install_ansible_slave () {
 #   #######################
 #   3U22 UBUNTU OS Install Software Functies
 #        Functie Installatie Ansible Semaphore
-#        Alleen beschikbaar maken en houden voor Ubuntu Linux
+#        Ansible
+#
+#        Werkt ook op Debian
+#
 #   #######################
 #
 #
