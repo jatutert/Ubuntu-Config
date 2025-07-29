@@ -50,7 +50,7 @@
 Major="4"
 Minor="1"
 Build="17"
-Patch="1"
+Patch="0"
 Channel="Canary"
 #
 #
@@ -319,7 +319,6 @@ echo ''
 # 28juli25 B16 Bepalen versienummer eerder in script verwijderd bij change repo ubuntu
 # 28juli25 B17 Proces fase meldingen 
 # 28juli25 B17 Powershell Debian Ubuntu 
-# 29juli25 B17 Patch 1 Powershell Debian Ubuntu naar 1 in plaats van per distro
 #
 # xxaug25 Bxx Ansible Master Controller en Ansible Slave Demo omgeving 
 #
@@ -992,12 +991,22 @@ function debulx_install_podman () {
 #
 function debulx_install_pwrshell () {
     #
-    curl -s -SL "https://packages.microsoft.com/config/$distro/$versie/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
-    dpkg -i /tmp/packages-microsoft-prod.deb > /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
-    apt update -qq >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
-    apt install powershell -y >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
-    rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    if [ $distro == "debian" ]; then
+        curl -s -SL "https://packages.microsoft.com/config/debian/$versie/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
+        dpkg -i /tmp/packages-microsoft-prod.deb > /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+        apt update -qq                      >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+        apt install powershell -y           >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+        rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    fi
     #
+    if [ $distro == "ubuntu" ]; then
+        curl -s -SL "https://packages.microsoft.com/config/ubuntu/$versie/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb"
+        dpkg -i /tmp/packages-microsoft-prod.deb > /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+        apt update -qq                      >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+        apt install powershell -y           >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+        rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct_logs/luct_pwsh.log 2>&1
+    fi
+#
 }
 #
 #
