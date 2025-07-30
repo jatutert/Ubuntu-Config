@@ -49,8 +49,8 @@
 #
 Major="4"
 Minor="1"
-Build="19"
-Patch="0"
+Build="18"
+Patch="1"
 Channel="Canary"
 #
 #
@@ -85,6 +85,8 @@ echo '- Fedora and RHEL'
 echo '- Slackware'
 echo ''
 echo 'Running this script takes about 15 minutes (With slower internet connection it takes longer)'
+echo ''
+echo 'NEW PROGRESS BAR'
 echo ''
 #
 #
@@ -322,8 +324,6 @@ echo ''
 # 29juli25 B17 Patch 1 Powershell Debian Ubuntu naar 1 in plaats van per distro
 # 29juli25 B18 Docker pull Progress Bar en APT Install Progress Bar
 # 30juli25 B18 Patch 1 Progress Bars fix
-# 30juli25 B19 Progress Bar Functie apart gezet in distro onafhankelijk gedeelte
-# 30juli25 B19 Introductie van parameter 2 test waarbij veel meer zichtbaar wordt tijdens uitvoering
 #
 # xxaug25 Bxx Ansible Master Controller en Ansible Slave Demo omgeving 
 #
@@ -569,7 +569,9 @@ function deb_os_bash_config () {
 #
 function deb_os_change_repo_nl () {
     #
-    if [ $versie == "12" ] ; then
+    VERSION_ID=$(grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
+    #
+    if [ $VERSION_ID == "12" ] ; then
         # Vervang tweede tekstregel door nieuwe inhoud 
         sed -i '1c\deb http://mirror.ams.macarne.com/debian/ bookworm main non-free-firmware' /etc/apt/sources.list
         sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/ bookworm main non-free-firmware' /etc/apt/sources.list
@@ -777,15 +779,9 @@ function debulx_os_update_apt () {
 #
 #
 function debulx_os_upgrade_packages () {
-    #
-    if [ $2 == "test" ]; then
-        apt upgrade -y
-        apt autoremove -y
-    else
-        apt upgrade -qq -y > /dev/null 2>&1
-        apt autoremove -qq -y > /dev/null 2>&1
-    fi 
-    #
+    apt update -qq        > /dev/null 2>&1
+    apt upgrade -qq -y    > /dev/null 2>&1
+    apt autoremove -qq -y > /dev/null 2>&1
 }
 
 #
@@ -842,6 +838,17 @@ TOTAL_APT_INSTALL=${#APT_INSTALL_ARRAY[@]}
 CURRENT_APT_INSTALL_COUNT=0
 #
 #
+draw_progress_bar() {
+    local progress=$1
+    local bar_length=50
+    local filled_length=$((progress * bar_length / 100))
+    local empty_length=$((bar_length - filled_length))
+    local filled_chars=$(printf "%${filled_length}s" | tr ' ' '#')
+    local empty_chars=$(printf "%${empty_length}s" | tr ' ' '-')
+
+    # Clear the current line and redraw the bar
+    printf "\r[%s%s] %3d%%" "$filled_chars" "$empty_chars" "$progress"
+}
 #
 #
 for apt_install in "${APT_INSTALL_ARRAY[@]}"; do
@@ -1057,53 +1064,119 @@ function debulx_install_pwrshell () {
 #
 #
 function debulx_docker_images_pull () {
-    #
-    DOCKER_IMAGES=(
-        "alpine:latest"
-        "amazonlinux:latest"
-        "clearlinux:latest"
-        "containrrr/watchtower:latest"
-        "codercom/code-server:latest"
-        "debian:latest"
-        "httpd:latest"
-        "minio/minio:latest"
-        "nginx:latest"
-        "photon:latest"
-        "portainer/portainer-ce:latest"
-        "registry:latest"
-        "selfhostedpro/yacht:latest"
-        "wordpress:latest"
-        "alpine:3.5"
-        "prakhar1989/static-site"
-        "jenkins/jenkins:latest-jdk21"
-    )
-    #
-    #
-    TOTAL_IMAGES=${#DOCKER_IMAGES[@]}
-    CURRENT_IMAGE_COUNT=0
-    #
-    #
-    for image in "${DOCKER_IMAGES[@]}"; do
-        CURRENT_IMAGE_COUNT=$((CURRENT_IMAGE_COUNT + 1))
-        # Bereken de voortgang in percentage
-        PROGRESS=$((CURRENT_IMAGE_COUNT * 100 / TOTAL_IMAGES))
-        # Update de progressiebalk
-        draw_progress_bar "$PROGRESS"
-        echo " "
-        docker pull -q "$image" > /dev/null 2>&1
-        if [ $? -ne 0 ]; then
-            echo "Fout bij het laden van $image. Gaat verder met de volgende..."
-        fi
-    done
-    #
-    echo " "
-    #
-    if [ $2 == "test" ]; then
-        docker images
-    else
-        docker images > /home/$SUDO_USER/luct_logs/debulx_docker_images_pull.log 2>&1
+#
+#
+DOCKER_IMAGES=(
+    "alpine:latest"
+    "alpine:3.5"
+    "amazonlinux:latest"
+    "clearlinux:latest"
+    "debian:latest"
+    "photon:latest"
+    "httpd:latest"
+    "nginx:latest"
+    "prakhar1989/static-site"
+    "portainer/portainer-ce:latest"
+    "selfhostedpro/yacht:latest"
+    "codercom/code-server:latest"
+    "jenkins/jenkins:latest-jdk21"
+    "containrrr/watchtower:latest"
+    "registry:latest"
+)
+#
+#
+TOTAL_IMAGES=${#DOCKER_IMAGES[@]}
+CURRENT_IMAGE_COUNT=0
+#
+#
+draw_progress_bar() {
+    local progress=$1
+    local bar_length=50
+    local filled_length=$((progress * bar_length / 100))
+    local empty_length=$((bar_length - filled_length))
+    local filled_chars=$(printf "%${filled_length}s" | tr ' ' '#')
+    local empty_chars=$(printf "%${empty_length}s" | tr ' ' '-')
+
+    # Clear the current line and redraw the bar
+    printf "\r[%s%s] %3d%%" "$filled_chars" "$empty_chars" "$progress"
+}
+#
+#
+for image in "${DOCKER_IMAGES[@]}"; do
+    CURRENT_IMAGE_COUNT=$((CURRENT_IMAGE_COUNT + 1))
+    
+    # Bereken de voortgang in percentage
+    PROGRESS=$((CURRENT_IMAGE_COUNT * 100 / TOTAL_IMAGES))
+    
+    # Update de progressiebalk
+    draw_progress_bar "$PROGRESS"
+
+    echo " " # Nieuwe lijn voor de status van de huidige pull
+    # echo "Laden van: $image"
+    docker pull -q "$image" > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo "Fout bij het laden van $image. Gaat verder met de volgende..."
     fi
+done
+
+echo " " # Nieuwe lijn om de laatste progressiebalk te finaliseren
+
+
     #
+    # Script wordt uitgevoerd als sudo en daarom wordt functie ook gedaan sudo
+    #
+    # docker pull -q hello-world > /dev/null 2>&1
+    #
+    # ## Operating Systems
+    #
+    ## Alpine
+    # docker pull -q alpine:latest > /dev/null 2>&1
+    # docker pull -q alpine:3.5 > /dev/null 2>&1
+    ## Bash is eigenlijk Alpine Linux Image 
+    ## docker pull -q bash:latest
+    # 
+    # docker pull -q amazonlinux:latest > /dev/null 2>&1
+    # 
+    # docker pull -q clearlinux:latest > /dev/null 2>&1
+    # 
+    # docker pull -q debian:latest > /dev/null 2>&1
+    # 
+    # docker pull -q photon:latest > /dev/null 2>&1
+    # 
+    ## Ubuntu
+    ## docker pull -q ubuntu:20.04
+    ## docker pull -q ubuntu:22.04
+    #
+    ## Middleware
+    #
+    ### CMS
+    ## docker pull -q wordpress
+    #
+    ### DBMS
+    ## docker pull -q mariadb:10.6
+    ## docker pull -q postgres:latest
+    #
+    ### Storage
+    ## docker pull -q minio/minio
+    ## docker pull -q nextcloud
+    #
+    ### Webservers
+    # docker pull -q ubuntu/apache2:latest
+    # docker pull -q httpd:latest > /dev/null 2>&1
+    # docker pull -q nginx > /dev/null 2>&1
+    # docker pull -q prakhar1989/static-site > /dev/null 2>&1
+    #
+    ## Management 
+    # docker pull -q portainer/portainer-ce:latest > /dev/null 2>&1
+    # docker pull -q selfhostedpro/yacht:latest > /dev/null 2>&1
+    # docker pull -q codercom/code-server:latest > /dev/null 2>&1
+    # docker pull -q jenkins/jenkins:latest-jdk21 > /dev/null 2>&1
+    # docker pull -q containrrr/watchtower:latest > /dev/null 2>&1
+    #
+    ## Registry
+    # docker pull -q registry > /dev/null 2>&1
+    #
+    docker images > /home/$SUDO_USER/luct_logs/debulx_docker_images_pull.log 2>&1
 }
 #
 #
@@ -2379,30 +2452,6 @@ function git_clone_demos () {
 #
 #  ####################################
 #  ## Linux Distributie Onafhankelijke Functies
-#  ## Function progress bar 
-#  ####################################
-#
-#
-#
-#
-draw_progress_bar() {
-    local progress=$1
-    local bar_length=50
-    local filled_length=$((progress * bar_length / 100))
-    local empty_length=$((bar_length - filled_length))
-    local filled_chars=$(printf "%${filled_length}s" | tr ' ' '#')
-    local empty_chars=$(printf "%${empty_length}s" | tr ' ' '-')
-
-    # Clear the current line and redraw the bar
-    printf "\r[%s%s] %3d%%" "$filled_chars" "$empty_chars" "$progress"
-}
-#
-#
-#
-#
-#
-#  ####################################
-#  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Menu
 #  ####################################
 #
@@ -2899,12 +2948,10 @@ if [ $distro == "debian" ]; then
         #
         # Directories maken
         # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
-        echo '########## Configuration Process Part 1 OF 2 ##########'
         maak_directories
         #
         # Debian/Ubuntu zo instellen zoals gewenst
         # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
-        echo '########## Configuration Process Part 2 OF 2 ##########'
         deb_nested_oobe
         #
         clear
@@ -3159,7 +3206,7 @@ if [ $distro == "ubuntu" ]; then
     actie=$1 
     #
     #
-    if [ $1 == "upgrade" ]; then
+    if [ $actie == "upgrade" ]; then
         #
         #
         # Ubuntu OPTIE 1
@@ -3168,12 +3215,10 @@ if [ $distro == "ubuntu" ]; then
         #
         # Directories maken
         # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
-        echo '########## Configuration Process Part 1 OF 2 ##########'
         maak_directories
         #
         # Ubuntu zo instellen zoals gewenst
         # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
-        echo '########## Configuration Process Part 2 OF 2 ##########'
         ulx_nested_oobe
         #
         clear
@@ -3192,7 +3237,7 @@ if [ $distro == "ubuntu" ]; then
         shutdown -r now
         #
         exit 1
-    elif [ $1 == "docker" ]; then
+    elif [ $actie == "docker" ]; then
         #
         #
         # Ubuntu OPTIE 2
@@ -3228,12 +3273,7 @@ if [ $distro == "ubuntu" ]; then
         #
         #
         #
-        if [ $2 == "test" ]; then
-            echo 'Voor nu laten alle voorgaande meldingen even staan'
-        else
-            clear
-        fi 
-        #
+        # clear
         echo 'Linux Universal Configuration Tool (LUCT)'
         echo "Version $Major.$Minor.$Build.$Patch"
         echo "Channel $Channel"
@@ -3246,14 +3286,11 @@ if [ $distro == "ubuntu" ]; then
         echo ''
         echo ''
         #
-        if [ $2 == "test" ]; then
-            echo 'Voor nu slaan we een herstart even over'
-        else
-            shutdown -r now
-        fi 
+        echo 'Een reboot slaan we vandaag even over'
+        # shutdown -r now
         #
         exit 1
-    elif [ $1 == "podman" ]; then
+    elif [ $actie == "podman" ]; then
         #
         #
         # Ubuntu OPTIE 3
@@ -3301,7 +3338,7 @@ if [ $distro == "ubuntu" ]; then
         # shutdown -r now
         #
         exit 1
-    elif [ $1 == "minikube" ]; then
+    elif [ $actie == "minikube" ]; then
         #
         #
         # Ubuntu OPTIE 4
@@ -3350,7 +3387,7 @@ if [ $distro == "ubuntu" ]; then
         shutdown -r now
         #
         exit 1
-    elif [ $1 == "iacmaster" ]; then
+    elif [ $actie == "iacmaster" ]; then
         #
         #
         # Ubuntu OPTIE 5
@@ -3389,7 +3426,7 @@ if [ $distro == "ubuntu" ]; then
         shutdown -r now
         #
         exit 1
-    elif [ $1 == "iacslave" ]; then
+    elif [ $actie == "iacslave" ]; then
         #
         #
         # Ubuntu OPTIE 6
@@ -3428,7 +3465,7 @@ if [ $distro == "ubuntu" ]; then
         shutdown -r now
         #
         exit 1
-    elif [ $1 == "introinfra" ]; then
+    elif [ $actie == "introinfra" ]; then
         #
         #
         # UBUNTU OPTIE 7
