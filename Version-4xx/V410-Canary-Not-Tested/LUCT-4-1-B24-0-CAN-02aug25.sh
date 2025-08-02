@@ -43,7 +43,7 @@
 #
 Major="4"
 Minor="1"
-Build="25"
+Build="24"
 Patch="0"
 Channel="Canary"
 #
@@ -225,9 +225,7 @@ echo ''
 # 31juli25 B22 ContainerEngine in plaats van Docker of Podman voor pull images en portainer
 # 01aug25  B23 Introductie gezamenlijke functies besparing 900 regels code
 # 01aug25  B23 Patch 1 Herstel foutje in if then statement
-# 02aug25  B24 Check if then statements script en introductie nieuwe functies om regels te besparen
-# 02aug25  B24 Ansible Master en Ansible Slave function nieuwe opzet
-# 02aug25  B25 Debian Ubuntu deel voltooien uit B24
+# 02aug25  B24 Check if then statements script
 #
 # xxaug25 Bxx Ansible Master Controller en Ansible Slave Demo omgeving 
 #
@@ -753,10 +751,7 @@ function debulx_install_default_apps () {
 function debulx_install_cockpit_srv () {
     #
     apt install -qq -y cockpit > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    #
-    # Installatie Apache2 Modules      Eventueel aanzetten      nog testen
-    # a2enmod env rewrite dir mime headers setenvif ssl
-    #
+    # Aanmaken Cockpit Service
     systemctl enable --now cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
     # Aanpassen Poort 
     rm -f /tmp/listen.conf
@@ -929,7 +924,7 @@ function debulx_install_minikube_compleet () {
     #
     if ! [ -x "$(command -v minikube)" ]; then
         echo 'Minikube niet aangetroffen. Installatie gestart ...' >&2
-        /snap/bin/curl -s -o /tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
+        curl -s -o /tmp/minikube_latest_amd64.deb https://storage.googleapis.com/minikube/releases/latest/minikube_latest_amd64.deb
         dpkg -i /tmp/minikube_latest_amd64.deb > /home/$SUDO_USER/luct-logs/luct_minikube.log 2>&1
         rm /tmp/minikube_latest_amd64.deb
     fi 
@@ -956,7 +951,7 @@ function debulx_install_minikube_compleet () {
     #
     #
     if ! [ -x "$(command -v kubectl)" ]; then
-        /snap/bin/curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" > /home/$SUDO_USER/luct-logs/luct_kubectl.log 2>&1
+        curl -LO "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" > /home/$SUDO_USER/luct-logs/luct_kubectl.log 2>&1
         chmod +x kubectl >> /home/$SUDO_USER/luct-logs/luct_kubectl.log 2>&1
         mv kubectl /usr/local/bin/ >> /home/$SUDO_USER/luct-logs/luct_kubectl.log 2>&1
         kubectl version --client >> /home/$SUDO_USER/luct-logs/luct_kubectl.log 2>&1
@@ -1124,16 +1119,6 @@ function debulx_install_ansible_compleet () {
         snap start semaphore
         snap set semaphore port=8301
         snap restart semaphore
-        if [[ $distro == "debian" ]]; then
-            echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
-            echo "sshpass -p $SUDO_USER ssh -o StrictHostKeyChecking=no $SUDO_USER@D12-BKW-M-IAC-S01" > /home/$SUDO_USER/ansible_host_ssh.sh 
-            chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
-        fi
-        if [[ $distro == "ubuntu" ]]; then
-            echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
-            echo "sshpass -p $SUDO_USER ssh -o StrictHostKeyChecking=no $SUDO_USER@U24-LTS-S-IAC-S01" > /home/$SUDO_USER/ansible_host_ssh.sh 
-            chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
-        fi
     # Ansible Master
     fi
     #
@@ -1190,20 +1175,26 @@ function debulx_install_ansible_compleet () {
                 fi
             fi
         fi
-        if [[ $distro == "debian" ]]; then
-            echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
-            echo "sshpass -p $SUDO_USER ssh -o StrictHostKeyChecking=no $SUDO_USER@D12-BKW-M-IAC-M01" > /home/$SUDO_USER/ansible_host_ssh.sh 
-            chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
-        fi
-        if [[ $distro == "ubuntu" ]]; then
-            echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
-            echo "sshpass -p $SUDO_USER ssh -o StrictHostKeyChecking=no $SUDO_USER@U24-LTS-S-IAC-M01" > /home/$SUDO_USER/ansible_host_ssh.sh 
-            chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
-        fi
     # Ansible Slave
     fi
-# Ansible
-}
+
+    #
+    #
+    # STAP 9
+    # SSH verbinden script maken 
+    # Uitvoeren als user Vagrant en niet als Root anders krijg je SSH foutmelding bij Ansible 
+    echo "Stap 7 - SSH Verbindingsscript maken gestart ..."
+    echo 'echo Uitvoeren als user Vagrant en niet als Root' > /home/$SUDO_USER/ansible_host_ssh.sh
+    echo 'sshpass -p "vagrant" ssh -o StrictHostKeyChecking=no vagrant@ulx-s-2204-l-a-010' > /home/$SUDO_USER/ansible_host_ssh.sh 
+    chmod +x /home/$SUDO_USER/ansible_host_ssh.sh
+    #
+    #
+    #
+
+
+
+
+} 
 #
 #
 #
@@ -2297,6 +2288,7 @@ function verander_machinenaam () {
                 hostnamectl set-hostname "$NEW_HOSTNAME"
                 sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
             fi
+            #
             if [[ $actie == "minikube" ]] ; then
                 NEW_HOSTNAME="D12-BKW-M-MKB-001"
                 hostnamectl set-hostname "$NEW_HOSTNAME"
@@ -2326,6 +2318,7 @@ function verander_machinenaam () {
                 hostnamectl set-hostname "$NEW_HOSTNAME"
                 sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
             fi
+            #
             if [[ $actie == "minikube" ]] ; then
                 NEW_HOSTNAME="U24-LTS-S-MKB-001"
                 hostnamectl set-hostname "$NEW_HOSTNAME"
@@ -2386,15 +2379,14 @@ function maak_directories () {
 #
 #
 function git_clone_demos () {
-
     # Demos
-    echo 'GIT CLONE - GitHub JATUTERT Demos'
+    echo 'GIT CLONE - Step 1 of 5 GitHub JATUTERT Demos'
     if [ -d "/home/$SUDO_USER/demos" ]; then
         rm -rf "/home/ubuntu/demos"
     fi
     git clone --quiet https://github.com/jatutert/demos.git /home/$SUDO_USER/demos
 
-    # Awesome Compose
+
     if [[ $actie == "docker" ]] ; then
         echo 'GIT CLONE - GitHub Docker Awesome Compose'
         if [ -d "/home/$SUDO_USER/demos" ]; then
@@ -2403,29 +2395,28 @@ function git_clone_demos () {
         git clone --quiet https://github.com/docker/awesome-compose.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose
     fi
 
-    # Onderwijs
-    if [[ $actie == "omv" || $actie == "osticket" ]] ; then
-        echo 'GIT CLONE - GitHub MSiekmans'
-        if [ -d "/home/$SUDO_USER/onderwijs" ]; then
-            rm -rf "/home/ubuntu/onderwijs"
-        fi
-        git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/onderwijs
-    fi
 
+    # Onderwijs
+    echo 'GIT CLONE - Step 3 of 5 GitHub MSiekmans (Onderwijs)'
+    if [ -d "/home/$SUDO_USER/onderwijs" ]; then
+        rm -rf "/home/ubuntu/onderwijs"
+    fi
+    git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/onderwijs
     # PowerShell
-    echo 'GIT CLONE - GitHub Powershell is fun'
+    echo 'GIT CLONE - Step 4 of 5 GitHub Powershell is fun'
     if [ -d "/home/$SUDO_USER/powershell" ]; then
         rm -rf "/home/ubuntu/powershell"
     fi
     git clone --quiet https://github.com/HarmVeenstra/Powershellisfun.git /home/$SUDO_USER/powershell
 
-    # Ansible 
     if [[ $actie == "iacmaster" ]] ; then
         if [ -d "/home/$SUDO_USER/ansible_devops" ]; then
             rm -rf "/home/ubuntu/ansible_devops"
         fi
         git clone --quiet https://github.com/geerlingguy/ansible-for-devops.git /home/$SUDO_USER/ansible_devops
     fi 
+
+
 
     # Shell Scripts
     echo 'GIT CLONE - Step 5 of 5 Make all Shell Scriptfiles Executable'
@@ -2533,15 +2524,43 @@ function config_menu () {
             #
             # Menu keuze 1 
             #
+            distro=$(echo "$NAME" | tr '[:upper:]' '[:lower:]')
             if [[ $distro == "alpine" ]]; then
+                #
+                # Alpine zo instellen zoals gewenst
+                # ulx_nested_oobe
+                #
+                # Directories maken
                 maak_directories
-                alx_update_os
+                #
             fi
+            #
             if [[ $distro == "buildroot" ]]; then
+                #
+                # Buildroot zo instellen zoals gewenst
+                # ulx_nested_oobe
+                #
+                # Directories maken
                 maak_directories
+                #
             fi
+            #
             if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
-                luct_linux_oobe
+                #
+                #
+                # Debian Ubuntu optie 1
+                # Besturingssysteem en standaard applicaties bijwerken naar laatste stand
+                #
+                #
+                # Directories maken
+                # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
+                echo '########## Configuration Process Part 1 OF 2 ##########'
+                maak_directories
+                #
+                # Ubuntu zo instellen zoals gewenst
+                # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
+                echo '########## Configuration Process Part 2 OF 2 ##########'
+                debulx_nested_os_config
             fi
             ;;
         2)
@@ -2678,8 +2697,6 @@ if [[ $distro == "alpine" ]]; then
         #
         # ALPINE OPTIE 1
         #
-        alx_update_os
-        luct_finish_script
         exit 1
         elif [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
             #
@@ -2836,7 +2853,9 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
         #
         #
         luct_linux_oobe
+        #
         luct_finish_script
+        #
         exit 1
     elif [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
         #
@@ -2846,28 +2865,39 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
         #
         #
         luct_linux_oobe
+        #
         debulx_nested_conteng_complete
+        #
+        #
         if [[ $actie == "minikube" ]] ; then
             debulx_install_minikube_compleet
             debulx_config_minikube_docker
         fi
+        #
         luct_finish_script
+        #
         exit 1
     elif [[ $actie == "iacmaster" || $actie == "iaslave" ]]; then
         #
         #
         # Debian Ubuntu Optie 3
-        # Installeren en Configureren Ansible
+        # Installeren en Configureren
+        # Ansible
+        # Master 001
+        # Slave  001
         #
         #
         luct_linux_oobe
+        #
         if [[ $actie == "iacmaster" ]] ; then
             ulx_install_ansible_complete "master"
         fi
         if [[ $actie == "iacslave" ]] ; then
             ulx_install_ansible_complete "slave"
         fi
+        #
         luct_finish_script
+        #
         exit 1
     elif [[ $actie == "omv" ]]; then
         #
@@ -2878,24 +2908,58 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
         #
         #
         luct_linux_oobe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if [[ $distro == "debian" ]] ; then
             deb_install_omv
+            #
+            if [[ $modus == "test" ]]; then
+                echo ''
+            else
+                clear
+            fi 
+            #
             luct_finish_script
+            #
+            if [[ $modus == "test" ]]; then
+                echo 'Normally I would reboot now'
+            else
+                shutdown -r now
+            fi 
         fi
         if [[ $distro == "ubuntu" ]] ; then
             echo 'Installing Open Media Vault on Ubuntu is NOT supported'
         fi 
         exit 1
-    elif [[ $actie == "osticket" ]]; then
+    elif [[ $actie == "osticktet" ]]; then
         #
         #
-        # Debian Ubuntu optie 5
-        # OS Ticket Native Install
+        # UBUNTU OPTIE 7
         #
         #
-        luct_linux_oobe
+        # Directories maken
+        maak_directories
+        #
+        # Debian/Ubuntu zo instellen zoals gewenst
+        ulx_nested_oobe
+        #
+        # OSTicket
         ulx_intro_infra_install
-        luct_finish_script
+        #
         exit 1
     elif [[ $actie == "itfunda" ]]; then
         #
