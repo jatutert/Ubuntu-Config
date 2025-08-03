@@ -1,6 +1,7 @@
 #! /bin/bash
 #
 #
+#
 #   #    #  # #### #####  #   #      ####  #####
 #   #    #  # #      #    #   #         #  #
 #   #    #  # #      #    #####         #  #
@@ -8,16 +9,18 @@
 #   #### #### ####   #        #  ##     #  #####
 #
 #
+#
 # Ophalen van Canary Latest versie van dit script in externe omgeving
+# 
 # sudo curl -L -o $HOME/luctv4.sh https://edu.nl/treah
 # sudo wget -O $HOME/luctv4.sh https://edu.nl/treah
 #
 # Hierna
+#
 # sudo chmod +x $HOME/luctv4.sh 
 # sudo $HOME/luctv4.sh docker 
 # sudo $HOME/luctv4.sh minikube 
 #
-# Bugcheck www.shellcheck.net
 #
 #
 # ################################################################################
@@ -40,8 +43,8 @@
 #
 Major="4"
 Minor="1"
-Build="27"
-Patch="0"
+Build="25"
+Patch="1"
 Channel="Canary"
 #
 #
@@ -72,7 +75,8 @@ echo '- Alpine (planned for version 4.5 in 2026)'
 echo ''
 echo 'Running this script takes about 15 minutes (With slower internet connection it takes longer)'
 echo ''
-echo 'LET OP modus staat standaard op TEST'
+echo 'Release Candidate 1'
+echo ''
 #
 #
 #
@@ -221,8 +225,8 @@ echo 'LET OP modus staat standaard op TEST'
 # 02aug25  B24 Ansible Master en Ansible Slave function nieuwe opzet
 # 02aug25  B25 Debian Ubuntu deel voltooien uit B24
 # 02aug25  B25 Patch 1 fix apt https installatie 
-# 03aug25  B26 Eerste opzet nieuwe manier installatie Docker nog niet gereed
-# 03aug25  B27 Nieuwe Functie Container Engine en Nieuwe Functie Netwerk instellingen
+#
+# xxaug25 Bxx Ansible Master Controller en Ansible Slave Demo omgeving 
 #
 #
 # ################################################################################
@@ -286,20 +290,14 @@ fi
 #
 #
 # Eerste parameter bijvoorbeeld docker
-actie=${1,,}
+actie=$1
 # Tweede parameter bijvoorbeeld test
-modus=${2,,}
+modus=$2
 #
 #
 if [[ ! "$modus" ]];then
     modus="leeg"
 fi
-#
-#
-echo '### Test Modus AAN ###'
-modus="test"
-#
-#
 #
 #
 # ############################
@@ -464,7 +462,7 @@ function build_bash_config () {
 #
 #
 #
-function deb_os_config_bash_settings () {
+function deb_os_bash_config () {
     #
     # Downloaden settings bestand
     curl -s -o /home/docker/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
@@ -644,12 +642,10 @@ function debulx_install_default_apps () {
         APT_INSTALL_ARRAY=(
             "7zip"
             "apt-transport-https"
-            "ca-certificates"
             "curl"
             "dmidecode"
             "dpkg"
             "git"
-            "gnupg"
             "gzip"
             "nano"
             "php"
@@ -674,12 +670,10 @@ function debulx_install_default_apps () {
         APT_INSTALL_ARRAY=(
             "7zip"
             "apt-transport-https"
-            "ca-certificates"
             "curl"
             "dmidecode"
             "dpkg"
             "git"
-            "gnupg"
             "gzip"
             "mc"
             "nano"
@@ -778,61 +772,112 @@ function debulx_install_cockpit_srv () {
 #
 #   #######################
 #   3DU22 Debian Ubuntu OS Install Software Functies
-#        Functie Installatie Container Engine
-#        Onderdeel van Debian Ubuntu Container Engine Nested Functie
+#        Functie Installatie Docker en Docker Compose
+#        Onderdeel van Debian Ubuntu Docker Nested Functie
 #   #######################
 #
 #
 #
 #
-function debulx_install_conteng () {
-    # DOCKER
-    if [[ $actie = "docker" || $actie = "minikube" ]]; then
-        # Verwijderen eventueel aanwezige container engine
-        apt purge -qq -y container* || true
-        apt purge -qq -y docker* || true
-        apt purge -qq -y podman* || true
-        apt purge -qq -y runc* || true
-        apt autoremove -y > /dev/null 2>&1
-        # Opschonen
-        rm -f /etc/apt/keyrings/docker.asc
-        rm -f /etc/apt/sources.list.d/docker.list
-        # Add Docker's official GPG key:
-        apt update -qq > /dev/null 2>&1
-        install -m 0755 -d /etc/apt/keyrings
-        curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-        chmod a+r /etc/apt/keyrings/docker.asc
-        # Add the repository to Apt sources
-        if [[ $distro = "debian" ]]; then
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-              $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+function debulx_install_docker_ce () {
+    #
+    # Check aanwezigheid Podman
+    #
+    if ! [ -x "$(command -v podman)" ]; then
+        #
+        # Podman is niet aanwezig 
+        #
+        # Check aanwezigheid Docker
+        #
+        if ! [ -x "$(command -v docker)" ]; then
+            #
+            # Podman is niet aanwezig
+            # Docker is niet aanwezig
+            # Installeer Docker
+            #
+            if [ $distro == "debian" ]; then
+                echo 'Package lxc-docker is not installed so not removed is NO problem'
+                echo 'Package lxc-docker-virtual-package is not installed so not removed is NO problem'
+            fi
+            #
+            if [ $distro == "ubuntu" ]; then
+                echo 'E: Unable to locate package lxc-docker* is NO problem'
+                echo 'E: Couldnt find any package by glob lxc-docker* is NO problem'
+            fi
+            #
+            apt purge -qq -y lxc-docker* || true
+            #
+            /snap/bin/curl -sSL https://get.docker.com/ | sh > /home/$SUDO_USER/luct-logs/debulx_install_docker_ce.log 2>&1
+            #
+            service docker start >> /home/$SUDO_USER/luct-logs/debulx_install_docker_ce.log 2>&1
+            #
+            usermod -a -G docker $SUDO_USER >> /home/$SUDO_USER/luct-logs/debulx_install_docker_ce.log 2>&1
+            #
+        else
+            #
+            # Podman is niet aanwezig
+            # Docker is wel aanwezig 
+            # 
+            echo 'Docker is already installed.'
         fi
-        if [[ $distro = "ubuntu" ]]; then
-            echo \
-              "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-              $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-              sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    else
+        #
+        # Podman is aanwezig
+        # Installatie Docker wordt overgeslagen
+        # 
+        echo 'Podman is installed. Skipping installation of Docker.'
+        #
+    fi
+    #
+}
+#
+#
+#
+#
+#   #######################
+#   3DU23 Debian Ubuntu OS Install Software Functies
+#        Functie Installatie Podman
+#        Onderdeel van Debian Ubuntu Podman Nested Functie
+#   #######################
+#
+#
+#
+#
+function debulx_install_podman () {
+    #
+    # Check aanwezigheid Docker 
+    #
+    if ! [ -x "$(command -v docker)" ]; then
+        #
+        # Docker is NIET aanwezig 
+        #
+        # Check aanwezigheid Podman
+        #
+        if ! [ -x "$(command -v podman)" ]; then
+            #
+            # Docker is niet aanwezig
+            # Podman is niet aanwezig 
+            # Installeer Podman
+            #
+            apt install -y podman > /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
+            service podman start >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
+            # sudo systemctl start podman.socket = alternatief voor service podman start
+            #
+            # Omdat PodMan rootless werkt is toevoegen aan groep NIET noodzakelijk 
+            #
+        else
+            #
+            # Podman is reeds aanwezig
+            #
+            echo 'Podman is already installed.'
+            #
         fi
-        apt update -qq > /dev/null 2>&1
-        apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y > /home/$SUDO_USER/luct-logs/debulx_install_docker.log 2>&1
-        usermod -a -G docker $SUDO_USER
+    else
+        # Docker is aanwezig
+        echo 'Docker is installed. Skipping installation of Podman.'
+        #
     fi
-    # PODMAN
-    if [[ $actie = "podman" ]]; then
-        # Verwijderen eventueel aanwezige container engine
-        apt purge -qq -y container* || true
-        apt purge -qq -y docker* || true
-        apt purge -qq -y podman* || true
-        apt purge -qq -y runc* || true
-        apt autoremove -y > /dev/null 2>&1
-        # Opschonen
-        rm -f /etc/apt/keyrings/docker.asc
-        rm -f /etc/apt/sources.list.d/docker.list
-        apt install -y podman > /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
-        service podman start >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
-    fi
+    #
 }
 #
 #
@@ -1567,7 +1612,7 @@ function debulx_config_timezone_ams () {
 #
 #
 #
-function debulx_config_os_repo_change () {
+function debulx_change_repo_nl () {
     #
     if [[ $distro == "debian" ]] ; then
         if [[ $versie == "12" ]] ; then
@@ -1618,7 +1663,7 @@ function debulx_config_os_repo_change () {
 #
 #
 #
-function debulx_config_os_repo_add_new () {
+function debulx_os_add_repo () {
     add-apt-repository http://mirror.nl.datapacket.com/$distro/ -s -y > /dev/null 2>&1
 } 
 #
@@ -1710,30 +1755,6 @@ function debulx_config_minikube_docker () {
 #
 #
 #
-#   #######################
-#   3DU56 Debian UBUNTU Configuratie Functies
-#         Functie Network Settings
-#         
-#   #######################
-#
-#
-#
-#
-function debulx_config_network_settings () {
-   #
-    echo 'DEBIAN/UBUNTU - Step 1 of 2 Changing Domain Name Service (DNS) settings'
-    if [[ $distro == "debian" ]]; then
-        deb_config_dns_settings
-    fi
-    if [[ $distro == "ubuntu" ]]; then
-        ulx_os_config_dns
-    fi
-    echo 'DEBIAN/UBUNTU - Step 2 of 2 Configure Network Interface Card 2'
-    # ulx_os_netplan_download
-} 
-#
-#
-#
 #
 # 3DU6 CATEGORIE Debian UBUNTU APPS Nested Functions
 #
@@ -1750,13 +1771,13 @@ function debulx_config_network_settings () {
 #
 function debulx_nested_os_config () {
     # Operating System Updating #
-    echo 'DEBIAN/UBUNTU - Step 1 of 11 Set Timezone to Europe Amsterdam'
+    echo 'DEBIAN/UBUNTU - Step 1 of 13 Set Timezone to Europe Amsterdam'
     debulx_config_timezone_ams
-    echo "DEBIAN/UBUNTU - Step 2 of 11 Change $distro Repository Settings"
-    debulx_config_os_repo_change
-    echo 'DEBIAN/UBUNTU - Step 3 of 11 Configure APT Repository'
+    echo "DEBIAN/UBUNTU - Step 2 of 13 Change $distro Repository Settings"
+    debulx_change_repo_nl
+    echo 'DEBIAN/UBUNTU - Step 3 of 13 Configure APT Repository'
     debulx_os_update_apt
-    echo 'DEBIAN/UBUNTU - Step 4 of 11 Upgrading Operating System (Please be patient ... takes a while)'
+    echo 'DEBIAN/UBUNTU - Step 4 of 13 Upgrading Operating System (Please be patient ... takes a while)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -1764,25 +1785,31 @@ function debulx_nested_os_config () {
         echo "Version after upgrade $deb_vers_nw"
     fi
     # Installatie #
-    echo 'DEBIAN/UBUNTU - Step 5 of 11 Installing Default Apps'
+    echo 'DEBIAN/UBUNTU - Step 5 of 13 Installing Default Apps'
     debulx_install_default_apps
-    echo 'DEBIAN/UBUNTU - Step 6 of 11 Installing or updating of Open VM Tools'
+    echo 'DEBIAN/UBUNTU - Step 6 of 13 Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo 'DEBIAN/UBUNTU - Step 7 of 11 Installing and configuration of Cockpit'
+    echo 'DEBIAN/UBUNTU - Step 7 of 13 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo 'DEBIAN/UBUNTU - Step 8 of 11 Installing Microsoft Powershell 7 (latest version)'
+    echo 'DEBIAN/UBUNTU - Step 8 of 13 Installing Microsoft Powershell 7 (latest version)'
     debulx_install_pwrshell
     # Configuratie #
-    echo "DEBIAN/UBUNTU - Step 9 of 11 Adding Operating System Repository"
-    debulx_config_os_repo_add_new
-    echo "DEBIAN/UBUNTU - Step 10 of 11 Configure BASH Shell settings"
+    echo "DEBIAN/UBUNTU - Step 9 of 13 Adding $distro Repository"
+    debulx_os_add_repo
+    echo 'DEBIAN/UBUNTU - Step 10 of 13 Changing Domain Name Service (DNS) settings'
     if [[ $distro == "debian" ]]; then
-        deb_os_config_bash_settings
+        deb_config_dns_settings
     fi
     if [[ $distro == "ubuntu" ]]; then
-        echo 'Skipping this step'
+        ulx_os_config_dns
     fi
-    echo 'DEBIAN/UBUNTU - Step 11 of 11 Python compatible with lower versions'
+    echo 'DEBIAN/UBUNTU - Step 11 of 13 Configure Network Interface Card 2'
+    # ulx_os_netplan_download
+    echo "DEBIAN/UBUNTU - Step 12 of 13 Configure BASH Shell settings for $SUDO_USER"
+    if [[ $distro == "debian" ]]; then
+        deb_os_bash_config
+    fi
+    echo 'DEBIAN/UBUNTU - Step 13 of 13 Python compatible with lower versions'
     debulx_python_compatible
 }
 #
@@ -1801,10 +1828,19 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo "DEBIAN/UBUNTU - Step 1 of 10 Installation and configuration of Container Engine"
-    if [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
-        debulx_install_conteng
-    fi 
+    if [[ $actie == "docker" || $actie == "podman" ]]; then
+        echo "DEBIAN/UBUNTU - Step 1 of 10 Installation and configuration of $actie"
+    fi
+    if [[ $actie == "minikube" ]]; then
+        echo "DEBIAN/UBUNTU - Step 1 of 10 Installation and configuration of Docker"
+    fi
+    #
+    if [[ $actie == "docker" || $actie == "minikube" ]]; then
+        debulx_install_docker_ce
+    fi
+    if [[ $actie == "podman" ]]; then
+        debulx_install_podman
+    fi
     #
     # ##########################################################################
     #
@@ -1881,12 +1917,13 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo "DEBIAN/UBUNTU - Step 9 of 10 Installing Container Engine Management tools"
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
+        echo "DEBIAN/UBUNTU - Step 9 of 10 Installing Docker Management tools"
         debulx_docker_mgmt_tools
     fi
     if [[ $actie == "podman" ]]; then
-        echo 'Skipping this step for Podman'
+        # debulx_podman_mgmt_tools
+        echo 'DEBIAN/UBUNTU - Step 9 of 10 Skipping Installing Podman Management tools'
     fi
     #
     # ##########################################################################
@@ -2346,14 +2383,14 @@ function maak_directories () {
 #
 #
 function git_clone_demos () {
-    #
+
     # Demos
     echo 'GIT CLONE - GitHub JATUTERT Demos'
     if [ -d "/home/$SUDO_USER/demos" ]; then
         rm -rf "/home/ubuntu/demos"
     fi
     git clone --quiet https://github.com/jatutert/demos.git /home/$SUDO_USER/demos
-    #
+
     # Awesome Compose
     if [[ $actie == "docker" ]] ; then
         echo 'GIT CLONE - GitHub Docker Awesome Compose'
@@ -2362,7 +2399,7 @@ function git_clone_demos () {
         fi
         git clone --quiet https://github.com/docker/awesome-compose.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose
     fi
-    #
+
     # Onderwijs
     if [[ $actie == "omv" || $actie == "osticket" ]] ; then
         echo 'GIT CLONE - GitHub MSiekmans'
@@ -2371,22 +2408,22 @@ function git_clone_demos () {
         fi
         git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/onderwijs
     fi
-    #
+
     # PowerShell
     echo 'GIT CLONE - GitHub Powershell is fun'
     if [ -d "/home/$SUDO_USER/powershell" ]; then
-        rm -rf "/home/$SUDO_USER/powershell"
+        rm -rf "/home/ubuntu/powershell"
     fi
     git clone --quiet https://github.com/HarmVeenstra/Powershellisfun.git /home/$SUDO_USER/powershell
-    #
+
     # Ansible 
     if [[ $actie == "iacmaster" ]] ; then
         if [ -d "/home/$SUDO_USER/ansible_devops" ]; then
-            rm -rf "/home/$SUDO_USER/ansible_devops"
+            rm -rf "/home/ubuntu/ansible_devops"
         fi
         git clone --quiet https://github.com/geerlingguy/ansible-for-devops.git /home/$SUDO_USER/ansible_devops
     fi 
-    #
+
     # Shell Scripts
     echo 'GIT CLONE - Step 5 of 5 Make all Shell Scriptfiles Executable'
     find /home/$SUDO_USER/demos -type f -name "*.sh" -exec chmod +x {} \;
@@ -2798,21 +2835,10 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
         luct_linux_oobe
         luct_finish_script
         exit 1
-    elif [[ $actie == "network" ]]; then
-        #
-        #
-        # Debian Ubuntu optie 2
-        # Aanpassen netwerkinstellingen zoals dns en nic2
-        #
-        #
-        luct_linux_oobe
-        debulx_config_network_settings
-        luct_finish_script
-        exit 1
     elif [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
         #
         #
-        # Debian Ubuntu Optie 3
+        # Debian Ubuntu Optie 2
         # Installeren en Configureren Docker Podman en Minikube op Docker
         #
         #
@@ -2827,7 +2853,7 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
     elif [[ $actie == "iacmaster" || $actie == "iaslave" ]]; then
         #
         #
-        # Debian Ubuntu Optie 4
+        # Debian Ubuntu Optie 3
         # Installeren en Configureren Ansible
         #
         #
@@ -2843,7 +2869,7 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
     elif [[ $actie == "omv" ]]; then
         #
         #
-        # Debian Ubuntu Optie 5
+        # Debian Ubuntu Optie 4
         # Installeren en Configureren
         # Open Media Vault
         #
@@ -2860,7 +2886,7 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
     elif [[ $actie == "osticket" ]]; then
         #
         #
-        # Debian Ubuntu optie 6
+        # Debian Ubuntu optie 5
         # OS Ticket Native Install
         #
         #
@@ -2871,7 +2897,7 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
     elif [[ $actie == "itfunda" ]]; then
         #
         #
-        # Debian Ubuntu optie 7
+        # UBUNTU OPTIE 8
         #
         #
         # Directories maken
@@ -2886,17 +2912,17 @@ if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
         exit 1
     elif [[ $actie == "scripts" ]]; then
         #
-        # Debian Ubuntu optie 8
+        # UBUNTU OPTIE 9
         #
         exit 1
     elif [[ $actie == "scripts" ]]; then
         #
-        # Debian Ubuntu optie 9
+        # UBUNTU OPTIE 10
         #
         exit 1
     elif [[ $actie == "menu" ]]; then
         #
-        # Debian Ubuntu optie 10
+        # UBUNTU OPTIE 11
         #
         config_menu
         exit 1
