@@ -1,3 +1,13 @@
+
+Build 30
+
+To do
+
+Podman TUI
+Regel 1965
+
+
+
 #! /bin/bash
 #
 #
@@ -40,7 +50,7 @@
 #
 Major="4"
 Minor="1"
-Build="30"
+Build="29"
 Patch="0"
 Channel="Canary"
 #
@@ -226,7 +236,6 @@ echo 'LET OP modus staat standaard op TEST'
 # 03aug25  B27 Nieuwe Functie Container Engine en Nieuwe Functie Netwerk instellingen
 # 03aug25  B28 Testmodus apt update en fix dry EN Podman docker registry fix voor images
 # 03aug25  B29 Linux Distros aangepast beginscherm EN Testmodus aangezet op belangrijke onderdelen 
-# 04aug25  B30 Cockpit nieuwe installatie manier EN Podman Cockpit EN Gebruiker ROOT vrijgeven
 #
 #
 # ################################################################################
@@ -398,8 +407,8 @@ function alx_vm_tools () {
 #
 #
 #   #######################
-#   3B  BuildRoot 
-#       Function Docker Compose Installation 
+#   3B  Function BuildRoot 
+#       Docker Compose Installation 
 #   #######################
 #
 #
@@ -411,6 +420,29 @@ function build_install_compose () {
     curl -s -SL https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-linux-x86_64 -o /home/$SUDO_USER/.docker/cli-plugins/docker-compose
     chmod a+x /home/$SUDO_USER/.docker/cli-plugins/docker-compose
     #
+}
+#
+#
+#
+#
+#  #######################
+#  3B   Function BuildRoot 
+#       BASH Configuratie Settings
+#  #######################
+#
+#
+#
+#
+function build_bash_config () {
+    #
+    # Downloaden settings bestand
+    curl -s -o /home/docker/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
+    # Downloaden bestand dat settings bestand automatisch activeert
+    curl -s -o /home/docker/.bash_profile https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bash_profile
+    # 
+    # echo '#! /bin/bash' > /home/docker/bash_config.sh
+    # echo 'source /etc/bash.bashrc' >> /home/docker/bash_config.sh
+    # chmod a+x /home/docker/bash_config.sh
 }
 #
 #
@@ -447,12 +479,10 @@ function build_install_compose () {
 #
 function deb_os_config_bash_settings () {
     #
-    # Wordt ook gebruikt voor BuildRoot Linux omdat stappen exact gelijk zijn
-    #
     # Downloaden settings bestand
-    curl -s -o /home/$SUDO_USER/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
+    curl -s -o /home/docker/.bashrc https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bashrc
     # Downloaden bestand dat settings bestand automatisch activeert
-    curl -s -o /home/$SUDO_USER/.bash_profile https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bash_profile
+    curl -s -o /home/docker/.bash_profile https://raw.githubusercontent.com/jatutert/Ubuntu-Config/main/.bash_profile
     # 
     # LET OP
     # Wordt pas actief na uitloggen of herstarten net zoals docker
@@ -744,14 +774,11 @@ function debulx_install_default_apps () {
 #
 function debulx_install_cockpit_srv () {
     #
-    if [[ $distro == "debian" ]]; then
-        . /etc/os-release
-        echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > \
-            /etc/apt/sources.list.d/backports.list
-        apt update -qq
-    fi
-    . /etc/os-release
-    apt install -t ${VERSION_CODENAME}-backports cockpit -y > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+    apt install -qq -y cockpit > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+    #
+    # Installatie Apache2 Modules      Eventueel aanzetten      nog testen
+    # a2enmod env rewrite dir mime headers setenvif ssl
+    #
     systemctl enable --now cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
     # Aanpassen Poort 
     rm -f /tmp/listen.conf
@@ -760,10 +787,9 @@ function debulx_install_cockpit_srv () {
     echo 'ListenStream=8101' >> /tmp/listen.conf
     mkdir -p /etc/systemd/system/cockpit.socket.d/
     cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
-    # Herstarten
+    #
     systemctl daemon-reload >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
     systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-# Cockpit
 }
 #
 #
@@ -838,13 +864,7 @@ function debulx_install_conteng () {
         # Docker IO Registry toevoegen aan lijst omdat standaard niet aanwezig is
         sed -i '$a[registries.search]' /etc/containers/registries.conf
         sed -i '$aregistries = ["docker.io"]' /etc/containers/registries.conf
-        # Cockpit Podman installeren en starten 
-        apt install cockpit-podman -y >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
-        systemctl enable --now cockpit.socket podman.service >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
-        systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
     fi
-    #
-# Install Container Engine
 }
 #
 #
@@ -870,7 +890,6 @@ function debulx_install_pwrshell () {
         rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
     fi
     #
-# Install Powershell
 }
 #
 #
@@ -1362,7 +1381,7 @@ function debulx_conteng_images_pull () {
 #
 #
 function debulx_conteng_portainer_run () {
-    #
+    fi
     if [[ $modus == "test" ]]; then
         echo 'Portainer'
     fi
@@ -1815,13 +1834,13 @@ function debulx_config_network_settings () {
 #
 function debulx_nested_os_config () {
     # Operating System Updating #
-    echo 'DEBIAN/UBUNTU - Step 1 of 12 Set Timezone to Europe Amsterdam'
+    echo 'DEBIAN/UBUNTU - Step 1 of 11 Set Timezone to Europe Amsterdam'
     debulx_config_timezone_ams
-    echo "DEBIAN/UBUNTU - Step 2 of 12 Change $distro Repository Settings"
+    echo "DEBIAN/UBUNTU - Step 2 of 11 Change $distro Repository Settings"
     debulx_config_os_repo_change
-    echo 'DEBIAN/UBUNTU - Step 3 of 12 Configure APT Repository'
+    echo 'DEBIAN/UBUNTU - Step 3 of 11 Configure APT Repository'
     debulx_os_update_apt
-    echo 'DEBIAN/UBUNTU - Step 4 of 12 Upgrading Operating System (Please be patient ... takes a while)'
+    echo 'DEBIAN/UBUNTU - Step 4 of 11 Upgrading Operating System (Please be patient ... takes a while)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -1829,34 +1848,26 @@ function debulx_nested_os_config () {
         echo "Version after upgrade $deb_vers_nw"
     fi
     # Installatie #
-    echo 'DEBIAN/UBUNTU - Step 5 of 12 Installing Default Apps'
+    echo 'DEBIAN/UBUNTU - Step 5 of 11 Installing Default Apps'
     debulx_install_default_apps
-    echo 'DEBIAN/UBUNTU - Step 6 of 12 Installing or updating of Open VM Tools'
+    echo 'DEBIAN/UBUNTU - Step 6 of 11 Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo 'DEBIAN/UBUNTU - Step 7 of 12 Installing and configuration of Cockpit'
+    echo 'DEBIAN/UBUNTU - Step 7 of 11 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo 'DEBIAN/UBUNTU - Step 8 of 12 Installing Microsoft Powershell 7 (latest version)'
+    echo 'DEBIAN/UBUNTU - Step 8 of 11 Installing Microsoft Powershell 7 (latest version)'
     debulx_install_pwrshell
     # Configuratie #
-    echo "DEBIAN/UBUNTU - Step 9 of 12 Adding Operating System Repository"
+    echo "DEBIAN/UBUNTU - Step 9 of 11 Adding Operating System Repository"
     debulx_config_os_repo_add_new
-    echo "DEBIAN/UBUNTU - Step 10 of 12 Configure BASH Shell settings"
+    echo "DEBIAN/UBUNTU - Step 10 of 11 Configure BASH Shell settings"
     if [[ $distro == "debian" ]]; then
         deb_os_config_bash_settings
     fi
     if [[ $distro == "ubuntu" ]]; then
         echo 'Skipping this step'
     fi
-    echo 'DEBIAN/UBUNTU - Step 11 of 12 Python compatible with lower versions'
+    echo 'DEBIAN/UBUNTU - Step 11 of 11 Python compatible with lower versions'
     debulx_python_compatible
-    echo 'DEBIAN/UBUNTU - Step 12 of 12 Releasing ROOT user'
-    # Wachtwoord instellen voor gebruiker ROOT
-    wachtwoord=$SUDO_USER
-    echo "root:$wachtwoord" | sudo chpasswd
-    # Ontgrendel gebruiker ROOT
-    usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
-    #
-# Debian Ubuntu Nested OS Config
 }
 #
 #
@@ -1960,6 +1971,24 @@ function debulx_nested_conteng_complete () {
     fi
     if [[ $actie == "podman" ]]; then
         echo 'Skipping this step for Podman'
+
+# Podman TUI
+wget https://github.com/containers/podman-tui/releases/download/v1.7.0/podman-tui_linux_amd64.tar.gz
+tar -xvf podman-tui_linux_amd64.tar.gz
+mv podman-tui /usr/local/bin/
+chmod +x /usr/local/bin/podman-tui
+
+# Zie https://github.com/containers/podman-tui
+# Zie https://github.com/containers/podman-tui/blob/main/docs/install.md
+
+podman run -it --name podman-tui-app \
+  -e CONTAINER_PASSPHRASE="<ssh key passphrase>" \
+  -v <ssh_keys_dir>:/ssh_keys/:Z \
+  --net=host \
+  quay.io/navidys/podman-tui:latest # latest release, use develop tag to pull the upstream build
+
+
+
     fi
     #
     # ##########################################################################
@@ -2814,7 +2843,7 @@ if [[ $distro == "buildroot" ]]; then
         #
         # BUILDROOT OPTIE 1
         #
-        deb_os_config_bash_settings
+        build_bash_config
         #
         build_install_compose
         #
