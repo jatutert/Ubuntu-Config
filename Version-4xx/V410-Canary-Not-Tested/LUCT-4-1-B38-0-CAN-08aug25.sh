@@ -3114,10 +3114,22 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Phase 8
         luct_finish_script
         exit 1
-    elif [[ $actie == "network" ]]; then
+    elif [[ $actie == "normal" ]]; then
         #
         #
         # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu optie 2
+        # Upgrade naar normale versie in plaats van LTS versie
+        #
+        #
+        if [[ $distro == "ubuntu" ]] ; then 
+            sed -i 's/Prompt=lts/Prompt=normal/g' /etc/update-manager/release-upgrades
+            do-release-upgrade
+        fi
+        exit 1
+    elif [[ $actie == "network" ]]; then
+        #
+        #
+        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu optie 3
         # Aanpassen netwerkinstellingen zoals dns en nic2
         #
         #
@@ -3131,7 +3143,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
     elif [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
         #
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 3
+        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 4
         # Installeren en Configureren Docker Podman en Minikube op Docker
         #
         # Phase 1 tot en met 4
@@ -3153,7 +3165,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
     elif [[ $actie == "iacmaster" || $actie == "iaslave" ]]; then
         #
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 4
+        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 5
         # Installeren en Configureren Ansible
         #
         #
@@ -3171,7 +3183,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
     elif [[ $actie == "omv" ]]; then
         #
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 5
+        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 6
         # Installeren en Configureren
         # Open Media Vault
         #
@@ -3188,7 +3200,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
     elif [[ $actie == "osticket" ]]; then
         #
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 6
+        # Debian Ubuntu LinuxMint Debian LinuxMint optie 7
         # OS Ticket Native Install
         #
         #
@@ -3199,7 +3211,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
     elif [[ $actie == "itfunda" ]]; then
         #
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 7
+        # Debian Ubuntu LinuxMint Debian LinuxMint optie 8
         #
         #
         # Directories maken
@@ -3214,17 +3226,17 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         exit 1
     elif [[ $actie == "scripts" ]]; then
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 8
+        # Debian Ubuntu LinuxMint Debian LinuxMint optie 9
         #
         exit 1
     elif [[ $actie == "scripts" ]]; then
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 9
+        # Debian Ubuntu LinuxMint Debian LinuxMint optie 10
         #
         exit 1
     elif [[ $actie == "menu" ]]; then
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 10
+        # Debian Ubuntu LinuxMint Debian LinuxMint optie 11
         #
         config_menu
         exit 1
