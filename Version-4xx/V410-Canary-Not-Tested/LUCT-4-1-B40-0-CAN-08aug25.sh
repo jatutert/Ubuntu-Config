@@ -70,10 +70,8 @@
 #
 Major="4"
 Minor="1"
-Build="41"
+Build="40"
 Patch="0"
-# Indien GEEN Release Candite op 0 zetten
-ReleaseCandidate="4"
 Channel="Canary"
 #
 #
@@ -234,9 +232,8 @@ Channel="Canary"
 # 08aug25  B38 RC2 Debug modus aan bij test EN UT Twente Repo toevoeging
 # 08aug25  B39 RC3 Nieuwe menu optie non lts upgrade
 # 08aug25  B40 RC3 Minder meldingen tijdens run en set e uitgezet omdat script onstabiel wordt
-# 08aug25  B40 RC4 Nieuwe Structuur Script
-# 09aug25  B40 RC4 Nieuwe Structuur Script
-# 10aug25  B41 RC4 Nieuwe Structuur Script
+# 08aug25  B40 Nieuwe Structuur Script
+# 09aug25  B40 Nieuwe Structuur Script
 #
 #
 # #######################
@@ -248,11 +245,7 @@ Channel="Canary"
 clear
 echo '#########################################################################################'
 echo "Linux Universal Configuration Tool (LUCT) Version $Major.$Minor Build $Build Patch $Patch"
-if [[ $ReleaseCandidate == "0" ]]; then
-    echo "Channel $Channel"
-else 
-    echo "Channel $Channel                      RELEASE CANDIDATE $ReleaseCandidate"
-fi
+echo "Channel $Channel                      RELEASE CANDIDATE 3 for DEV Channel"
 echo "Created by John Tutert(TutSOFT) for Bachelor IT Saxion UAS"
 echo "Commercial use of this script is NOT permitted!"
 echo '#########################################################################################'
@@ -273,21 +266,6 @@ echo 'Running this script on a laptop running on battery power is NOT recommende
 echo ''
 #
 #
-# #######################
-# Blok 1G
-# Starttijd script
-# #######################
-#
-#
-TARGET_TIMEZONE="Europe/Amsterdam"
-CURRENT_TIMEZONE=$(timedatectl | grep "Time zone" | awk '{print $3}')
-if [ "$CURRENT_TIMEZONE" != "$TARGET_TIMEZONE" ]; then
-    timedatectl set-timezone "$TARGET_TIMEZONE" > /dev/null 2>&1
-fi 
-rm -f /TMP/LUCT-Start-Time.txt
-date > /TMP/LUCT-Start-Time.txt
-#
-#
 # ################################################################################
 # ################################################################################
 #
@@ -300,63 +278,70 @@ date > /TMP/LUCT-Start-Time.txt
 #
 # #######################
 # Blok 2A
-# Rechten
-# #######################
-#
-#
-# Controleer ROOT rechten voor het script 
-echo 'Phase 1 - Checking executing rights'
-echo "Script started as user $USER"
-if [ $(id -u) -ne 0 ]; then
-    # GEEN ROOT Rechten dus einde script
-    luct_finish_script
-fi
-#
-#
-# #######################
-# Blok 2B
 # Argument 1
 # #######################
 #
 #
 # Eerste parameter bijvoorbeeld docker
-echo 'Phase 2 - Checking Script Arguments'
-echo "Script started with first argument $1"
+echo 'Phase 1 - Checking Start Parameter'
 if [ $1 -eq 0 ]; then
-    # Geen parameter 1 opgegeven dus einde script
-    luct_finish_script
-fi 
+    echo 'No parameter specified !' 
+    echo 'Available parameters:'
+    echo 'upgrade    Upgrade operating system and applications'
+    echo 'network    Change networking settings for EduRoam'
+    echo 'docker     Docker with demo environment'
+    echo 'podman     Podman with demo environment'
+    echo 'minikube   Minikube with demo environment'
+    echo 'iacmaster  Ansible master with demo environment'
+    echo 'iacslave   Configure Ansible slave'
+    echo 'omv        Open Media Vault on Debian'
+    exit 1
+fi
+actie=${1,,}
+echo "You specified $actie" 
 #
 #
 # #######################
-# Blok 2C
+# Blok 2B
 # Argument 2
 # #######################
 #
 #
+
+
+AANPASSEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+
+
+
+# Tweede parameter
+# Geldig zijn
+# test om script sneller te doorlopen en meer meldingen te krijgen
+# docker of podman voor container engine van minikube 
+echo 'Phase 1 Checking Second Parameter'
 if [ $2 -eq 0 ]; then
-    echo 'No Second Argument specified'
-    echo ''
-    echo 'Available Second Arguments are:'
-    echo 'Docker - Use Docker as Container Engine with Minikube'
-    echo 'Podman - Use Podman as Container Engine with Minikube'
-    echo 'Test   - Skipping steps during execution to test this script'
-else 
-    echo "Script started with second argument $2"
+    echo 'No parameter specified !' 
+    echo 'Available parameters:'
+    echo 'upgrade    Upgrade operating system and applications'
+    echo 'network    Change networking settings for EduRoam'
+    echo 'docker     Docker with demo environment'
+    echo 'podman     Podman with demo environment'
+    echo 'minikube   Minikube with demo environment'
+    echo 'iacmaster  Ansible master with demo environment'
+    echo 'iacslave   Configure Ansible slave'
+    echo 'omv        Open Media Vault on Debian'
 fi
 modus=${2,,}
+#
+#
 if [[ ! "$modus" ]]; then
     modus="leeg"
 fi
 #
 #
 # #######################
-# Blok 2D
+# Blok 2C
 # Settings
 # #######################
-#
-#
-echo 'Phase 3 - Checking Script running mode'
 #
 #
 # SET E
@@ -367,8 +352,22 @@ echo 'Phase 3 - Checking Script running mode'
 # SET X
 # Debug modus aanzetten
 if [[ $modus == "test" ]]; then
-    echo 'DEBUG Mode is ON'
     set -x
+fi
+#
+#
+# #######################
+# Blok 2D
+# Rechten
+# #######################
+#
+#
+# Controleer execute als sudo
+echo 'Phase 2 - Checking executing rights'
+if [ $(id -u) -ne 0 ]; then
+    echo 'Script NIET gestart met sudo. Start dit script met sudo LUCT-4-1-[Channel]-latest.sh [parameter]'
+    echo 'Script NOT started with sudo. Start this script with sudo LUCT-4-1-[Channel]-latest.sh [parameter]'
+    exit 1
 fi
 #
 #
@@ -388,7 +387,7 @@ fi
 # #######################
 #
 #
-echo 'Phase 4 - Collecting current Linux Distribution information'
+echo 'Phase 3 - Collecting current Linux Distribution information'
 if [ -f /etc/os-release ]; then
     # Punt is gelijk aan Source commando
     . /etc/os-release
@@ -403,7 +402,6 @@ if [ -f /etc/os-release ]; then
         ulx_vers_oud=$VERSION
     fi
     #
-    echo "You are running $distro $versie as Operting System"
 fi
 #
 #
@@ -423,7 +421,7 @@ fi
 # #######################
 #
 #
-echo 'Phase 5 - Define Functions for this Script'
+echo 'Phase 4 - Define Functions for this Script'
 #
 #
 # ################################################################################
@@ -508,7 +506,7 @@ function build_install_docker_compose_plugin () {
 #
 #
 #
-# Blok 4D-1 CATEGORIE 1 OS Functies
+# Blok 4D-1 CATEGORIE 1 Debian OS Functies
 #
 #
 #
@@ -535,15 +533,15 @@ function deb_install_omv () {
 #
 #
 #
-# Blok 4D-3 CATEGORIE 3 Configuratie Functies
+# Blok 5C-D CATEGORIE 3 Configuratie Functies
 #
 #
 #
 #
 #   #######################
-#   4D-3-1    Debian Configuratie Functies
-#             Functie Change DNS OS
-#             Onderdeel van Debian Nested OOBE Functie
+#   5C-D-3-1 Debian Configuratie Functies
+#            Functie Change DNS OS
+#            Onderdeel van Debian Nested OOBE Functie
 #   #######################
 #
 #
@@ -606,7 +604,7 @@ EOF
 #
 # ################################################################################
 #
-# Blok 4E                                                        # #       #
+# Blok 5C-DU                                                     # #       #
 # DECLARATIE Debian en Ubuntu Gezamenlijke functies              # #       #
 # Debian 12                                                      # #       #
 # Ubuntu 24                                              ######### #       #
@@ -619,13 +617,13 @@ EOF
 #
 #
 #
-# Blok 4E-1 CATEGORIE 1 OS FUNCTIES
+# Blok 5C-DU CATEGORIE 1 OS FUNCTIES
 #
 #
 #
 #
 #   #######################
-#   Blok 4E-1-1    Debian Ubuntu OS FUNCTIES
+#   Blok 5C-DU-1-1 Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os update apt
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -641,12 +639,11 @@ function debulx_os_update_apt () {
 #
 #
 #   #######################
-#   Blok 4E-1-2    Debian Ubuntu OS FUNCTIES
+#   Blok 5C-DU-1-2 Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os upgrade packages 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
 #
-# Phase 8
 #
 #
 #
@@ -670,13 +667,13 @@ function debulx_os_upgrade_packages () {
 #
 #
 #
-# Blok 4E-2 CATEGORIE 2 Install Software Functies
+# Blok 5C-DU CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 #   #######################
-#   Blok 4E-2-1    Debian Ubuntu OS Install Software Functies
+#   Blok 5C-DU-2-1 Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Default Apps
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -810,7 +807,7 @@ function debulx_install_default_apps () {
 #
 #
 #   #######################
-#   Blok 4E-2-2 Debian Ubuntu OS Install Software Functies
+#   Blok 5C-DU-2-2 Debian Ubuntu OS Install Software Functies
 #                  Functie Native Installatie Cockpit Management Server
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -853,7 +850,7 @@ function debulx_install_cockpit_srv () {
 #
 #
 #   #######################
-#   Blok 4E-2-3    Debian Ubuntu OS Install Software Functies
+#   Blok 5C-DU-2-3 Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Container Engine
 #                  Onderdeel van Debian Ubuntu Container Engine Nested Functie
 #   #######################
@@ -939,7 +936,7 @@ function debulx_install_conteng () {
 #
 #
 #   #######################
-#   BLOK 4E-2-4    Debian Ubuntu OS Install Software Functies
+#   BLOK 5C-DU-2-4 Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie OS Powershell
 #                  Onderdeel van Debian Nested OOBE Functie
 #   #######################
@@ -961,19 +958,16 @@ function debulx_install_pwrshell () {
 #
 #
 #   #######################
-#   BLOK 4E-2-5    Debian Ubuntu OS Install Software Functies
+#   BLOK 5C-DU-2-5 Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Minikube
 #                  Minikube Kubeadm Kubectl
 #   #######################
 #
 #
-# PHASE 11
 #
 #
 function debulx_install_minikube_and_k8stools () {
     #
-    echo 'PHASE 11 - Instelling Minikube and tools'
-    # 
     # Bij installatie Docker of Podman wordt ALTIJD ook Minikube geinstalleerd 
     #
     if ! [ -x "$(command -v minikube)" ]; then
@@ -990,7 +984,7 @@ function debulx_install_minikube_and_k8stools () {
 #
 #
 #   #######################
-#   BLOK 4E-2-6    Debian Ubuntu OS Install Software Functies
+#   BLOK 5C-DU-2-6 Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Ansible
 #                  Ansible Master Slave
 #   #######################
@@ -1173,13 +1167,13 @@ function debulx_install_ansible_master_slave () {
 #
 #
 #
-# BLOK 4E-3 CATEGORIE 3 Container Engine
+# BLOK 5C-DU CATEGORIE 3 Container Engine
 #
 #
 #
 #
 # ###############################
-# BLOK 4E-3-1  Container Engine
+# BLOK 5C-DU-3-1  Container Engine
 #                 Function Management Tools Install and Run
 # ###############################
 #
@@ -1295,7 +1289,7 @@ function debulx_conteng_install_run_mgmt_tools () {
 #
 #
 # ################################################
-# Blok 4E-3-2     Container Engine
+# Blok 5C-DU-3-2  Container Engine
 #                 Images Pull 
 # ###############################################
 #
@@ -1366,8 +1360,8 @@ function debulx_conteng_images_pull () {
 #
 #
 # ################################################
-# Blok 4E-3-3    Container Engine
-#                Portainer
+# Blok 5C-DU-3-3  Container Engine
+#                 Portainer
 # ###############################################
 #
 #
@@ -1436,8 +1430,8 @@ function debulx_conteng_portainer_run () {
 #
 #
 # ################################################
-# Blok 4E-3-4    Container Engine
-#                Yacht
+# Blok 5C-DU-3-4  Container Engine
+#                 Yacht
 # ###############################################
 #
 #
@@ -1502,8 +1496,8 @@ function debulx_conteng_yacht_run () {
 #
 #
 # ################################################
-# Blok 4E-3-5    Container Engine
-#                Visual Studio Code Server
+# Blok 5C-DU-3-5  Container Engine
+#                 Visual Studio Code Server
 # ###############################################
 #
 #
@@ -1531,8 +1525,8 @@ function debulx_conteng_vscsrv_run () {
 #
 #
 # ################################################
-# Blok 4E-3-6    Container Engine
-#                Jenkins
+# Blok 5C-DU-3-6  Container Engine
+#                 Jenkins
 # ###############################################
 #
 #
@@ -1556,8 +1550,8 @@ function debulx_conteng_jenkins_run () {
 #
 #
 # ################################################
-# Blok 4E-3-7    Container Engine
-#                Registry
+# Blok 5C-DU-3-7  Container Engine
+#                 Registry
 # ###############################################
 #
 #
@@ -1579,8 +1573,8 @@ function debulx_conteng_registry_run () {
 #
 #
 # ################################################
-# Blok 4E-3-8    Container Engine
-#                WatchTower
+# Blok 5C-DU-3-8  Container Engine
+#                 WatchTower
 # ###############################################
 #
 #
@@ -1611,14 +1605,14 @@ unction debulx_conteng_watchtower_run () {
 #
 #
 #
-# Blok 4E CATEGORIE 4 Ubuntu Configuratie 
+# Blok 5C-DU CATEGORIE 4 Ubuntu Configuratie 
 #
 #
 #
 #
 #
 #   #######################
-#   Blok 4E-4-1    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-1 Debian UBUNTU Configuratie Functies
 #                  Functie Config Timezone Amsterdam Europa 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1626,8 +1620,9 @@ unction debulx_conteng_watchtower_run () {
 #
 #
 #
-function debulx_config_taal_nl () {
+function debulx_config_timezone_ams () {
     #
+    timedatectl set-timezone Europe/Amsterdam > /home/$SUDO_USER/luct-logs/debulx_config_timezone_ams.log 2>&1
     # Taal 
     apt install language-pack-nl -y > /dev/null 2>&1
     # Lokale instellingen
@@ -1635,7 +1630,6 @@ function debulx_config_taal_nl () {
     localectl set-locale LANG=nl_NL.UTF-8 > /dev/null 2>&1
     update-locale LANG=nl_NL.UTF-8 > /dev/null 2>&1
     #
-# Configuratie Taal Nederlands
 }
 #
 #
@@ -1643,7 +1637,7 @@ function debulx_config_taal_nl () {
 #
 #
 #   #######################
-#   Blok 4E-4-2    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-2 Debian UBUNTU Configuratie Functies
 #                  Functie Change OS Repository
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1758,7 +1752,7 @@ function debulx_config_os_repo_change () {
 #
 #
 #   #######################
-#   Blok 4E-4-3    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-3 Debian UBUNTU Configuratie Functies
 #                  Functie Config Repository
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1872,7 +1866,7 @@ function debulx_config_add_repositories () {
 #
 #
 #   #######################
-#   Blok 4E-4-4    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-4 Debian UBUNTU Configuratie Functies
 #                  Functie Configuratie Virtualisatie
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1908,7 +1902,7 @@ function debulx_config_virtualization () {
 #
 #
 #   #######################
-#   Blok 4E-4-5    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-5 Debian UBUNTU Configuratie Functies
 #                  Functie Python Compatible
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1929,7 +1923,7 @@ function debulx_python_compatible () {
 #
 #
 #   #######################
-#   Blok 4E-4-6    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-6 Debian UBUNTU Configuratie Functies
 #                  Functie Minikube
 #                  Minikube met Docker als driver
 #   #######################
@@ -1938,8 +1932,6 @@ function debulx_python_compatible () {
 #
 #
 function debulx_config_minikube_driver () {
-    #
-    echo 'Phase 12 - Configuring Minikube default driver'
     #
     conteng=$1
     #
@@ -1977,7 +1969,7 @@ function debulx_config_minikube_driver () {
 #
 #
 #   #######################
-#   Blok 4E-4-7    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-7 Debian UBUNTU Configuratie Functies
 #                  Functie Network Settings
 #         
 #   #######################
@@ -2001,7 +1993,7 @@ function debulx_config_network_settings () {
 #
 #
 #   #######################
-#   Blok 4E-4-8    Debian UBUNTU Configuratie Functies
+#   Blok 5C-DU-4-8 Debian UBUNTU Configuratie Functies
 #                  Functie Configuratie BASH shell
 #         
 #   #######################
@@ -2026,30 +2018,30 @@ function debulx_config_bash_shell () {
 #
 #
 #
-# Blok 4E CATEGORIE 5 Nested Functions
+# Blok 5C-DU CATEGORIE 5 Nested Functions
 #
 #
 #
 #
 #   #################################
-#   Blok 4E-5-1    Debian Ubuntu Nested 
+#   Blok 5C-DU-5-1 Debian Ubuntu Nested 
 #                  OOBE
 #   #################################
 #
 #
-# PHASE 8
+# PHASE 6
 #
 #
 function debulx_nested_os_config () {
     # Europa Amsterdam instellen
-    echo '## Phase 8 - Step 1 of 12 Set Operating System settings to Europe'
-    debulx_config_taal_nl
-    echo "## Phase 8 - Step 2 of 12 Change Operating System Repository to Europe"
+    echo '## Phase 6 - Step 1 of 12 Set Operating System settings to Europe'
+    debulx_config_timezone_ams
+    echo "## Phase 6 - Step 2 of 12 Change Operating System Repository to Europe"
     debulx_config_os_repo_change
     # APT
-    echo '## Phase 8 - Step 3 of 12 Implementing new APT Repository from Europe'
+    echo '## Phase 6 - Step 3 of 12 Implementing new APT Repository from Europe'
     debulx_os_update_apt
-    echo '## Phase 8 - Step 4 of 12 Upgrading Operating System (Please be patient ... takes a while)'
+    echo '## Phase 6 - Step 4 of 12 Upgrading Operating System (Please be patient ... takes a while)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -2062,28 +2054,28 @@ function debulx_nested_os_config () {
         ulx_vers_nw=$VERSION
         echo "Version after upgrade $ulx_vers_nw"
     fi
-    echo '## Phase 8 - Step 5 of 12 Installing Default Apps (Please be patient ... takes a while)'
+    echo '## Phase 6 - Step 5 of 12 Installing Default Apps (Please be patient ... takes a while)'
     # Doet installate van add apt repository commando
     debulx_install_default_apps
-    echo "## Phase 8 - Step 6 of 12 Adding new Repositories to APT"
+    echo "## Phase 6 - Step 6 of 12 Adding new Repositories to APT"
     # Toevoegen Ansible Cockpit Docker Kubernetes Powershell 
     # Gebruikt add apt repository commando
     debulx_config_add_repositories
     # Operating System instellen
-    echo "## Phase 8 - Step 7 of 12 Configure BASH Shell settings"
+    echo "## Phase 6 - Step 7 of 12 Configure BASH Shell settings"
     debulx_config_bash_shell
-    echo '## Phase 8 - Step 8 of 12 Releasing ROOT user'
+    echo '## Phase 6 - Step 8 of 12 Releasing ROOT user'
     wachtwoord=$SUDO_USER
     echo "root:$wachtwoord" | sudo chpasswd
     usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
     # Applicaties
-    echo '## Phase 8 - Step 9 of 12 Installing or updating of Open VM Tools'
+    echo '## Phase 6 - Step 9 of 12 Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo '## Phase 8 - Step 10 of 12 Python compatible with lower versions'
+    echo '## Phase 6 - Step 10 of 12 Python compatible with lower versions'
     debulx_python_compatible
-    echo '## Phase 8 - Step 11 of 12 Installing and configuration of Cockpit'
+    echo '## Phase 6 - Step 11 of 12 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo '## Phase 8 - Step 12 of 12 Installing Microsoft Powershell 7'
+    echo '## Phase 6 - Step 12 of 12 Installing Microsoft Powershell 7'
     debulx_install_pwrshell
     #
 # Debian Ubuntu Nested OS Config
@@ -2093,7 +2085,7 @@ function debulx_nested_os_config () {
 #
 #
 #   #################################
-#   Blok 4E-5-2    Debian Ubuntu Nested 
+#   Blok 5C-DU-5-2 Debian Ubuntu Nested 
 #                  Container Engine 
 #   #################################
 #
@@ -2104,14 +2096,14 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo "## Phase 10 - Step 1 of 10 Installation and configuration of Container Engine"
+    echo "## Phase 5 - Step 1 of 10 Installation and configuration of Container Engine"
     if [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
         debulx_install_conteng
     fi 
     #
     # ##########################################################################
     #
-    echo '## Phase 10 - Step 2 of 10 Pull most commonly used Images from Docker Hub'
+    echo '## Phase 5 - Step 2 of 10 Pull most commonly used Images from Docker Hub'
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
         debulx_conteng_images_pull "docker"
     fi
@@ -2121,7 +2113,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo "## Phase 10 - Step 3 of 10 Starting Jenkins CI CD CD Server as container on $actie"
+    echo "## Phase 5 - Step 3 of 10 Starting Jenkins CI CD CD Server as container on $actie"
     if [[ $actie == "docker" ]]; then
         debulx_conteng_jenkins_run "docker"
     fi
@@ -2134,7 +2126,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo '## Phase 10 - Step 4 of 10 Starting Portainer as container'
+    echo '## Phase 5 - Step 4 of 10 Starting Portainer as container'
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
         debulx_conteng_portainer_run "docker"
     fi
@@ -2144,7 +2136,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo '## Phase 10 - Step 5 of 10 Starting Yacht as container'
+    echo '## Phase 5 - Step 5 of 10 Starting Yacht as container'
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
         debulx_conteng_yacht_run "docker"
     fi
@@ -2154,7 +2146,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo '## Phase 10 - Step 6 of 10 Starting Visual Studio Code Server as container'
+    echo '## Phase 5 - Step 6 of 10 Starting Visual Studio Code Server as container'
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
         debulx_conteng_vscsrv_run "docker"
     fi
@@ -2164,7 +2156,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo '## Phase 10 - Step 7 of 10 Starting Registry as container'
+    echo '## Phase 5 - Step 7 of 10 Starting Registry as container'
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
         debulx_conteng_registry_run "docker"
     fi
@@ -2174,7 +2166,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo '## Phase 10 - Step 8 of 10 Starting WatchTower as container'
+    echo '## Phase 5 - Step 8 of 10 Starting WatchTower as container'
     if [[ $actie == "docker" || $actie == "minikube" ]]; then
         debulx_conteng_watchtower_run "docker"
     fi
@@ -2184,7 +2176,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo "## Phase 10 - Step 9 of 10 Installing Container Engine Management tools"
+    echo "## Phase 5 - Step 9 of 10 Installing Container Engine Management tools"
     if [[ $actie == "docker" ]]; then
         debulx_conteng_install_run_mgmt_tools "docker"
     fi
@@ -2202,7 +2194,7 @@ function debulx_nested_conteng_complete () {
     #
     # ##########################################################################
     #
-    echo "## Phase 10 - Step 10 of 10 Saving Jenkins initialAdminPassword to file"
+    echo "## Phase 5 - Step 10 of 10 Saving Jenkins initialAdminPassword to file"
     if [[ $actie == "docker" ]]; then
         docker cp LUCT_Jenkins:/var/jenkins_home/secrets/initialAdminPassword /home/$SUDO_USER/Jenkins_Initial_Password.txt
     fi
@@ -2227,7 +2219,7 @@ function debulx_nested_conteng_complete () {
 #
 # ################################################################################
 #
-# Blok 4F                                                #########
+# Blok 5C-F                                              #########
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES             #
 # Fedora RHEL                                            #
 #                                                        #######
@@ -2240,19 +2232,19 @@ function debulx_nested_conteng_complete () {
 #
 #
 #
-# Blok 4F-1 CATEGORIE 1 OS Functies
+# Blok 5C-F CATEGORIE 1 OS Functies
 #
 #
 #
 #
-# Blok 4F-2 CATEGORIE 2 Install Software Functies
+# Blok 5C-F CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 # ################################################################################
 #
-# Blok 4G                                                #       #
+# Blok 5C-U                                              #       #
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES             #       #
 # UBUNTU LINUX                                           #       #
 #                                                        #       #
@@ -2265,20 +2257,20 @@ function debulx_nested_conteng_complete () {
 #
 #
 #
-# Block 4G-1 CATEGORIE 1 OS Functies
+# Block 5C-U CATEGORIE 1 OS Functies
 #
 #
 #
 #
-# Blok 4G-2 CATEGORIE 2 Install Software Functies
+# Blok 5C-U CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 #   #######################
-#   Blok 4G-2-1    UBUNTU OS Install Software Functies
-#                  Functie Installatie gnome desktop
-#                  GUI
+#   Blok 5C-U-2-1 UBUNTU OS Install Software Functies
+#               Functie Installatie gnome desktop
+#               GUI
 #   #######################
 #
 #
@@ -2310,9 +2302,9 @@ function ulx_os_gnome_install () {
 #
 #
 #   #######################
-#   Blok 4G-2-2    UBUNTU OS Install Software Functies
-#                  Functie Installatie Desktop Tools
-#                  GUI
+#   Blok 5C-U-2-2 UBUNTU OS Install Software Functies
+#                 Functie Installatie Desktop Tools
+#                 GUI
 #   #######################
 #
 #
@@ -2334,12 +2326,12 @@ function ulx_it-funda_tooling () {
 #
 #
 #
-# Block 4E CATEGORIE 3 Configuratie Functies
+# Block 5C-DU CATEGORIE 3 Configuratie Functies
 #
 #
 #
 #   #######################
-#   Blok 4E-3-1    UBUNTU Configuratie Functies
+#   Blok 5C-DU-3-1 UBUNTU Configuratie Functies
 #                  Functie NIC Config OS
 #              
 #   #######################
@@ -2425,7 +2417,7 @@ function ulx_os_netplan_download () {
 #
 #
 #   #######################
-#   Blok 4E-3-2    UBUNTU Configuratie Functies
+#   Blok 5C-DU-3-2 UBUNTU Configuratie Functies
 #                  Functie Change DNS OS
 #       
 #   #######################
@@ -2515,7 +2507,7 @@ fi
 #   ################################################################################
 #   ################################################################################
 #
-#   Blok 5
+#   Blok 6
 #
 #   Linux Distributie Onafhankelijke Functies 
 #
@@ -2523,12 +2515,12 @@ fi
 #   ################################################################################
 #
 #
-#   Blok 5-1 Categorie 1 OOBE
+#   Blok 6 Categorie 1 OOBE
 #
 #
 #
 #  ####################################
-#  Blok 5-1-1
+#  Blok 6-1-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Linux OOBE
 #  ####################################
@@ -2537,39 +2529,37 @@ fi
 #
 function luct_linux_oobe () {
     #
-    echo '## Phase 6 - Changing Hostname'
+    echo '## Phase 4 - Changing Hostname'
     verander_machinenaam
     #
     # Directories maken
     # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
-    echo '## Phase 7 - Creating LUCT environment'
+    echo '## Phase 5 - Creating LUCT environment'
     maak_directories
     #
     # Operating System zo instellen zoals gewenst
     # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
-    echo '## Phase 8 - Configure Operating System'
-    if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
-        debulx_nested_os_config
-    fi
+    echo '## Phase 6 - Configure Operating System'
+    debulx_nested_os_config
     #
     # GitHub Clones maken
-    echo '## Phase 9 - Cloning GitHub Repositories'
+    echo '## Phase 7 - Cloning GitHub Repositories'
     git_clone_demos
     #
 } 
 #
 #
-# Blok 5 Categorie 2 Verander Machinenaam
+# Blok 6 Categorie 2 Verander Machinenaam
 #
 #
 #
 #  ####################################
-#  Blok 5-2-1
+#  Blok 6-2-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Verander Machinenaam
 #  ####################################
 #
-#  PHASE 6
+#  PHASE 4
 #
 #
 function verander_machinenaam () {
@@ -2697,83 +2687,63 @@ function verander_machinenaam () {
 }
 #
 #
-# Blok 5 Categorie 3 Maak Directories
+# Blok 6 Categorie 3 Maak Directories
 #
 #
 #
 #  ####################################
-#  Blok 5-3-1
+#  Blok 6-3-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function maak directories
 #  ####################################
 #
 #
-# PHASE 7
+# PHASE 5
 #
 #
 function maak_directories () {
     #
-    #
     # Temporary
     #
-    #
-    echo 'Phase 7 - Creating TMP directory in home directory of this user'
     if [ ! -d "/home/$SUDO_USER/tmp" ]; then
         mkdir -p /home/$SUDO_USER/tmp
         chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
     fi
     #
-    #
     # LUCT Loggings 
     #
-    #
-    echo 'Phase 7 - Creating LUCT logging directory'
     if [ ! -d "/home/$SUDO_USER/luct-logs" ]; then
         mkdir -p /home/$SUDO_USER/luct-logs
         chown -f -R $SUDO_USER /home/$SUDO_USER/luct-logs
     fi
     #
-    #
     # Docker Scripts
     #
-    #
-    if [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
-        echo 'Phase 7 - Creating Container Engine scripts directory'
-        if [[ $actie == "docker" || $actie == "minikube" ]]; then
-            if [ ! -d "/home/$SUDO_USER/dkr-scripts" ]; then
-                mkdir -p /home/$SUDO_USER/dkr-scripts
-                chown -f -R $SUDO_USER /home/$SUDO_USER/dkr-scripts
-            fi
-        fi
-        if [[ $actie == "podman" ]]; then
-            if [ ! -d "/home/$SUDO_USER/pmn-scripts" ]; then
-                mkdir -p /home/$SUDO_USER/pdm-scripts
-                chown -f -R $SUDO_USER /home/$SUDO_USER/pdm-scripts
-            fi
-        fi
+    if [ ! -d "/home/$SUDO_USER/dkr-scripts" ]; then
+        mkdir -p /home/$SUDO_USER/dkr-scripts
+        chown -f -R $SUDO_USER /home/$SUDO_USER/dkr-scripts
     fi
 # Maak Directories
 }
 #
 #
-# Blok 5 Categorie 4 Git Clone functies
+# Blok 6 Categorie 4 Git Clone functies
 #
 #
 #
 #  ####################################
-#  Blok 5-4-1
+#  Blok 6-4-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function git clone 
 #  ####################################
 #
 #
-# PHASE 9
 #
 #
 function git_clone_demos () {
     #
     # Demos
-    echo '## Phase 9 - Clone GitHub JATUTERT Demos'
+    echo '## Phase 4 - Clone GitHub JATUTERT Demos'
     if [ -d "/home/$SUDO_USER/demos" ]; then
         rm -rf "/home/ubuntu/demos"
     fi
@@ -2781,7 +2751,7 @@ function git_clone_demos () {
     #
     # Awesome Compose
     if [[ $actie == "docker" ]] ; then
-        echo '## Phase 9 - Clone GitHub Docker Awesome Compose'
+        echo '## Phase 4 - Clone GitHub Docker Awesome Compose'
         if [ -d "/home/$SUDO_USER/demos" ]; then
             rm -rf "/home/ubuntu/demos/Docker/Compose/Awesome-compose"
         fi
@@ -2790,7 +2760,7 @@ function git_clone_demos () {
     #
     # Onderwijs
     if [[ $actie == "omv" || $actie == "osticket" ]] ; then
-        echo '## Phase 9 - Clone GitHub MSiekmans'
+        echo '## Phase 4 - Clone GitHub MSiekmans'
         if [ -d "/home/$SUDO_USER/onderwijs" ]; then
             rm -rf "/home/ubuntu/onderwijs"
         fi
@@ -2798,7 +2768,7 @@ function git_clone_demos () {
     fi
     #
     # PowerShell
-    echo '## Phase 9 - Clone GitHub Powershell is fun'
+    echo '## Phase 4 - Clone GitHub Powershell is fun'
     if [ -d "/home/$SUDO_USER/powershell" ]; then
         rm -rf "/home/$SUDO_USER/powershell"
     fi
@@ -2806,7 +2776,7 @@ function git_clone_demos () {
     #
     # Ansible 
     if [[ $actie == "iacmaster" ]] ; then
-        echo '## Phase 9 - Clone GitHub Ansible for DevOps'
+        echo '## Phase 4 - Clone GitHub Ansible for DevOps'
         if [ -d "/home/$SUDO_USER/ansible_devops" ]; then
             rm -rf "/home/$SUDO_USER/ansible_devops"
         fi
@@ -2814,18 +2784,18 @@ function git_clone_demos () {
     fi 
     #
     # Shell Scripts
-    echo '## Phase 9 - Make all Shell Scriptfiles Executable'
+    echo '## Phase 4 - Make all Shell Scriptfiles Executable'
     find /home/$SUDO_USER/demos -type f -name "*.sh" -exec chmod +x {} \;
 # Git Clone
 } 
 #
 #
-# Blok 5 Categorie 5 Progress Bar functies
+# Blok 6 Categorie 5 Progress Bar functies
 #
 #
 #
 #  ####################################
-#  Blok 5-5-1
+#  Blok 6-5-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function progress bar 
 #  ####################################
@@ -2856,12 +2826,12 @@ draw_progress_bar() {
 }
 #
 #
-# Blok 5 Categorie 6 Finish Script functies
+# Blok 6 Categorie 6 Finish Script functies
 #
 #
 #
 #  ####################################
-#  Blok 5-6-1
+#  Blok 6-6-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Actie Klaar
 #  ####################################
@@ -2870,64 +2840,39 @@ draw_progress_bar() {
 #
 #
 function luct_finish_script () {
-    #
-    rm -f /TMP/LUCT-End-Time.txt
-    date > /TMP/LUCT-End-Time.txt
-    #
-    clear
-    echo 'Linux Universal Configuration Tool (LUCT)'
-    echo "Version $Major.$Minor.$Build.$Patch"
-    echo "Channel $Channel"
-    echo ''
-    # Fase 1
-    # Geen Root Rechten
-    if [ $(id -u) -ne 0 ]; then
-        echo 'Script not started with ROOT rights !'
-        echo ''
-        echo 'Please start script with sudo in advance for ROOT rights'
-        echo ''
-        echo 'Terminate script execution ...'
-        exit 1
-    fi
-    # Fase 2
-    # Geen Argument opgegeven 
-    if [ $1 -eq 0 ]; then
-        echo 'No parameter specified !' 
-        echo 'Available parameters:'
-        echo 'upgrade    Upgrade operating system and applications'
-        echo 'network    Change networking settings for EduRoam'
-        echo 'docker     Docker with demo environment'
-        echo 'podman     Podman with demo environment'
-        echo 'minikube   Minikube with demo environment'
-        echo 'iacmaster  Ansible master with demo environment'
-        echo 'iacslave   Configure Ansible slave'
-        echo 'omv        Open Media Vault on Debian'
-        exit 1
-    fi
-    # Wel Root Rechten 
-    echo 'PHASE 9'
-    # Test modus 
-    if [[ $modus == "test" ]]; then
-        echo '## The End ## Snif Snif Time to say goodbye ##'
-        echo '## Normally I would reboot now ##'
-        exit 1 
-    fi
-    echo "I have finished my work. Just need to do a restart of the virtual machine."
-    echo ''
-    echo ''
-    echo "Found a bug ? Let me know by emailing me at j.a.tutert@saxion.nl"
-    echo ''
-    shutdown -r now
+        if [[ $modus == "test" ]]; then
+            echo 'PHASE 9'
+            echo '## The End ## Snif Snif Time to say goodbye ##'
+        else
+            clear
+            echo 'Linux Universal Configuration Tool (LUCT)'
+            echo "Version $Major.$Minor.$Build.$Patch"
+            echo "Channel $Channel"
+            echo ''
+            echo ''
+            echo 'PHASE 9'
+            echo "I have finished my work. Just need to do a restart of the virtual machine."
+            echo ''
+            echo ''
+            echo "Found a bug ? Let me know by emailing me at j.a.tutert@saxion.nl"
+            echo ''
+        fi 
+        #
+        if [[ $modus == "test" ]]; then
+            echo '## Normally I would reboot now ##'
+        else
+            shutdown -r now
+        fi 
 # Actie klaar
 }
 #
 #
-# Blok 5 Categorie 7 Interactief menu functies
+# Blok 6 Categorie 7 Interactief menu functies
 #
 #
 #
 #  ####################################
-#  Blok 5-7-1
+#  Blok 6-7-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Menu
 #  ####################################
@@ -2937,8 +2882,8 @@ function luct_finish_script () {
 #
 #
 function config_menu () {
-    #
-    #
+#
+#
     while true; do
         clear
         echo 'Configuratie' $NAME $VERSION 'HoofdMenu'
@@ -2978,42 +2923,41 @@ function config_menu () {
             #
             # Menu keuze 2
             #
-            if [[ $distro == "alpine" ]]; then
-                maak_directories
-                alx_os_upgrade_full
-            fi
-            if [[ $distro == "buildroot" ]]; then
-                maak_directories
-            fi
-            if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
-                #
-                #
-                # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 4
-                # Installeren en Configureren Docker Podman en Minikube op Docker
-                #
-                # Phase 6 tot en met 9
-                luct_linux_oobe
-                # Phase 10
-                debulx_nested_conteng_complete
-                # Phase 11
-                debulx_install_minikube_and_k8stools
-                # Phase 12
-                if [[ $actie == "docker" || $actie == "minikube" || $modus == "docker" || $modus = "test" || $modus = "leeg" ]] ; then
-                    debulx_config_minikube_driver "docker"
-                fi
-                if [[ $actie == "podman" || $modus == "podman" ]] ; then
-                    debulx_config_minikube_driver "podman"
-                fi
-                # Phase 11
-                luct_finish_script
-            fi
+            # Configuratie 
+            echo "Step 1 of 5 Making Preperations"
+            debulx_config_timezone_ams
+            maak_directories
+            ulx_os_netplan_download
+            ulx_os_change_repo_nl
+            debulx_os_update_apt
+            # Bijwerken 
+            echo "Step 2 of 5 Upgrading OS"
+            debulx_os_upgrade_packages
+            # Installatie 
+            echo "Step 3 of 5 Installing OS Tools"
+            debulx_config_virtualization
+            ulx_install_pwrshell
+            debulx_install_cockpit_srv
+            # DOCKER
+            echo "Step 4 of 5 Installation and configuration Docker CE"
+            debulx_install_docker_ce
+            debulx_docker_portainer_run
+            debulx_docker_images_pull
+            # 
+            # DEMO omgeving maken 
+            echo "Step 5 of 5 Creating demo environment"
+            maak_directories
+            ulx_maak_docker_scripts
+            ulx_maak_docker_voorbeelden
+            ulx_maak_compose_scripts
+            ulx_maak_compose_voorbeelden
             ;;
         3)
             #
             # Menu keuze 3
             #
             # Configuratie 
-            debulx_config_taal_nl
+            debulx_config_timezone_ams
             maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
@@ -3045,7 +2989,7 @@ function config_menu () {
             # Menu keuze 4
             #
             # Configuratie
-            debulx_config_taal_nl
+            debulx_config_timezone_ams
             maak_directories
             ulx_os_netplan_download
             ulx_os_change_repo_nl
@@ -3091,7 +3035,7 @@ function config_menu () {
 #   ################################################################################
 #   ################################################################################
 #
-#   Blok 6 Main functies
+#   Blok 7 Main functies
 #   Fase 4 
 #
 #   ################################################################################
@@ -3102,7 +3046,7 @@ function config_menu () {
 #
 #   ################################################################################
 #   ################################################################################
-#   Blok 6-1 ALPINE
+#   Blok 7-1 ALPINE
 #   PLANNED FOR 2026
 #   ################################################################################
 #   ################################################################################
@@ -3181,7 +3125,7 @@ fi
 #
 #   ################################################################################
 #   ################################################################################
-#   Blok 6-2
+#   Blok 7-2
 #   BuildRoot 
 #   ################################################################################
 #   ################################################################################
@@ -3260,7 +3204,7 @@ fi
 #
 #   ################################################################################
 #   ################################################################################
-#   Blok 6-3 
+#   Blok 7-3 
 #   Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu
 #   ################################################################################
 #   ################################################################################
@@ -3277,9 +3221,9 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Besturingssysteem en standaard applicaties bijwerken naar laatste stand
         #
         #
-        # Phase 6 tot en met 9
+        # Phase 1 tot en met 4
         luct_linux_oobe
-        # Phase 10
+        # Phase 8
         luct_finish_script
         exit 1
     elif [[ $actie == "normal" ]]; then
@@ -3301,11 +3245,11 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Aanpassen netwerkinstellingen zoals dns en nic2
         #
         #
-        # Phase 6 tot en met 9
+        # Phase 4 tot en met 7
         luct_linux_oobe
-        # Phase 10
+        # Phase 8
         debulx_config_network_settings
-        # Phase 11
+        # Phase 9
         luct_finish_script
         exit 1
     elif [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
@@ -3314,20 +3258,20 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 4
         # Installeren en Configureren Docker Podman en Minikube op Docker
         #
-        # Phase 6 tot en met 9
+        # Phase 4 tot en met 7
         luct_linux_oobe
-        # Phase 10
+        # Phase 8
         debulx_nested_conteng_complete
-        # Phase 11
+        # Phase 9
         debulx_install_minikube_and_k8stools
-        # Phase 12
+        # Phase 10
         if [[ $actie == "docker" || $actie == "minikube" || $modus == "docker" || $modus = "test" || $modus = "leeg" ]] ; then
             debulx_config_minikube_driver "docker"
         fi
         if [[ $actie == "podman" || $modus == "podman" ]] ; then
             debulx_config_minikube_driver "podman"
         fi
-        # Phase 11
+        # Phase 8
         luct_finish_script
         exit 1
     elif [[ $actie == "iacmaster" || $actie == "iaslave" ]]; then
@@ -3337,16 +3281,15 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Installeren en Configureren Ansible
         #
         #
-        # Phase 4 tot en met 7
+        # Phase 1 tot en met 4
         luct_linux_oobe
-        # Phase 8
         if [[ $actie == "iacmaster" ]] ; then
             debulx_install_ansible_master_slave "master"
         fi
         if [[ $actie == "iacslave" ]] ; then
             debulx_install_ansible_master_slave "slave"
         fi
-        # Phase 9
+        # Phase 8
         luct_finish_script
         exit 1
     elif [[ $actie == "omv" ]]; then
@@ -3356,7 +3299,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Installeren en Configureren
         # Open Media Vault
         #
-        # Phase 4 tot en met 7
+        #
         luct_linux_oobe
         if [[ $distro == "debian" ||  $distro == "lmde" ]] ; then
             deb_install_omv
