@@ -83,3 +83,19 @@ FOR /F "delims=" %%I IN ('DIR "%v4source%" /B /A:-D /O:-D') DO SET NewestFile=%%
 
 :: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
 COPY "%v4source%\%NewestFile%" "%v4destination%\LUCT-4-1-Canary-latest.sh"
+
+
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Aanmaken latest voor LUCT (versie 4.1) DEV
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:: Stel de bron- en doelmap in
+set v4source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-4xx\V410-Dev-Tested
+set v4destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config
+
+:: Zoek het nieuwste bestand in de bronmap
+FOR /F "delims=" %%I IN ('DIR "%v4source%" /B /A:-D /O:-D') DO SET NewestFile=%%I & GOTO Continue
+:Continue
+
+:: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
+COPY "%v4source%\%NewestFile%" "%v4destination%\LUCT-4-1-DEV-latest.sh"
