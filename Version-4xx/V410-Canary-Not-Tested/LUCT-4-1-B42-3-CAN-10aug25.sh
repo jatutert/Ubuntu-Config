@@ -71,7 +71,7 @@
 Major="4"
 Minor="1"
 Build="42"
-Patch="2"
+Patch="3"
 # Indien GEEN Release Candite op 0 zetten
 ReleaseCandidate="4"
 Channel="Canary"
