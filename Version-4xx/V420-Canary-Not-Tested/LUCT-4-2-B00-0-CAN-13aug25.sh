@@ -6,14 +6,14 @@
 #
 #   #    #  # #### #####  #   #      ####   Gemaakt door John Tutert (TutSOFT)
 #   #    #  # #      #    #   #         #   2023 WSL Config
-#   #    #  # #      #    #####         #   2024 Ubuntu Config
-#   #    #  # #      #        #         #   2025 LUCT
-#   #### #### ####   #        #  ##     #   Persoonlijk en / of educatief gebruik
+#   #    #  # #      #    #####        #    2024 Ubuntu Config
+#   #    #  # #      #        #       #     2025 LUCT
+#   #### #### ####   #        #  ##  ####   Persoonlijk en / of educatief gebruik
 #
 # ################################################################################
 # ################################################################################
 #
-#
+# Regel 1030 Ansible 
 #
 #
 # ################################################################################
@@ -69,12 +69,12 @@
 #
 #
 Major="4"
-Minor="1"
-Build="46"
-Patch="2"
+Minor="2"
+Build="00"
+Patch="0"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
-Channel="DEV"
+Channel="Canary"
 #
 echo "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 logger "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER"
@@ -151,105 +151,12 @@ logger "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER
 # #######################
 #
 #
-# Ubuntu
-# 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
-# 12juli25 Docker Management Tools functie 
-# 12juli25 Visual Studio Code Server native en Docker 
-# 12juli25 Visual Studio Code Server sed bug fixed 
-# 18juli25 Build 32 Jenkins als Container in plaats van native install
-# 18juli25 Build 32 Visual Studio Code Server als Container in plaats van native install 
-# 19juli25 Edu link naar Canary latest opgenomen in kop van het script
-# 20juli25 B5 PHP installatie output naar dev nul gezet
-# 20juli25 B5 Native installatie van Visual Studio code uitgezet stond nog aan 
-# 20juli25 B5 Docker Compose plugin installatie uitgezet wordt al gedaan bij installatie van Docker CE
-# 20juli25 B5 Docker Compose installatie functie opmerkingen erbij gezet
-# 20juli25 B5 Docker pull van Jenkins image gelijk aan gebruikte image stond op latest en lts 
-# 20juli25 B5 Visual Studio Code Server als Docker container functie aangepast en werkend gemaakt
-# 20juli25 B5 Volgorde functies Docker Podman en Minikube aangepast 
-# 20juli25 B5 Namen containers met LUCT ervoor 
-# 20juli25 B5 Initieel wachtwoord Jenkins naar lokaal bestand 
-# 20juli25 B5 Dockly werkend 
-# 20juli25 B5 LazyDocker werkend
-# 20juli25 B5 Dry toevoeging
-# 20juli25 B5 7zip in plaats van 7z installatie bugfix 
-# 21juli25 B6 Poorten overzicht bijgewerkt
-# 21juli25 B7 Nummering stappen correctie
-# 21juli25 B7 Commando starten VS Code Server aangepast
-# 21juli25 B8 Ansible eerste opzetje gemaakt start by scriptregel 1144
-# 22juli25 B9 Ansible eth en ens netwerkconfiguratie
-# 23juli25 B10 Ansible Master Inventory 
-# 23juli25 B10 Uitbreiding logging 
-# 23juli25 B10 Aanpassen hostname op basis van eerst check gebruikersnaam
-# 24juli25 B11 Powershell installatie met snap in plaats van apt
-# 24juli25 B11 Markering functies die niet meer actief in gebruik zijn
-# 24juli25 B11 Patch 1 Snap installatie Powershell parameter classic EN run dry script chmod 
-# 25juli25 B12 Nieuwe hoofd repo ubuntu en backup repo instellingen
-# 25juli25 B12 Nieuwe logging manier docker images pull 
-# 25juli25 B12 Patch 1 Bugfixes na run script
-# 25juli25 B12 Patch 1 Aanpassen Ubuntu Repo op nieuwe manier 
-# 25juli25 B13 Dive installatie fix WatchTower Image pull toegevoegd
-# 25juli25 B13 Jenkins Wachtwoord bestand aanmaak in nested docker functie gezet
-# Debian
-# 25juli25 B14 Debian 12 Linux support start
-# 25juli25 B14 Aanmaak Debian Ubuntu gezamenlijke functies 
-# 26juli25 B14 Patch 1 wget voor ophalen script en aanpassen hostname debian docker
-# 26juli25 B14 Patch 2 vullen distro variabele compatible met debian gemaakt
-# 26juli25 B14 Patch 3 volgorde fixes nested oobe nav eerste run op debian
-# 28juli25 B15 Succesvolle testrun op Debian gedaan melding apt repo add stil gemaakt en 7zz bij Debian
-# 28juli25 B15 Debian installatie Snap van Ubuntu toegevoegd Snap is dus nu ook beschikbaar op Debian
-# Debian Ubuntu
-# 28juli25 B16 Bepalen versienummer eerder in script verwijderd bij change repo ubuntu
-# 28juli25 B17 Proces fase meldingen 
-# 28juli25 B17 Powershell Debian Ubuntu 
-# 29juli25 B17 Patch 1 Powershell Debian Ubuntu naar 1 in plaats van per distro
-# 29juli25 B18 Docker pull Progress Bar en APT Install Progress Bar
-# 30juli25 B18 Patch 1 Progress Bars fix
-# 30juli25 B19 Progress Bar Functie apart gezet in distro onafhankelijk gedeelte
-# 30juli25 B19 Introductie van parameter 2 test waarbij veel meer zichtbaar wordt tijdens uitvoering
-# 30juli25 B19 Patch 1 bugfix parameter 2 en oude en nieuwe versie Debian weergeven
-# 30juli25 B20 Foutmelding Docker installatie distro afhankelijk gemaakt 
-# 30juli25 B20 paramater een en twee werkend gemaakt
-# 31juli25 B21 Debian en Ubuntu opties gelijk getrokken en omv optie voor Debian 
-# 31juli25 B22 Modus naar leeg bij geen parameter 2 opgegeven
-# 31juli25 B22 ContainerEngine in plaats van Docker of Podman voor pull images en portainer
-# 01aug25  B23 Introductie gezamenlijke functies besparing 900 regels code
-# 01aug25  B23 Patch 1 Herstel foutje in if then statement
-# 02aug25  B24 Check if then statements script en introductie nieuwe functies om regels te besparen
-# 02aug25  B24 Ansible Master en Ansible Slave function nieuwe opzet
-# 02aug25  B25 Debian Ubuntu deel voltooien uit B24
-# 02aug25  B25 Patch 1 fix apt https installatie 
-# 03aug25  B26 Eerste opzet nieuwe manier installatie Docker nog niet gereed
-# 03aug25  B27 Nieuwe Functie Container Engine en Nieuwe Functie Netwerk instellingen
-# 03aug25  B28 Testmodus apt update en fix dry EN Podman docker registry fix voor images
-# 03aug25  B29 Linux Distros aangepast beginscherm EN Testmodus aangezet op belangrijke onderdelen 
-# 04aug25  B30 Cockpit nieuwe installatie manier EN Podman Cockpit EN Gebruiker ROOT vrijgeven
-# 04aug25  B31 curl in plaats van snap curl omdat snap curl problemen geeft
-# 04aug25  B31 Add Repo in gezamenlijke functie in plaats van apart
-# 04aug25  B32 Test modus standaard uit
-# 06aug25  B33 Eerste implementatie van LinuxMint en LMDE Linux ondersteuning 
-# 06aug25  B33 Nieuwe manier hostnamen Debian en Ubuntu en Debian nieuwe structuur hostnaam
-# 06aug25  Feature Complete 
-# 06aug25  B34 RC1 Functie Config Bash shell naar debulx EN functie betere namen
-# 07aug25  B35 RC2 Minder meldingen op scherm en duidelijke indicate fasen in script op scherm 
-# 07aug25  B36 RC2 Minikube altijd installeren bij Docker 
-# 07aug25  B37 RC2 Progress bar bugfix alles blijft nu op 1 regel
-# 08aug25  B38 RC2 Debug modus aan bij test EN UT Twente Repo toevoeging
-# 08aug25  B39 RC3 Nieuwe menu optie non lts upgrade
-# 08aug25  B40 RC3 Minder meldingen tijdens run en set e uitgezet omdat script onstabiel wordt
-# 08aug25  B40 RC4 Nieuwe Structuur Script
-# 09aug25  B40 RC4 Nieuwe Structuur Script
-# 10aug25  B41 RC4 Nieuwe Structuur Script
-# 10aug25  B42 RC4 Nieuwe Structuur Script
-# 12aug25  B42 Lus eth ens Ansible master nieuwe opzet EN aanmaken log bestand in tmp directory
-# 12aug25  B44 en B45 Logging via log bestanden in var log directory 
-# 13aug25  B46 Canary Channel naar DEV Channel 
-# 13aug25  B46 Patch 1 Aanpassen verkorte URL naar nieuwe verkorte URL # GEEN aanpassingen in script verder 
-# 15aug25  B46 Patch 2 Logging via functie 
+# 13 aug 25 B00 P00 Init versie voor versie 4.2 builds 
 #
 #
 # #######################
 # Blok 1F
-# Definieer functies
+# Header Script
 # #######################
 #
 #
@@ -267,11 +174,6 @@ function luct_display_header () {
 }
 #
 #
-function luct_log_message () {
-    echo "$1" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-}
-#
-#
 # #######################
 # Blok 1G
 # Openingssscherm gebruiker script
@@ -283,11 +185,13 @@ luct_display_header
 echo 'Implemented and fully tested Linux distributions are:'
 echo '- Debian  12      Bookworm'
 echo '- Ubuntu  24 LTS  Noble Numbat'
+echo '- Linux Mint Debian 5/6 and Ubuntu 21/22         Versie 4.2'
+echo ''
+echo 'Implemented and fully tested are:'
+echo '- Ansible                                        Versie 4.2'
 echo ''
 echo 'Features for the next version(s), which are already partially included in this version:'
-echo '- Ansible'
 echo '- Interactive menu' 
-echo '- Linux Mint Debian 5/6 and Ubuntu 21/22'
 echo ''
 echo 'Developed and tested using virtual machines from the Linux VM Images website'
 echo ''
@@ -308,20 +212,12 @@ if [ "$CURRENT_TIMEZONE" != "$TARGET_TIMEZONE" ]; then
     timedatectl set-timezone "$TARGET_TIMEZONE" > /dev/null 2>&1
 fi 
 #
-#
 logger "Timezone changed by LUCT $Major.$Minor Build $Build $Patch Channel $Channel"
 #
+echo "Starttijd" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+timedatectl status | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
-#   luct_log_message "Starttijd"
-#   timedatectl status | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-luct_log_message "#######################################################"
-luct_log_message "LUCT $Major.$Minor Build $Build $Patch Channel $Channel"
-luct_log_message "#######################################################"
-luct_log_message "Uitvoerende gebruiker is $USER"
-luct_log_message "Starttijd van het script $(date)"
-luct_log_message "Tijdzone instelling was $CURRENT_TIMEZONE"
-luct_log_message "Tijdzone ingesteld op $TARGET_TIMEZONE"
-#
+
 #
 #
 #
@@ -343,9 +239,8 @@ luct_log_message "Tijdzone ingesteld op $TARGET_TIMEZONE"
 #
 # Controleer ROOT rechten voor het script 
 #
-#   luct_phase_one_time=$(date)
-#   luct_log_message "Phase 1 $luct_phase_one_time"
-luct_log_message "Phase 1 $(date)"
+luct_phase_one_time=$(date)
+echo "Phase 1 $luct_phase_one_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 if [ $(id -u) -ne 0 ]; then
     clear
@@ -373,9 +268,8 @@ fi
 #
 # Eerste parameter bijvoorbeeld docker
 #
-#   luct_phase_two_time=$(date)
-#   luct_log_message "Phase 2 $luct_phase_two_time"
-luct_log_message "Phase 2 $(date)"
+luct_phase_two_time=$(date)
+echo "Phase 2 $luct_phase_two_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 echo '## Phase 2 - Checking Script Arguments'
 if [ $# -eq 0 ]; then
@@ -395,9 +289,8 @@ if [ $# -eq 0 ]; then
     echo ''
     echo 'Terminate script execution ...'
     #
-    #   luct_end_time=$(date)
-    #   luct_log_message "Einde $luct_end_time"
-    luct_log_message "Afbreken script $(date)"
+    luct_end_time=$(date)
+    echo "Einde $luct_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     logger "LUCT Version $Major.$Minor Build $Build Patch $Patch Terminated at Phase 2"
     exit 1
@@ -423,8 +316,8 @@ if [[ ! "$modus" ]];then
     modus="leeg"
 fi
 #
-luct_log_message "Actie $actie"
-luct_log_message "Modus $modus"
+echo "Actie $actie" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+echo "Modus $modus" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 # #######################
 # Blok 2D
@@ -432,9 +325,8 @@ luct_log_message "Modus $modus"
 # #######################
 #
 #
-#   luct_phase_three_time=$(date)
-#   luct_log_message "Phase 3 $luct_phase_three_time $USER $SUDO_USER"
-luct_log_message "Phase 3 $(date) $USER $SUDO_USER"
+luct_phase_three_time=$(date)
+echo "Phase 3 $luct_phase_three_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 echo '## Phase 3 - Checking Script running mode'
 #
@@ -468,9 +360,8 @@ fi
 # #######################
 #
 #
-#   luct_phase_four_time=$(date)
-#   luct_log_message "Phase 4 $luct_phase_four_time $(date)"
-luct_log_message "Phase 4 $(date) $USER $SUDO_USER"
+luct_phase_four_time=$(date)
+echo "Phase 4 $luct_phase_four_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 echo '## Phase 4 - Collecting current Linux Distribution information'
 #
@@ -489,7 +380,7 @@ if [ -f /etc/os-release ]; then
     fi
     #
     echo "You are running $distro $versie as Operating System"
-    luct_log_message "LUCT is running on $distro $versie"
+    echo "LUCT is running on $distro $versie" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 fi
 #
 #
@@ -509,9 +400,8 @@ fi
 # #######################
 #
 #
-#   luct_phase_five_time=$(date)
-#   echo "Phase 5 $luct_phase_five_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-luct_log_message "Phase 5 $(date) $USER $SUDO_USER"
+luct_phase_five_time=$(date)
+echo "Phase 5 $luct_phase_five_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 echo '## Phase 5 - Define Functions for this Script'
 #
@@ -617,9 +507,7 @@ function build_install_docker_compose_plugin () {
 #
 function deb_install_omv () {
     #
-    luct_log_message "Start installatie OMV $(date)"
     wget -q -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash
-    luct_log_message "Einde installatie OMV $(date)"
     #
 # Open Media Vault NAS Install
 }
@@ -744,8 +632,8 @@ function debulx_os_update_apt () {
 #
 function debulx_os_upgrade_packages () {
     #
-    # luct_upgrade_os_start_time=$(date)
-    luct_log_message "Start OS Upgrade $(date) $USER $SUDO_USER"
+    luct_upgrade_os_start_time=$(date)
+    echo "Start OS Upgrade $luct_upgrade_os_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     if [[ $modus = "test" ]]; then
         apt full-upgrade -y
@@ -760,8 +648,8 @@ function debulx_os_upgrade_packages () {
         apt autoremove -y > /dev/null 2>&1
     fi
     #
-    # luct_upgrade_os_end_time=$(date)
-    luct_log_message "Einde OS Upgrade $(date)"
+    luct_upgrade_os_end_time=$(date)
+    echo "Einde OS Upgrade $luct_upgrade_os_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
 }
 
@@ -784,8 +672,8 @@ function debulx_os_upgrade_packages () {
 #
 function debulx_install_default_apps () {
     #
-    # luct_install_default_apps_start_time=$(date)
-    luct_log_message "Start installatie default Apps $(date) $USER $SUDO_USER"
+    luct_install_default_apps_start_time=$(date)
+    echo "Start Installatie Default Apps $luct_install_default_apps_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     if [[ $modus == "test" ]]; then
         APT_INSTALL_ARRAY=(
@@ -871,9 +759,8 @@ function debulx_install_default_apps () {
         # Update de progressiebalk
         draw_progress_bar "$PROGRESS"
         if [[ $modus == "test" ]]; then 
-            echo "Installing $apt_install"
+            echo "Install of $apt_install in progress ..."
         fi
-        luct_log_message "Installatie van $apt_install"
         apt install "$apt_install" -y >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_pb.log 2>&1
         if [[ $? -ne 0 ]]; then
             echo "$apt_install could not be installed. Continue with the next one ..."
@@ -902,19 +789,16 @@ function debulx_install_default_apps () {
     echo 'Installing bat'
     wget -q -O /tmp/bat_0.25.0_amd64.deb https://github.com/sharkdp/bat/releases/download/v0.25.0/bat_0.25.0_amd64.deb
     dpkg -i /tmp/bat_0.25.0_amd64.deb > /dev/null 2>&1
-    luct_log_message "bat"
     # Youtube DL
-    curl -L https://github.com/ytdl-patched/youtube-dl/releases/latest/download/youtube-dl -o /usr/local/bin/youtube-dl > /dev/null 2>&1
+    curl -L https://github.com/ytdl-patched/youtube-dl/releases/download/2025.08.07.19419/youtube-dl -o /usr/local/bin/youtube-dl > /dev/null 2>&1
     chmod a+rx /usr/local/bin/youtube-dl
-    luct_log_message "youtube-dl"
     #
     # Deze Curl heeft maar beperkt toegang tot bestandssysteem Kan niet gebruik worden voor bijv Docker
     echo 'Installing Snap curl package'
     snap install curl >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_snap.log 2>&1
-    luct_log_message "snap curl"
     #
-    # luct_install_default_apps_end_time=$(date)
-    luct_log_message "Einde Installatie Default Apps $(date)"
+    luct_install_default_apps_end_time=$(date)
+    echo "Einde Installatie Default Apps $luct_install_default_apps_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
 }
 #
@@ -932,8 +816,8 @@ function debulx_install_default_apps () {
 #
 function debulx_install_cockpit_srv () {
     #
-    # luct_install_cockpit_start_time=$(date)
-    luct_log_message "Start Installatie Cockpit $(date)"
+    luct_install_cockpit_start_time=$(date)
+    echo "Start Installatie Cockpit $luct_install_cockpit_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     # #######################
     # ## Parameters vullen
@@ -962,8 +846,8 @@ function debulx_install_cockpit_srv () {
     systemctl daemon-reload >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
     systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
     #
-    #   luct_install_cockpit_end_time=$(date)
-    luct_log_message "Einde Installatie Cockpit $(date)"
+    luct_install_cockpit_end_time=$(date)
+    echo "Einde Installatie Cockpit $luct_install_cockpit_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
 # Cockpit
 }
@@ -982,8 +866,8 @@ function debulx_install_cockpit_srv () {
 #
 function debulx_install_conteng () {
     #
-    # luct_install_conteng_start_time=$(date)
-    luct_log_message "Start Installatie Container Engine $(date)"
+    luct_install_conteng_start_time=$(date)
+    echo "Start Installatie Container Engine $luct_install_conteng_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     # DOCKER
     if [[ $actie = "docker" || $actie = "minikube" ]]; then
@@ -1009,29 +893,10 @@ function debulx_install_conteng () {
         apt autoremove -y > /dev/null 2>&1
         #
         echo 'Installing Docker and Compose plugin'
-        APT_DOCKER_INSTALL_ARRAY=(
-            "docker-ce"
-            "docker-ce-cli"
-            "containerd.io"
-            "docker-buildx-plugin"
-            "docker-compose-plugin"
-        )
-        for apt_docker_install in "${APT_DOCKER_INSTALL_ARRAY[@]}"; do
-            if [[ $modus == "test" ]]; then 
-                echo "Installing $apt_docker_install"
-            fi
-            luct_log_message "Installatie van $apt_docker_install"
-            apt install "$apt_docker_install" -y >> /home/$SUDO_USER/luct-logs/debulx_install_docker.log 2>&1
-            if [[ $? -ne 0 ]]; then
-                echo "$apt_docker_install could not be installed. Continue with the next one ..."
-            fi
-        done
-        #   echo 'Installing Docker and Compose plugin'
-        #   apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y > /home/$SUDO_USER/luct-logs/debulx_install_docker.log 2>&1
+        apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y > /home/$SUDO_USER/luct-logs/debulx_install_docker.log 2>&1
         #
-        # docker -v | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-        luct_log_message "$(docker -v) is geinstalleerd"
-        luct_log_message "$(docker compose version) is geinstalleerd"
+        docker -v | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        docker compose version | sudo tee -a /var/log/luct.log > /dev/null 2>&1
         #
         echo "Adding current user $SUDO_USER to security group Docker"
         usermod -a -G docker $SUDO_USER
@@ -1100,7 +965,6 @@ function debulx_install_pwrshell () {
     #
     pwsh --command Get-Host > /dev/null 2>&1
     if [ $? -ne 0 ]; then
-        luct_log_message "Installatie Powershell"
         apt install powershell -y >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
         rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
     fi
@@ -1497,9 +1361,8 @@ function debulx_conteng_images_pull () {
         draw_progress_bar "$PROGRESS"
         # echo " "
         if [[ $modus == "test" ]]; then
-            echo "Pull of image $image"
+            echo "Pull van image $image"
         fi
-        luct_log_message "Pull van $image"
         $containerengine pull -q "$image" > /dev/null 2>&1
         if [[ $? -ne 0 ]]; then
             echo "Error loading image $image. Pulling next image ..."
@@ -1950,14 +1813,14 @@ function debulx_config_add_repositories () {
         if [[ $modus = "test" ]]; then 
             echo 'NL Datapacket 20Gbs'
         fi
-        luct_log_message "NL Datapacket 20GBs"
+        echo "Datapacket" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
         add-apt-repository http://mirror.nl.datapacket.com/$distro/ -s -y > /dev/null 2>&1
         #
         # UT Twente NL 10GBs
         if [[ $modus = "test" ]]; then 
             echo 'NL UT Twente 10Gbs'
         fi
-        luct_log_message "NL UT Twente 10GBs"
+        echo "UT Twente" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
         add-apt-repository https://ftp.snt.utwente.nl/pub/os/linux/$distro/ -s -y > /dev/null 2>&1
         #
         # Backup 1
@@ -1965,7 +1828,7 @@ function debulx_config_add_repositories () {
         if [[ $modus = "test" ]]; then 
             echo 'US PilotFiber 50GBs'
         fi
-        luct_log_message "US Pilotfiber 50Gbs"
+        echo "Pilotfiber" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
         add-apt-repository http://mirror.pilotfiber.com/$distro/ -s -y > /dev/null 2>&1
     fi
     if [[ $distro = "linuxmint" ]]; then
@@ -1979,7 +1842,7 @@ function debulx_config_add_repositories () {
     # ## Cockpit
     # ############################
     #
-    luct_log_message "Cockpit" 
+    echo "Cockpit" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     if [[ $distro == "debian" ]]; then
         echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > /etc/apt/sources.list.d/backports.list
@@ -1989,7 +1852,7 @@ function debulx_config_add_repositories () {
     # ## Docker
     # ############################
     #
-    luct_log_message "Docker"
+    echo "Docker" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     install -m 0755 -d /etc/apt/keyrings
     # LET OP Curl van Ubuntu gebruiken omdat Snap Curl maar beperkt toegang heeft tot filesystem
@@ -2014,7 +1877,7 @@ function debulx_config_add_repositories () {
     # ## Microsoft
     # ############################
     #
-    luct_log_message "Microsoft"
+    echo "Microsoft" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     curl -s -SL "https://packages.microsoft.com/config/$distro/$versie/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb" > /dev/null 2>&1
     dpkg -i /tmp/packages-microsoft-prod.deb > /dev/null 2>&1
@@ -2023,7 +1886,7 @@ function debulx_config_add_repositories () {
     # ## Kubernetes
     # ############################
     #
-    luct_log_message "Kubernetes"
+    echo "Kubernetes" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     k8sstable_lang=$(curl -Ls https://dl.k8s.io/release/stable.txt)
@@ -2035,7 +1898,7 @@ function debulx_config_add_repositories () {
     # ## Ansible
     # ############################
     #
-    luct_log_message "Ansible"
+    echo "Ansible" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     if [[ $distro == "ubuntu" ]]; then
         apt-add-repository ppa:ansible/ansible -s -y > /dev/null 2>&1
@@ -2189,7 +2052,7 @@ function debulx_config_network_settings () {
 #
 function debulx_config_bash_shell () {
     #
-    luct_log_message "Bash Shell configuratiebestanden downloaden"
+    echo "Bash Shell Config" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     # Wordt ook gebruikt voor BuildRoot Linux omdat stappen exact gelijk zijn
     #
@@ -3069,7 +2932,8 @@ draw_progress_bar() {
 #
 function luct_finish_script () {
     #
-    luct_log_message "Eindtijd van het script $(date)"
+    echo "Eindtijd" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    timedatectl status | sudo tee -a /var/log/luct.log > /dev/null 2>&1
     #
     clear
     luct_display_header

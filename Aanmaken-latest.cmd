@@ -11,7 +11,7 @@
 :: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: Stel de bron- en doelmap in
-set v1source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-1xx-WSL2-No-Usermenu
+set v1source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-1xx\Version-1xx-WSL2-No-Usermenu
 set v1destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config
 
 :: Zoek het nieuwste bestand in de bronmap
@@ -26,7 +26,7 @@ COPY "%v1source%\%NewestFile%" "%v1destination%\ubuntu-config-V1-latest.sh"
 :: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :: Stel de bron- en doelmap in
-set v2source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Ubuntu-Config\Version-2xx-Usermenu-Edition
+set v2source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-2xx\Version-2xx-Usermenu-Edition
 set v2destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config
 
 :: Zoek het nieuwste bestand in de bronmap
@@ -50,6 +50,21 @@ FOR /F "delims=" %%I IN ('DIR "%v3source%" /B /A:-D /O:-D') DO SET NewestFile=%%
 
 :: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
 COPY "%v3source%\%NewestFile%" "%v3destination%\ubuntu-config-V3-latest.sh"
+
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Aanmaken latest voor LUCT (versie 4.0) Canary
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:: Stel de bron- en doelmap in
+set v4source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-4xx\V400-Canary-Not-Tested
+set v4destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config
+
+:: Zoek het nieuwste bestand in de bronmap
+FOR /F "delims=" %%I IN ('DIR "%v4source%" /B /A:-D /O:-D') DO SET NewestFile=%%I & GOTO Continue
+:Continue
+
+:: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
+COPY "%v4source%\%NewestFile%" "%v4destination%\LUCT-4-0-CAN-latest.sh"
 
 
 :: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -99,3 +114,19 @@ FOR /F "delims=" %%I IN ('DIR "%v4source%" /B /A:-D /O:-D') DO SET NewestFile=%%
 
 :: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
 COPY "%v4source%\%NewestFile%" "%v4destination%\LUCT-4-1-DEV-latest.sh"
+
+
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Aanmaken latest voor LUCT (versie 4.2) Canary
+:: :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:: Stel de bron- en doelmap in
+set v4source=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config\Version-4xx\V420-Canary-Not-Tested
+set v4destination=D:\OneDrive\OneDrive - Saxion\Repository-Playground\Development\GitHub-GitDesktop\Ubuntu-Config
+
+:: Zoek het nieuwste bestand in de bronmap
+FOR /F "delims=" %%I IN ('DIR "%v4source%" /B /A:-D /O:-D') DO SET NewestFile=%%I & GOTO Continue
+:Continue
+
+:: Maak een kopie van het nieuwste bestand met de oude naam en "latest" als toevoeging
+COPY "%v4source%\%NewestFile%" "%v4destination%\LUCT-4-2-CAN-latest.sh"
