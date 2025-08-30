@@ -71,7 +71,7 @@
 Major="4"
 Minor="1"
 Build="46"
-Patch="7"
+Patch="6"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
 Channel="DEV"
@@ -265,7 +265,6 @@ Channel="DEV"
 # 15aug25   B46 Patch 3 Docker images regel 1436
 # 17aug25   B46 Patch 5 Git Clones functie 
 # 29aug25   B46 Patch 6 Debian Repo aangepast
-# 30aug25   B46 Patch 7 Hostname OMV aangepast 
 #
 #
 # #######################
@@ -1829,8 +1828,8 @@ function debulx_config_taal_nl () {
 function debulx_config_os_repo_change () {
     if [[ $distro == "debian" ]] ; then
         if [[ $versie == "12" ]] ; then
-            sed -i '1c\deb http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
-            sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
+            sed -i '1c\deb http://mirror.ams.macarne.com/debian/dists/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
+            sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/dists bookworm main non-free non-free-firmware' /etc/apt/sources.list
         fi
     # Debian
     fi 
@@ -2803,8 +2802,7 @@ function verander_machinenaam () {
                 sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
             fi
             if [[ $actie == "omv" ]] ; then
-                #   NEW_HOSTNAME="D$versiehostnaam-LTS-D-OMV-001"
-                NEW_HOSTNAME="omv332463"
+                NEW_HOSTNAME="D$versiehostnaam-LTS-D-OMV-001"
                 hostnamectl set-hostname "$NEW_HOSTNAME"
                 sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
             fi
