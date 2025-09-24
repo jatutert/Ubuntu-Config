@@ -33,13 +33,15 @@
 #
 #
 # Ophalen van DEV Latest versie van dit script in externe omgeving
-# sudo curl -L -o $HOME/luctv41.sh https://edu.nl/n7faw
-# sudo wget -O $HOME/luctv41.sh https://edu.nl/n7faw
+# sudo curl -L -o $HOME/luctv42.sh https://edu.nl/vnej9
+# sudo wget -O $HOME/luctv42.sh https://edu.nl/vnej9
 #
 # Hierna
-# sudo chmod +x $HOME/luctv41.sh 
-# sudo $HOME/luctv41.sh docker 
-# sudo $HOME/luctv41.sh podman 
+# sudo chmod +x $HOME/luctv42.sh 
+# sudo $HOME/luctv42.sh docker 
+# sudo $HOME/luctv42.sh podman 
+# sudo $HOME/luctv42.sh network 
+# sudo $HOME/luctv42.sh vaxvms 
 #
 #
 # #######################
