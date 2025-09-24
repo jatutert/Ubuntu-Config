@@ -6,9 +6,9 @@
 #
 #   #    #  # #### #####  #   #      ####   Gemaakt door John Tutert (TutSOFT)
 #   #    #  # #      #    #   #         #   2023 WSL Config
-#   #    #  # #      #    #####        #    2024 Ubuntu Config
-#   #    #  # #      #        #       #     2025 LUCT
-#   #### #### ####   #        #  ##  ####   Persoonlijk en / of educatief gebruik
+#   #    #  # #      #    #####         #   2024 Ubuntu Config
+#   #    #  # #      #        #         #   2025 LUCT
+#   #### #### ####   #        #  ##     #   Persoonlijk en / of educatief gebruik
 #
 # ################################################################################
 # ################################################################################
@@ -69,12 +69,12 @@
 #
 #
 Major="4"
-Minor="2"
-Build="00"
-Patch="00"
+Minor="1"
+Build="46"
+Patch="9"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
-Channel="CAN"
+Channel="DEV"
 #
 #
 # #######################
@@ -167,12 +167,108 @@ Channel="CAN"
 # Changelog Script
 # #######################
 #
-#   24sept25    LUCT versie 4.1 Build 46 Patch 11 = LUCT versie 4.2 Build 00 Patch 00
-#   xxxxxx25    x
-#   xxxxxx25    x
 #
+# Ubuntu
+# 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
+# 12juli25 Docker Management Tools functie 
+# 12juli25 Visual Studio Code Server native en Docker 
+# 12juli25 Visual Studio Code Server sed bug fixed 
+# 18juli25 Build 32 Jenkins als Container in plaats van native install
+# 18juli25 Build 32 Visual Studio Code Server als Container in plaats van native install 
+# 19juli25 Edu link naar Canary latest opgenomen in kop van het script
+# 20juli25 B5 PHP installatie output naar dev nul gezet
+# 20juli25 B5 Native installatie van Visual Studio code uitgezet stond nog aan 
+# 20juli25 B5 Docker Compose plugin installatie uitgezet wordt al gedaan bij installatie van Docker CE
+# 20juli25 B5 Docker Compose installatie functie opmerkingen erbij gezet
+# 20juli25 B5 Docker pull van Jenkins image gelijk aan gebruikte image stond op latest en lts 
+# 20juli25 B5 Visual Studio Code Server als Docker container functie aangepast en werkend gemaakt
+# 20juli25 B5 Volgorde functies Docker Podman en Minikube aangepast 
+# 20juli25 B5 Namen containers met LUCT ervoor 
+# 20juli25 B5 Initieel wachtwoord Jenkins naar lokaal bestand 
+# 20juli25 B5 Dockly werkend 
+# 20juli25 B5 LazyDocker werkend
+# 20juli25 B5 Dry toevoeging
+# 20juli25 B5 7zip in plaats van 7z installatie bugfix 
+# 21juli25 B6 Poorten overzicht bijgewerkt
+# 21juli25 B7 Nummering stappen correctie
+# 21juli25 B7 Commando starten VS Code Server aangepast
+# 21juli25 B8 Ansible eerste opzetje gemaakt start by scriptregel 1144
+# 22juli25 B9 Ansible eth en ens netwerkconfiguratie
+# 23juli25 B10 Ansible Master Inventory 
+# 23juli25 B10 Uitbreiding logging 
+# 23juli25 B10 Aanpassen hostname op basis van eerst check gebruikersnaam
+# 24juli25 B11 Powershell installatie met snap in plaats van apt
+# 24juli25 B11 Markering functies die niet meer actief in gebruik zijn
+# 24juli25 B11 Patch 1 Snap installatie Powershell parameter classic EN run dry script chmod 
+# 25juli25 B12 Nieuwe hoofd repo ubuntu en backup repo instellingen
+# 25juli25 B12 Nieuwe logging manier docker images pull 
+# 25juli25 B12 Patch 1 Bugfixes na run script
+# 25juli25 B12 Patch 1 Aanpassen Ubuntu Repo op nieuwe manier 
+# 25juli25 B13 Dive installatie fix WatchTower Image pull toegevoegd
+# 25juli25 B13 Jenkins Wachtwoord bestand aanmaak in nested docker functie gezet
+# Debian
+# 25juli25 B14 Debian 12 Linux support start
+# 25juli25 B14 Aanmaak Debian Ubuntu gezamenlijke functies 
+# 26juli25 B14 Patch 1 wget voor ophalen script en aanpassen hostname debian docker
+# 26juli25 B14 Patch 2 vullen distro variabele compatible met debian gemaakt
+# 26juli25 B14 Patch 3 volgorde fixes nested oobe nav eerste run op debian
+# 28juli25 B15 Succesvolle testrun op Debian gedaan melding apt repo add stil gemaakt en 7zz bij Debian
+# 28juli25 B15 Debian installatie Snap van Ubuntu toegevoegd Snap is dus nu ook beschikbaar op Debian
+# Debian Ubuntu
+# 28juli25 B16 Bepalen versienummer eerder in script verwijderd bij change repo ubuntu
+# 28juli25 B17 Proces fase meldingen 
+# 28juli25 B17 Powershell Debian Ubuntu 
+# 29juli25 B17 Patch 1 Powershell Debian Ubuntu naar 1 in plaats van per distro
+# 29juli25 B18 Docker pull Progress Bar en APT Install Progress Bar
+# 30juli25 B18 Patch 1 Progress Bars fix
+# 30juli25 B19 Progress Bar Functie apart gezet in distro onafhankelijk gedeelte
+# 30juli25 B19 Introductie van parameter 2 test waarbij veel meer zichtbaar wordt tijdens uitvoering
+# 30juli25 B19 Patch 1 bugfix parameter 2 en oude en nieuwe versie Debian weergeven
+# 30juli25 B20 Foutmelding Docker installatie distro afhankelijk gemaakt 
+# 30juli25 B20 paramater een en twee werkend gemaakt
+# 31juli25 B21 Debian en Ubuntu opties gelijk getrokken en omv optie voor Debian 
+# 31juli25 B22 Modus naar leeg bij geen parameter 2 opgegeven
+# 31juli25 B22 ContainerEngine in plaats van Docker of Podman voor pull images en portainer
+# 01aug25  B23 Introductie gezamenlijke functies besparing 900 regels code
+# 01aug25  B23 Patch 1 Herstel foutje in if then statement
+# 02aug25  B24 Check if then statements script en introductie nieuwe functies om regels te besparen
+# 02aug25  B24 Ansible Master en Ansible Slave function nieuwe opzet
+# 02aug25  B25 Debian Ubuntu deel voltooien uit B24
+# 02aug25  B25 Patch 1 fix apt https installatie 
+# 03aug25  B26 Eerste opzet nieuwe manier installatie Docker nog niet gereed
+# 03aug25  B27 Nieuwe Functie Container Engine en Nieuwe Functie Netwerk instellingen
+# 03aug25  B28 Testmodus apt update en fix dry EN Podman docker registry fix voor images
+# 03aug25  B29 Linux Distros aangepast beginscherm EN Testmodus aangezet op belangrijke onderdelen 
+# 04aug25  B30 Cockpit nieuwe installatie manier EN Podman Cockpit EN Gebruiker ROOT vrijgeven
+# 04aug25  B31 curl in plaats van snap curl omdat snap curl problemen geeft
+# 04aug25  B31 Add Repo in gezamenlijke functie in plaats van apart
+# 04aug25  B32 Test modus standaard uit
+# 06aug25  B33 Eerste implementatie van LinuxMint en LMDE Linux ondersteuning 
+# 06aug25  B33 Nieuwe manier hostnamen Debian en Ubuntu en Debian nieuwe structuur hostnaam
+# 06aug25  Feature Complete 
+# 06aug25  B34 RC1 Functie Config Bash shell naar debulx EN functie betere namen
+# 07aug25  B35 RC2 Minder meldingen op scherm en duidelijke indicate fasen in script op scherm 
+# 07aug25  B36 RC2 Minikube altijd installeren bij Docker 
+# 07aug25  B37 RC2 Progress bar bugfix alles blijft nu op 1 regel
+# 08aug25  B38 RC2 Debug modus aan bij test EN UT Twente Repo toevoeging
+# 08aug25  B39 RC3 Nieuwe menu optie non lts upgrade
+# 08aug25  B40 RC3 Minder meldingen tijdens run en set e uitgezet omdat script onstabiel wordt
+# 08aug25  B40 RC4 Nieuwe Structuur Script
+# 09aug25  B40 RC4 Nieuwe Structuur Script
+# 10aug25  B41 RC4 Nieuwe Structuur Script
+# 10aug25  B42 RC4 Nieuwe Structuur Script
+# 12aug25  B42 Lus eth ens Ansible master nieuwe opzet EN aanmaken log bestand in tmp directory
+# 12aug25  B44 en B45 Logging via log bestanden in var log directory 
+# 13aug25   B46 Canary Channel naar DEV Channel 
+# 13aug25   B46 Patch 1 Aanpassen verkorte URL naar nieuwe verkorte URL # GEEN aanpassingen in script verder 
+# 15aug25   B46 Patch 2 Logging via functie 
+# 15aug25   B46 Patch 3 Docker images regel 1436
+# 17aug25   B46 Patch 5 Git Clones functie 
+# 29aug25   B46 Patch 6 Debian Repo aangepast
+# 30aug25   B46 Patch 7 Hostname OMV aangepast 
+# 18sept25  B46 Patch 9 Podman Repo check aanwezigheid toegevoegd
+# 18sept25  B46 Patch 9 VaxVMS optie eerste opzetje toegevoegd
 #
-# 21sept25  B46 Patch 11 Uniek MAC adres Debian
 #
 # #######################
 # Blok 1F
@@ -571,35 +667,21 @@ function deb_config_dns_settings () {
     if [[ -n "$interface" ]]; then
         #
         #   #########################################################
-        #   Stap 1: Genereer een MAC adres 
-        #   #########################################################
-        #
-        volledig_jaar=$(date +"%Y")
-        jaar_eerste_twee=${volledig_jaar:0:2}
-        jaar_laatste_twee=${volledig_jaar:2:2}
-        mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
-        #
-        #   #########################################################
-        #   Stap 2: MAC adres aanpassen
-        #   #########################################################
-        #
-        ip link set "$interface" address "$mac_address"
-        #
-        #   #########################################################
-        #   Stap 3: Bepaal het configuratiebestand voor Debian
+        #   Stap 2: Bepaal het configuratiebestand voor Debian
         #   #########################################################
         #
         interfaces_file="/etc/network/interfaces"
+        
         #
         #   #########################################################
-        #   Stap 4: Maak een backup van het huidige bestand 
+        #   Stap 3: Maak een backup van het huidige bestand 
         #   #########################################################
         #
         backup_file="${interfaces_file}.bak.$(date +%Y%m%d%H%M%S)"
         cp "$interfaces_file" "$backup_file"
         #
         #   #########################################################
-        #   Stap 5: Genereer nieuwe configuratie
+        #   Stap 4: Genereer nieuwe configuratie
         #   #########################################################
         #
         # Verwijder bestaande dns-nameservers regels voor de interface
@@ -620,12 +702,9 @@ EOF
         #   Stap 5: Pas netwerkinstellingen toe
         #   #########################################################
         #
-        #   Herstart de netwerkinterface
-        #
-        #   Uitgezet omdat dit script een automatische herstart doet
-        #
-        #   ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-        #   ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        # Herstart de netwerkinterface
+        ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
     else
         echo 'No valid network interface found (eth* or ens*)'
     fi
@@ -664,19 +743,10 @@ EOF
 #
 #
 function debulx_os_machine_init () {
-    #
-    # Verwijder huidige machine ID
     rm /etc/machine-id
-    rm /var/lib/dbus/machine-id
-    #
-    #   Genereer nieuwe machine ID zonder herstart
     dbus-uuidgen --ensure=/etc/machine-id
-    #
-    #   Unieke SSH sleutels genereren
     #   sudo rm /etc/ssh/ssh_host_*
     #   sudo ssh-keygen -A
-    #
-    #   Cloud Init uitvoeren 
     cloud-init clean --logs
 }
 #
@@ -782,13 +852,11 @@ function debulx_install_default_apps () {
             "wget"
             "wget2"
             "zip"
-            "make"
         )
     else 
         APT_INSTALL_ARRAY=(
             "7zip"
             "apt-transport-https"
-            "bridge-utils"
             "ca-certificates"
             "cowsay"
             "curl"
@@ -800,7 +868,6 @@ function debulx_install_default_apps () {
             "gnupg"
             "gzip"
             "lolcat"
-            "make"
             "mc"
             "micro"
             "nano"
@@ -2218,15 +2285,15 @@ function debulx_nested_os_config () {
     #
     luct_log_message "Phase 8 Start tijd $(date) $USER $SUDO_USER"
     #
-    echo '## Phase 8 - Step 1 of 13 Changing Machine ID'
-    debulx_os_machine_init
-    echo '## Phase 8 - Step 2 of 13 Set Operating System settings to Europe'
+    # Europa Amsterdam instellen
+    echo '## Phase 8 - Step 1 of 12 Set Operating System settings to Europe'
     debulx_config_taal_nl
-    echo "## Phase 8 - Step 3 of 13 Change Operating System Repository to Europe"
+    echo "## Phase 8 - Step 2 of 12 Change Operating System Repository to Europe"
     debulx_config_os_repo_change
-    echo '## Phase 8 - Step 4 of 13 Implementing new APT Repository from Europe'
+    # APT
+    echo '## Phase 8 - Step 3 of 12 Implementing new APT Repository from Europe'
     debulx_os_update_apt
-    echo '## Phase 8 - Step 5 of 13 Upgrading Operating System (takes about 5 minutes)'
+    echo '## Phase 8 - Step 4 of 12 Upgrading Operating System (takes about 5 minutes)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -2239,27 +2306,28 @@ function debulx_nested_os_config () {
         ulx_vers_nw=$VERSION
         echo "Version after upgrade $ulx_vers_nw"
     fi
-    echo '## Phase 8 - Step 6 of 13 Installing Default Apps (takes about 5 minutes)'
+    echo '## Phase 8 - Step 5 of 12 Installing Default Apps (takes about 5 minutes)'
     # Doet installate van add apt repository commando
     debulx_install_default_apps
-    echo "## Phase 8 - Step 7 of 13 Adding new Repositories to APT"
-    # LET OP Gebruikt resultaat van vorige stap 
+    echo "## Phase 8 - Step 6 of 12 Adding new Repositories to APT"
+    # Toevoegen Ansible Cockpit Docker Kubernetes Powershell 
+    # Gebruikt add apt repository commando
     debulx_config_add_repositories
     # Operating System instellen
-    echo "## Phase 8 - Step 8 of 13 Configure BASH Shell settings"
+    echo "## Phase 8 - Step 7 of 12 Configure BASH Shell settings"
     debulx_config_bash_shell
-    echo '## Phase 8 - Step 9 of 13 Releasing ROOT user'
+    echo '## Phase 8 - Step 8 of 12 Releasing ROOT user'
     wachtwoord=$SUDO_USER
     echo "root:$wachtwoord" | sudo chpasswd
     usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
     # Applicaties
-    echo '## Phase 8 - Step 10 of 13 Installing or updating of Open VM Tools'
+    echo '## Phase 8 - Step 9 of 12 Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo '## Phase 8 - Step 11 of 13 Python compatible with lower versions'
+    echo '## Phase 8 - Step 10 of 12 Python compatible with lower versions'
     debulx_python_compatible
-    echo '## Phase 8 - Step 12 of 13 Installing and configuration of Cockpit'
+    echo '## Phase 8 - Step 11 of 12 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo '## Phase 8 - Step 13 of 13 Installing Microsoft Powershell 7'
+    echo '## Phase 8 - Step 12 of 12 Installing Microsoft Powershell 7'
     debulx_install_pwrshell
     #
     luct_log_message "Phase 8 Eind tijd $(date) $USER $SUDO_USER"
@@ -2660,19 +2728,6 @@ if [[ -n "$interface" ]]; then
     #
     #
     #   #########################################################
-    #   Stap 4: Genereer een nieuw MAC adres 
-    #   #########################################################
-    #
-    #
-    #   Format yy:yy:dd:mm:uu:mm
-    #
-    volledig_jaar=$(date +"%Y")
-    jaar_eerste_twee=${volledig_jaar:0:2}
-    jaar_laatste_twee=${volledig_jaar:2:2}
-    mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
-    #
-    #
-    #   #########################################################
     #   Stap 4: Genereer nieuwe configuratie
     #   #########################################################
     #
@@ -2686,7 +2741,6 @@ network:
   ethernets:
     $interface:
       dhcp4: true
-      macaddress: $mac_address
       nameservers:
         addresses: [145.2.14.10, 145.2.14.11, 8.8.8.8, 8.8.4.4]
 EOF
@@ -2698,13 +2752,10 @@ EOF
     #   Stap 5: Pas Netplan toe
     #   ##########################################################
     #
-    #   Als dit nu wordt gedaan dan is verbinding weg
-    #   Dit script doet een automatische reboot
-    #   Bij reboot wordt nieuwe configuratie actief
     #
-    #   netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-    #
-    #
+    netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+#
+#
 else
     echo 'No valid netwerkinterface found (eth* or ens*)'
 fi
@@ -3635,6 +3686,8 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         git clone --quiet https://github.com/simh/simh.git /opt/simh
         #
         yes | make --directory /opt/simh -j4 vax8600 --always-make
+        #make -j4 vax8600
+        #
         #
         mkdir -p /opt/simulators/vax8600/iso
         mkdir -p /opt/simulators/vax8600/data
