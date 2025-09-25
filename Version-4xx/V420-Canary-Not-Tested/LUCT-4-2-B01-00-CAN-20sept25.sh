@@ -70,11 +70,11 @@
 #
 Major="4"
 Minor="2"
-Build="00"
-Patch="0"
+Build="01"
+Patch="00"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
-Channel="Canary"
+Channel="CAN"
 #
 #
 # #######################
@@ -266,6 +266,10 @@ Channel="Canary"
 # 17aug25   B46 Patch 5 Git Clones functie 
 # 29aug25   B46 Patch 6 Debian Repo aangepast
 # 30aug25   B46 Patch 7 Hostname OMV aangepast 
+# 18sept25  B46 Patch 9 Podman Repo check aanwezigheid toegevoegd
+# 18sept25  B46 Patch 9 VaxVMS optie eerste opzetje toegevoegd
+# 19sept25  B46 Patch 9 Machine ID functie
+# 20sept25  B46 Patch10 Uniek MAC adres Ubuntu
 #
 #
 # #######################
@@ -669,7 +673,6 @@ function deb_config_dns_settings () {
         #   #########################################################
         #
         interfaces_file="/etc/network/interfaces"
-        
         #
         #   #########################################################
         #   Stap 3: Maak een backup van het huidige bestand 
@@ -677,6 +680,17 @@ function deb_config_dns_settings () {
         #
         backup_file="${interfaces_file}.bak.$(date +%Y%m%d%H%M%S)"
         cp "$interfaces_file" "$backup_file"
+        #
+        #
+        #   #########################################################
+        #   Stap 4: Genereer een MAC adres 
+        #   #########################################################
+        #
+        volledig_jaar=$(date +"%Y")
+        jaar_eerste_twee=${volledig_jaar:0:2}
+        jaar_laatste_twee=${volledig_jaar:2:2}
+        mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
+        #
         #
         #   #########################################################
         #   Stap 4: Genereer nieuwe configuratie
@@ -733,6 +747,26 @@ EOF
 #
 #   #######################
 #   Blok 4E-1-1    Debian Ubuntu OS FUNCTIES
+#                  Functie machine id 
+#                  Onderdeel van Debian Ubuntu Nested OOBE Functie
+#   #######################
+#
+#
+#
+#
+function debulx_os_machine_init () {
+    rm /etc/machine-id
+    dbus-uuidgen --ensure=/etc/machine-id
+    #   sudo rm /etc/ssh/ssh_host_*
+    #   sudo ssh-keygen -A
+    cloud-init clean --logs
+}
+#
+#
+#
+#
+#   #######################
+#   Blok 4E-1-2    Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os update apt
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -748,7 +782,7 @@ function debulx_os_update_apt () {
 #
 #
 #   #######################
-#   Blok 4E-1-2    Debian Ubuntu OS FUNCTIES
+#   Blok 4E-1-3    Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os upgrade packages 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -945,37 +979,46 @@ function debulx_install_default_apps () {
 #
 function debulx_install_cockpit_srv () {
     #
-    luct_log_message "Start Installatie Cockpit $(date)"
+    # Controleer of de cockpit.socket service actief is
+    systemctl is-active --quiet cockpit.socket
     #
-    # #######################
-    # ## Parameters vullen
-    # #######################
-    . /etc/os-release
-    #
-    # ######################
-    # ## Installeren
-    # ######################
-    #
-    apt install -t ${VERSION_CODENAME}-backports cockpit -y > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    #
-    # ######################
-    # ## Service
-    # ######################
-    #
-    systemctl enable --now cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    # Aanpassen Poort 
-    rm -f /tmp/listen.conf
-    echo '[Socket]' > /tmp/listen.conf
-    echo 'ListenStream=' >> /tmp/listen.conf
-    echo 'ListenStream=8101' >> /tmp/listen.conf
-    mkdir -p /etc/systemd/system/cockpit.socket.d/
-    cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
-    # Herstarten
-    systemctl daemon-reload >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    #
-    luct_log_message "Einde Installatie Cockpit $(date)"
-    #
+    if [ $? -ne 0 ]; then
+        #
+        luct_log_message "Start Installatie Cockpit $(date)"
+        #
+        #
+        #
+        # #######################
+        # ## Parameters vullen
+        # #######################
+        . /etc/os-release
+        #
+        # ######################
+        # ## Installeren
+        # ######################
+        #
+        apt install -t ${VERSION_CODENAME}-backports cockpit -y > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        #
+        # ######################
+        # ## Service
+        # ######################
+        #
+        systemctl enable --now cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        # Aanpassen Poort 
+        rm -f /tmp/listen.conf
+        echo '[Socket]' > /tmp/listen.conf
+        echo 'ListenStream=' >> /tmp/listen.conf
+        echo 'ListenStream=8101' >> /tmp/listen.conf
+        mkdir -p /etc/systemd/system/cockpit.socket.d/
+        cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
+        # Herstarten
+        systemctl daemon-reload >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        #
+        #
+        luct_log_message "Einde Installatie Cockpit $(date)"
+        #
+    fi
 # Cockpit
 }
 #
@@ -1080,8 +1123,28 @@ function debulx_install_conteng () {
         echo 'Adding Docker Registry to Podman'
         luct_log_message "Docker Registry toevoegen aan Podman"
         # Docker IO Registry toevoegen aan lijst omdat standaard niet aanwezig is
-        sed -i '$a[registries.search]' /etc/containers/registries.conf
-        sed -i '$aregistries = ["docker.io"]' /etc/containers/registries.conf
+        #
+        # Stap 1 van 2 
+        #
+        FILE="/etc/containers/registries.conf"
+        SEARCH_STRING="[registries.search]"
+        grep -q "$SEARCH_STRING" "$FILE"
+        if [ $? -ne 0 ]; then
+            sed -i '$a[registries.search]' "$FILE"
+        fi
+        #
+        # Stap 2 van 2 
+        #
+        FILE="/etc/containers/registries.conf"
+        SEARCH_STRING="registries = [\"docker.io\"]"
+        grep -q "$SEARCH_STRING" "$FILE"
+        if [ $? -ne 0 ]; then
+            sed -i '$a\registries = ["docker.io"]' "$FILE"
+        fi
+        #
+        #   sed -i '$a[registries.search]' /etc/containers/registries.conf
+        #   sed -i '$aregistries = ["docker.io"]' /etc/containers/registries.conf
+        #
         # Cockpit Podman installeren en starten 
         echo 'Installing Podman Cockpit integration'
         luct_log_message "Installatie van Podman integratie in Cockpit"
@@ -2677,6 +2740,19 @@ if [[ -n "$interface" ]]; then
     #
     #
     #   #########################################################
+    #   Stap 4: Genereer een nieuw MAC adres 
+    #   #########################################################
+    #
+    #
+    #   Format yy:yy:dd:mm:uu:mm
+    #
+    volledig_jaar=$(date +"%Y")
+    jaar_eerste_twee=${volledig_jaar:0:2}
+    jaar_laatste_twee=${volledig_jaar:2:2}
+    mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
+    #
+    #
+    #   #########################################################
     #   Stap 4: Genereer nieuwe configuratie
     #   #########################################################
     #
@@ -2690,6 +2766,7 @@ network:
   ethernets:
     $interface:
       dhcp4: true
+      macaddress: $mac_address
       nameservers:
         addresses: [145.2.14.10, 145.2.14.11, 8.8.8.8, 8.8.4.4]
 EOF
@@ -2701,10 +2778,13 @@ EOF
     #   Stap 5: Pas Netplan toe
     #   ##########################################################
     #
+    #   Als dit nu wordt gedaan dan is verbinding weg
+    #   Dit script doet een automatische reboot
+    #   Bij reboot wordt nieuwe configuratie actief
     #
-    netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-#
-#
+    #   netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+    #
+    #
 else
     echo 'No valid netwerkinterface found (eth* or ens*)'
 fi
@@ -3107,6 +3187,13 @@ draw_progress_bar() {
 #
 #
 function luct_finish_script () {
+    #
+    #   Remove Unnecessary Dependencies
+    apt autoclean
+    #
+    #   Clean Package Cache
+    apt clean
+    #
     #
     luct_log_message "Eindtijd van het script $(date)"
     #
@@ -3608,9 +3695,47 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Debian Ubuntu LinuxMint Debian LinuxMint optie 9
         #
         exit 1
-    elif [[ $actie == "scripts" ]]; then
+    elif [[ $actie == "vaxvms" ]]; then
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 10
+        #
+        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu optie 10
+        # Installeren VAX VMS Emulator
+        #
+        #
+        # Phase 6 tot en met 9
+        luct_linux_oobe
+        #
+        #   https://www.openvmshobby.com/vax-vms/openvms-on-vax-simh/
+        #   https://blog.poggs.com/2020/04/21/openvms-on-a-raspberry-pi/
+        #
+        apt install make -y
+        apt install libsdl2-dev libpng-dev libpcap-dev libvdeplug-dev -y
+        apt install bridge-utils -y
+        #
+        git clone --quiet https://github.com/simh/simh.git /opt/simh
+        #
+        yes | make --directory /opt/simh -j4 vax8600 --always-make
+        #make -j4 vax8600
+        #
+        #
+        mkdir -p /opt/simulators/vax8600/iso
+        mkdir -p /opt/simulators/vax8600/data
+        mkdir -p /opt/simulators/vax8600/log
+        mkdir -p /opt/simulators/vax8600/bin
+        #
+        cp /opt/simh/BIN/vax8600 /opt/simulators/vax8600/bin/
+        #
+        curl -o /tmp/AG-QSBWB-BE.iso.zip http://vaxhaven.com/cd-image/AG-QSBWB-BE.iso.zip
+        #
+        unzip /tmp/AG-QSBWB-BE.iso.zip
+        #
+        cp AG-QSBWB-BE.ISO /opt/simulators/vax8600/iso/VAXVMS071.iso
+        #
+        # downloaden van /opt/simulators/vax8600/data/vax8600.ini
+        ln -s /opt/simulators/vax8600/data/vax8600.ini /opt/simulators/vax8600/bin/
+        #
+        ip tuntap add mode tap user ubuntu tapvax
+        ip link set dev tapvax up
         #
         exit 1
     elif [[ $actie == "menu" ]]; then

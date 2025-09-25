@@ -13,7 +13,7 @@
 # ################################################################################
 # ################################################################################
 #
-# Regel 1030 Ansible 
+#
 #
 #
 # ################################################################################
@@ -33,13 +33,15 @@
 #
 #
 # Ophalen van DEV Latest versie van dit script in externe omgeving
-# sudo curl -L -o $HOME/luctv41.sh https://edu.nl/n7faw
-# sudo wget -O $HOME/luctv41.sh https://edu.nl/n7faw
+# sudo curl -L -o $HOME/luctv42.sh https://edu.nl/vnej9
+# sudo wget -O $HOME/luctv42.sh https://edu.nl/vnej9
 #
 # Hierna
-# sudo chmod +x $HOME/luctv41.sh 
-# sudo $HOME/luctv41.sh docker 
-# sudo $HOME/luctv41.sh podman 
+# sudo chmod +x $HOME/luctv42.sh 
+# sudo $HOME/luctv42.sh docker 
+# sudo $HOME/luctv42.sh podman 
+# sudo $HOME/luctv42.sh network 
+# sudo $HOME/luctv42.sh vaxvms 
 #
 #
 # #######################
@@ -70,14 +72,12 @@
 #
 Major="4"
 Minor="2"
-Build="00"
-Patch="0"
+Build="01"
+Patch="00"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
-Channel="Canary"
+Channel="CAN"
 #
-echo "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-logger "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER"
 #
 # #######################
 # Blok 1D
@@ -112,27 +112,48 @@ logger "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER
 #
 #
 # Uitgaande Containerpoorten 9100 Docker Management Tools
-# 9101 Portainer 
-# 9102 Yacht
-# 9103 Visual Studio Code Server
-# 9104 Jenkins 
-# 9105 Registry
-# 9106 WatchTower
+#   9101    Portainer 
+#   9102    Yacht
+#   9103    Visual Studio Code Server
+#   9104    Jenkins 
+#   9105    Registry
+#   9106    WatchTower
+#   9107    PostGreSQL
+#   9108    PGAdmin4
 #
-# Uitgaande Containerpoorten 9200 Docker Containers eigen
-# 9200 NGINX
-# 9201 K8S Demo Simple Deployment # k8s_simple_deployment_nginx.sh
-# 9202 K8S Demo Deployment step 1 # k8s_nginx_deployment_stap_1.sh
-# 9203 Niet in gebruik 
-# 9204 Flask-demo # k8s-flask-demo-deployment.sh
-#
+# Uitgaande Containerpoorten 9200 Docker Containers
+# 9201 prakhar1989/static-site
+# 9202 dockersamples/static-site
+# 9203 Demo Dockerfile Apache 
+# 9204 Demo Dockerfile NodeJS
 # 9205 Flask-demo # Website 1 # Docker
+#
 # 9206 Flask-demo # Website 2 # Docker
 # 9207 Flask-demo # Website 3 # Docker
 # 9208 Flask-demo # Website 4 # Docker
 # 9209 Flask-demo # Website 5 # Docker
-#
 # 9210 NextCloud
+#
+# 9211 MinIO API poort (wordt niet actief gebruikt maar beschikbaar houden voor bijv kubernetes)
+# 9212 Minio Console 
+# 9213 x
+# 9214 x
+# 9215 x
+#
+# Uitgaande Containerpoorten 9300 Containers op Kubernetes
+# 9301 K8S Demo Simple Deployment # k8s_simple_deployment_nginx.sh
+# 9302 K8S Demo Deployment step 1 # k8s_nginx_deployment_stap_1.sh
+# 9303 Flask-demo # k8s-flask-demo-deployment.sh
+# 9304 x
+# 9305 x
+# 
+# 9306 x
+# 9307 x
+# 9308 x
+# 9309 x 
+# 9310 x
+#
+
 # 9211 dc-nextcloud-mariadb.yml
 #
 # 9220 WordPress
@@ -150,13 +171,14 @@ logger "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER
 # Changelog Script
 # #######################
 #
-#
-# 13 aug 25 B00 P00 Init versie voor versie 4.2 builds 
+#   24sept25    LUCT versie 4.1 Build 46 Patch 11 = LUCT versie 4.2 Build 00 Patch 00
+#   25sept25    PostGreSQL en PGAdmin als containers eerste opzetje
+#   xxxxxx25    x
 #
 #
 # #######################
 # Blok 1F
-# Header Script
+# Definieer functies
 # #######################
 #
 #
@@ -174,6 +196,11 @@ function luct_display_header () {
 }
 #
 #
+function luct_log_message () {
+    echo "$1" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+}
+#
+#
 # #######################
 # Blok 1G
 # Openingssscherm gebruiker script
@@ -185,13 +212,11 @@ luct_display_header
 echo 'Implemented and fully tested Linux distributions are:'
 echo '- Debian  12      Bookworm'
 echo '- Ubuntu  24 LTS  Noble Numbat'
-echo '- Linux Mint Debian 5/6 and Ubuntu 21/22         Versie 4.2'
-echo ''
-echo 'Implemented and fully tested are:'
-echo '- Ansible                                        Versie 4.2'
 echo ''
 echo 'Features for the next version(s), which are already partially included in this version:'
+echo '- Ansible'
 echo '- Interactive menu' 
+echo '- Linux Mint Debian 5/6 and Ubuntu 21/22'
 echo ''
 echo 'Developed and tested using virtual machines from the Linux VM Images website'
 echo ''
@@ -212,12 +237,19 @@ if [ "$CURRENT_TIMEZONE" != "$TARGET_TIMEZONE" ]; then
     timedatectl set-timezone "$TARGET_TIMEZONE" > /dev/null 2>&1
 fi 
 #
+#
+logger "LUCT $Major.$Minor Build $Build $Patch Channel $Channel Started by $USER"
 logger "Timezone changed by LUCT $Major.$Minor Build $Build $Patch Channel $Channel"
 #
-echo "Starttijd" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-timedatectl status | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
-
+luct_log_message "#######################################################"
+luct_log_message "LUCT $Major.$Minor Build $Build $Patch Channel $Channel"
+luct_log_message "#######################################################"
+luct_log_message "Uitvoerende gebruiker is $USER"
+luct_log_message "Starttijd van het script $(date)"
+luct_log_message "Tijdzone instelling was $CURRENT_TIMEZONE"
+luct_log_message "Tijdzone ingesteld op $TARGET_TIMEZONE"
+#
 #
 #
 #
@@ -239,8 +271,9 @@ timedatectl status | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 #
 # Controleer ROOT rechten voor het script 
 #
-luct_phase_one_time=$(date)
-echo "Phase 1 $luct_phase_one_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+#   luct_phase_one_time=$(date)
+#   luct_log_message "Phase 1 $luct_phase_one_time"
+luct_log_message "Phase 1 $(date)"
 #
 if [ $(id -u) -ne 0 ]; then
     clear
@@ -254,6 +287,7 @@ if [ $(id -u) -ne 0 ]; then
     echo ''
     echo 'Terminate script execution ...'
     logger "LUCT Version $Major.$Minor Build $Build Patch $Patch Terminated at Phase 1"
+    luct_log_message "Afbreken script $(date)"
     exit 1
 else
     echo '## Phase 1 - Checking executing rights'
@@ -268,8 +302,9 @@ fi
 #
 # Eerste parameter bijvoorbeeld docker
 #
-luct_phase_two_time=$(date)
-echo "Phase 2 $luct_phase_two_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+#   luct_phase_two_time=$(date)
+#   luct_log_message "Phase 2 $luct_phase_two_time"
+luct_log_message "Phase 2 $(date)"
 #
 echo '## Phase 2 - Checking Script Arguments'
 if [ $# -eq 0 ]; then
@@ -289,8 +324,9 @@ if [ $# -eq 0 ]; then
     echo ''
     echo 'Terminate script execution ...'
     #
-    luct_end_time=$(date)
-    echo "Einde $luct_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    #   luct_end_time=$(date)
+    #   luct_log_message "Einde $luct_end_time"
+    luct_log_message "Afbreken script $(date)"
     #
     logger "LUCT Version $Major.$Minor Build $Build Patch $Patch Terminated at Phase 2"
     exit 1
@@ -316,8 +352,8 @@ if [[ ! "$modus" ]];then
     modus="leeg"
 fi
 #
-echo "Actie $actie" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-echo "Modus $modus" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+luct_log_message "Actie $actie"
+luct_log_message "Modus $modus"
 #
 # #######################
 # Blok 2D
@@ -325,8 +361,7 @@ echo "Modus $modus" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
 # #######################
 #
 #
-luct_phase_three_time=$(date)
-echo "Phase 3 $luct_phase_three_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+luct_log_message "Phase 3 $(date) Checking running mode script $USER $SUDO_USER"
 #
 echo '## Phase 3 - Checking Script running mode'
 #
@@ -360,8 +395,7 @@ fi
 # #######################
 #
 #
-luct_phase_four_time=$(date)
-echo "Phase 4 $luct_phase_four_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+luct_log_message "Phase 4 $(date) Current Linux distro info $USER $SUDO_USER"
 #
 echo '## Phase 4 - Collecting current Linux Distribution information'
 #
@@ -380,7 +414,7 @@ if [ -f /etc/os-release ]; then
     fi
     #
     echo "You are running $distro $versie as Operating System"
-    echo "LUCT is running on $distro $versie" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "LUCT is running on $distro $versie"
 fi
 #
 #
@@ -400,8 +434,7 @@ fi
 # #######################
 #
 #
-luct_phase_five_time=$(date)
-echo "Phase 5 $luct_phase_five_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+luct_log_message "Phase 5 $(date) Define functions $USER $SUDO_USER"
 #
 echo '## Phase 5 - Define Functions for this Script'
 #
@@ -507,7 +540,9 @@ function build_install_docker_compose_plugin () {
 #
 function deb_install_omv () {
     #
+    luct_log_message "Start installatie OMV $(date)"
     wget -q -O - https://github.com/OpenMediaVault-Plugin-Developers/installScript/raw/master/install | sudo bash
+    luct_log_message "Einde installatie OMV $(date)"
     #
 # Open Media Vault NAS Install
 }
@@ -538,21 +573,35 @@ function deb_config_dns_settings () {
     if [[ -n "$interface" ]]; then
         #
         #   #########################################################
-        #   Stap 2: Bepaal het configuratiebestand voor Debian
+        #   Stap 1: Genereer een MAC adres 
+        #   #########################################################
+        #
+        volledig_jaar=$(date +"%Y")
+        jaar_eerste_twee=${volledig_jaar:0:2}
+        jaar_laatste_twee=${volledig_jaar:2:2}
+        mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
+        #
+        #   #########################################################
+        #   Stap 2: MAC adres aanpassen
+        #   #########################################################
+        #
+        ip link set "$interface" address "$mac_address"
+        #
+        #   #########################################################
+        #   Stap 3: Bepaal het configuratiebestand voor Debian
         #   #########################################################
         #
         interfaces_file="/etc/network/interfaces"
-        
         #
         #   #########################################################
-        #   Stap 3: Maak een backup van het huidige bestand 
+        #   Stap 4: Maak een backup van het huidige bestand 
         #   #########################################################
         #
         backup_file="${interfaces_file}.bak.$(date +%Y%m%d%H%M%S)"
         cp "$interfaces_file" "$backup_file"
         #
         #   #########################################################
-        #   Stap 4: Genereer nieuwe configuratie
+        #   Stap 5: Genereer nieuwe configuratie
         #   #########################################################
         #
         # Verwijder bestaande dns-nameservers regels voor de interface
@@ -573,9 +622,12 @@ EOF
         #   Stap 5: Pas netwerkinstellingen toe
         #   #########################################################
         #
-        # Herstart de netwerkinterface
-        ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-        ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        #   Herstart de netwerkinterface
+        #
+        #   Uitgezet omdat dit script een automatische herstart doet
+        #
+        #   ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        #   ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
     else
         echo 'No valid network interface found (eth* or ens*)'
     fi
@@ -606,6 +658,35 @@ EOF
 #
 #   #######################
 #   Blok 4E-1-1    Debian Ubuntu OS FUNCTIES
+#                  Functie machine id 
+#                  Onderdeel van Debian Ubuntu Nested OOBE Functie
+#   #######################
+#
+#
+#
+#
+function debulx_os_machine_init () {
+    #
+    # Verwijder huidige machine ID
+    rm /etc/machine-id
+    rm /var/lib/dbus/machine-id
+    #
+    #   Genereer nieuwe machine ID zonder herstart
+    dbus-uuidgen --ensure=/etc/machine-id
+    #
+    #   Unieke SSH sleutels genereren
+    #   sudo rm /etc/ssh/ssh_host_*
+    #   sudo ssh-keygen -A
+    #
+    #   Cloud Init uitvoeren 
+    cloud-init clean --logs
+}
+#
+#
+#
+#
+#   #######################
+#   Blok 4E-1-2    Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os update apt
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -621,7 +702,7 @@ function debulx_os_update_apt () {
 #
 #
 #   #######################
-#   Blok 4E-1-2    Debian Ubuntu OS FUNCTIES
+#   Blok 4E-1-3    Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os upgrade packages 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -632,8 +713,7 @@ function debulx_os_update_apt () {
 #
 function debulx_os_upgrade_packages () {
     #
-    luct_upgrade_os_start_time=$(date)
-    echo "Start OS Upgrade $luct_upgrade_os_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Start OS Upgrade $(date) $USER $SUDO_USER"
     #
     if [[ $modus = "test" ]]; then
         apt full-upgrade -y
@@ -648,8 +728,7 @@ function debulx_os_upgrade_packages () {
         apt autoremove -y > /dev/null 2>&1
     fi
     #
-    luct_upgrade_os_end_time=$(date)
-    echo "Einde OS Upgrade $luct_upgrade_os_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Einde OS Upgrade $(date)"
     #
 }
 
@@ -672,8 +751,7 @@ function debulx_os_upgrade_packages () {
 #
 function debulx_install_default_apps () {
     #
-    luct_install_default_apps_start_time=$(date)
-    echo "Start Installatie Default Apps $luct_install_default_apps_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Start installatie default Apps $(date) $USER $SUDO_USER"
     #
     if [[ $modus == "test" ]]; then
         APT_INSTALL_ARRAY=(
@@ -706,11 +784,13 @@ function debulx_install_default_apps () {
             "wget"
             "wget2"
             "zip"
+            "make"
         )
     else 
         APT_INSTALL_ARRAY=(
             "7zip"
             "apt-transport-https"
+            "bridge-utils"
             "ca-certificates"
             "cowsay"
             "curl"
@@ -722,6 +802,7 @@ function debulx_install_default_apps () {
             "gnupg"
             "gzip"
             "lolcat"
+            "make"
             "mc"
             "micro"
             "nano"
@@ -759,11 +840,12 @@ function debulx_install_default_apps () {
         # Update de progressiebalk
         draw_progress_bar "$PROGRESS"
         if [[ $modus == "test" ]]; then 
-            echo "Install of $apt_install in progress ..."
+            echo "Installing $apt_install"
         fi
         apt install "$apt_install" -y >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_pb.log 2>&1
         if [[ $? -ne 0 ]]; then
             echo "$apt_install could not be installed. Continue with the next one ..."
+            luct_log_message "FOUT $apt_install kon NIET geinstaleerd worden"
         fi
     done
     # echo " "
@@ -773,6 +855,7 @@ function debulx_install_default_apps () {
         # Install Ubuntu Snap on Debian
         #
         echo 'Installing Ubuntu Snap Management System from Canonical '
+        luct_log_message "Installatie Snap management system op Debian"
         apt install snapd -y >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_snap.log 2>&1
         snap install core >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_snap.log 2>&1
         #
@@ -787,18 +870,21 @@ function debulx_install_default_apps () {
     fi
     # BAT 
     echo 'Installing bat'
+    luct_log_message "bat"
     wget -q -O /tmp/bat_0.25.0_amd64.deb https://github.com/sharkdp/bat/releases/download/v0.25.0/bat_0.25.0_amd64.deb
     dpkg -i /tmp/bat_0.25.0_amd64.deb > /dev/null 2>&1
     # Youtube DL
-    curl -L https://github.com/ytdl-patched/youtube-dl/releases/download/2025.08.07.19419/youtube-dl -o /usr/local/bin/youtube-dl > /dev/null 2>&1
+    luct_log_message "youtube-dl"
+    curl -L https://github.com/ytdl-patched/youtube-dl/releases/latest/download/youtube-dl -o /usr/local/bin/youtube-dl > /dev/null 2>&1
     chmod a+rx /usr/local/bin/youtube-dl
     #
     # Deze Curl heeft maar beperkt toegang tot bestandssysteem Kan niet gebruik worden voor bijv Docker
     echo 'Installing Snap curl package'
+    luct_log_message "snap curl"
     snap install curl >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_snap.log 2>&1
     #
-    luct_install_default_apps_end_time=$(date)
-    echo "Einde Installatie Default Apps $luct_install_default_apps_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    # luct_install_default_apps_end_time=$(date)
+    luct_log_message "Einde Installatie Default Apps $(date)"
     #
 }
 #
@@ -816,39 +902,46 @@ function debulx_install_default_apps () {
 #
 function debulx_install_cockpit_srv () {
     #
-    luct_install_cockpit_start_time=$(date)
-    echo "Start Installatie Cockpit $luct_install_cockpit_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    # Controleer of de cockpit.socket service actief is
+    systemctl is-active --quiet cockpit.socket
     #
-    # #######################
-    # ## Parameters vullen
-    # #######################
-    . /etc/os-release
-    #
-    # ######################
-    # ## Installeren
-    # ######################
-    #
-    apt install -t ${VERSION_CODENAME}-backports cockpit -y > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    #
-    # ######################
-    # ## Service
-    # ######################
-    #
-    systemctl enable --now cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    # Aanpassen Poort 
-    rm -f /tmp/listen.conf
-    echo '[Socket]' > /tmp/listen.conf
-    echo 'ListenStream=' >> /tmp/listen.conf
-    echo 'ListenStream=8101' >> /tmp/listen.conf
-    mkdir -p /etc/systemd/system/cockpit.socket.d/
-    cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
-    # Herstarten
-    systemctl daemon-reload >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
-    #
-    luct_install_cockpit_end_time=$(date)
-    echo "Einde Installatie Cockpit $luct_install_cockpit_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-    #
+    if [ $? -ne 0 ]; then
+        #
+        luct_log_message "Start Installatie Cockpit $(date)"
+        #
+        #
+        #
+        # #######################
+        # ## Parameters vullen
+        # #######################
+        . /etc/os-release
+        #
+        # ######################
+        # ## Installeren
+        # ######################
+        #
+        apt install -t ${VERSION_CODENAME}-backports cockpit -y > /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        #
+        # ######################
+        # ## Service
+        # ######################
+        #
+        systemctl enable --now cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        # Aanpassen Poort 
+        rm -f /tmp/listen.conf
+        echo '[Socket]' > /tmp/listen.conf
+        echo 'ListenStream=' >> /tmp/listen.conf
+        echo 'ListenStream=8101' >> /tmp/listen.conf
+        mkdir -p /etc/systemd/system/cockpit.socket.d/
+        cp /tmp/listen.conf /etc/systemd/system/cockpit.socket.d
+        # Herstarten
+        systemctl daemon-reload >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_cockpit_srv.log 2>&1
+        #
+        #
+        luct_log_message "Einde Installatie Cockpit $(date)"
+        #
+    fi
 # Cockpit
 }
 #
@@ -866,8 +959,7 @@ function debulx_install_cockpit_srv () {
 #
 function debulx_install_conteng () {
     #
-    luct_install_conteng_start_time=$(date)
-    echo "Start Installatie Container Engine $luct_install_conteng_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Start Installatie Container Engine $(date)"
     #
     # DOCKER
     if [[ $actie = "docker" || $actie = "minikube" ]]; then
@@ -893,10 +985,25 @@ function debulx_install_conteng () {
         apt autoremove -y > /dev/null 2>&1
         #
         echo 'Installing Docker and Compose plugin'
-        apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y > /home/$SUDO_USER/luct-logs/debulx_install_docker.log 2>&1
-        #
-        docker -v | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-        docker compose version | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        APT_DOCKER_INSTALL_ARRAY=(
+            "docker-ce"
+            "docker-ce-cli"
+            "containerd.io"
+            "docker-buildx-plugin"
+            "docker-compose-plugin"
+        )
+        for apt_docker_install in "${APT_DOCKER_INSTALL_ARRAY[@]}"; do
+            if [[ $modus == "test" ]]; then 
+                echo "Installing $apt_docker_install"
+            fi
+            luct_log_message "Installatie van $apt_docker_install"
+            apt install "$apt_docker_install" -y >> /home/$SUDO_USER/luct-logs/debulx_install_docker.log 2>&1
+            if [[ $? -ne 0 ]]; then
+                echo "$apt_docker_install could not be installed. Continue with the next one ..."
+            fi
+        done
+        luct_log_message "$(docker -v) is geinstalleerd"
+        luct_log_message "$(docker compose version) is geinstalleerd"
         #
         echo "Adding current user $SUDO_USER to security group Docker"
         usermod -a -G docker $SUDO_USER
@@ -928,19 +1035,42 @@ function debulx_install_conteng () {
         apt autoremove -y > /dev/null 2>&1
         #
         echo 'Installing Podman'
+        luct_log_message "Instalatie van Podman"
         apt install -y podman > /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
         echo 'Starting Podman service'
         systemctl enable --now podman >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
         #
-        podman -v | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        luct_log_message "$(podman -v) is geinstalleerd"
         podman auto-update
         #
         echo 'Adding Docker Registry to Podman'
+        luct_log_message "Docker Registry toevoegen aan Podman"
         # Docker IO Registry toevoegen aan lijst omdat standaard niet aanwezig is
-        sed -i '$a[registries.search]' /etc/containers/registries.conf
-        sed -i '$aregistries = ["docker.io"]' /etc/containers/registries.conf
+        #
+        # Stap 1 van 2 
+        #
+        FILE="/etc/containers/registries.conf"
+        SEARCH_STRING="[registries.search]"
+        grep -q "$SEARCH_STRING" "$FILE"
+        if [ $? -ne 0 ]; then
+            sed -i '$a[registries.search]' "$FILE"
+        fi
+        #
+        # Stap 2 van 2 
+        #
+        FILE="/etc/containers/registries.conf"
+        SEARCH_STRING="registries = [\"docker.io\"]"
+        grep -q "$SEARCH_STRING" "$FILE"
+        if [ $? -ne 0 ]; then
+            sed -i '$a\registries = ["docker.io"]' "$FILE"
+        fi
+        #
+        #   sed -i '$a[registries.search]' /etc/containers/registries.conf
+        #   sed -i '$aregistries = ["docker.io"]' /etc/containers/registries.conf
+        #
         # Cockpit Podman installeren en starten 
         echo 'Installing Podman Cockpit integration'
+        luct_log_message "Installatie van Podman integratie in Cockpit"
         apt install cockpit-podman -y >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
         systemctl enable --now cockpit.socket podman.service >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
         systemctl restart cockpit.socket >> /home/$SUDO_USER/luct-logs/debulx_install_podman.log 2>&1
@@ -965,6 +1095,7 @@ function debulx_install_pwrshell () {
     #
     pwsh --command Get-Host > /dev/null 2>&1
     if [ $? -ne 0 ]; then
+        luct_log_message "Installatie Powershell"
         apt install powershell -y >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
         rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
     fi
@@ -986,8 +1117,7 @@ function debulx_install_pwrshell () {
 #
 function debulx_install_minikube_and_k8stools () {
     #
-    luct_install_minikube_start_time=$(date)
-    echo "Start Installatie Minikube $luct_install_minikube_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Start Installatie Minikube $(date)"
     #
     echo '## Phase 11 - Installing latest version of Minikube and tools'
     # 
@@ -1001,7 +1131,7 @@ function debulx_install_minikube_and_k8stools () {
     fi 
     #
     minikube version > /home/$SUDO_USER/luct-logs/luct_minikube.log 2>&1
-    minikube version | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "$(minikube version) is geinstalleerd"
     #
     apt install kubeadm kubectl kubecolor -y > /dev/null 2>&1
     #
@@ -1009,8 +1139,7 @@ function debulx_install_minikube_and_k8stools () {
     kubectl version > /home/$SUDO_USER/luct-logs/luct_minikube.log 2>&1
     kubecolor version > /home/$SUDO_USER/luct-logs/luct_minikube.log 2>&1
     #
-    luct_install_minikube_end_time=$(date)
-    echo "Einde Installatie Minikube $luct_install_minikube_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Einde Installatie Minikube $(date)"
     #
 # Minikube en Tools
 }
@@ -1314,39 +1443,54 @@ function debulx_conteng_install_run_mgmt_tools () {
 #
 function debulx_conteng_images_pull () {
     #
-    luct_conteng_images_pull_start_time=$(date) 
-    echo "Start container images laden $luct_conteng_images_pull_start_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Start container images laden $(date)"
     #
     local containerengine=$1
     #
-    if [[ $modus == "test" ]]; then
+    if [[ $modus == "databases" ]]; then
         DOCKER_IMAGES=(
-            "containrrr/watchtower:latest"
-            "codercom/code-server:latest"
+            "dpage/pgadmin4"
             "portainer/portainer-ce:latest"
-            "registry:latest"
+            "postgresql:latest"
             "selfhostedpro/yacht:latest"
-            "jenkins/jenkins:latest-jdk21"
         )
-    else
+    fi
+    #
+    if [[ $modus == "virtualisatie" ]]; then
         DOCKER_IMAGES=(
             "alpine:latest"
+            "alpine:3.5"
             "amazonlinux:latest"
             "clearlinux:latest"
-            "containrrr/watchtower:latest"
-            "codercom/code-server:latest"
             "debian:latest"
+            "fedora:latest"
+            "photon:latest"
+            "ubuntu:latest"
+            "codercom/code-server:latest"
             "httpd:latest"
+            "prakhar1989/static-site"
+            "dockersamples/static-site"
             "minio/minio:latest"
             "nginx:latest"
-            "photon:latest"
+            "wordpress:latest"
+            "jenkins/jenkins:latest-jdk21"
             "portainer/portainer-ce:latest"
             "registry:latest"
             "selfhostedpro/yacht:latest"
-            "wordpress:latest"
+            "containrrr/watchtower:latest"
+        )
+    fi
+    #
+    if [[ $modus == "test" ]]; then
+        DOCKER_IMAGES=(
+            "alpine:latest"
             "alpine:3.5"
-            "prakhar1989/static-site"
+            "codercom/code-server:latest"
             "jenkins/jenkins:latest-jdk21"
+            "portainer/portainer-ce:latest"
+            "registry:latest"
+            "selfhostedpro/yacht:latest"
+            "containrrr/watchtower:latest"
         )
     fi
     #
@@ -1361,9 +1505,9 @@ function debulx_conteng_images_pull () {
         draw_progress_bar "$PROGRESS"
         # echo " "
         if [[ $modus == "test" ]]; then
-            echo "Pull van image $image"
+            echo "Pull of image $image"
         fi
-        $containerengine pull -q "$image" > /dev/null 2>&1
+        $containerengine pull -q "$image" >> /home/$SUDO_USER/luct-logs/debulx_docker_images_pull.log 2>&1
         if [[ $? -ne 0 ]]; then
             echo "Error loading image $image. Pulling next image ..."
         fi
@@ -1371,10 +1515,9 @@ function debulx_conteng_images_pull () {
     #
     echo " "
     #
-    $containerengine images > /home/$SUDO_USER/luct-logs/debulx_docker_images_pull.log 2>&1
+    $containerengine images >> /home/$SUDO_USER/luct-logs/debulx_docker_images_pull.log 2>&1
     #
-    luct_conteng_images_pull_end_time=$(date) 
-    echo "Einde container images laden $luct_conteng_images_pull_end_time" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Einde container images laden $(date)"
     #
 }
 #
@@ -1391,7 +1534,7 @@ function debulx_conteng_images_pull () {
 #
 function debulx_conteng_portainer_run () {
     #
-    echo "Portainer" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Portainer"
     #
     if [[ $modus == "test" ]]; then
         echo 'Portainer'
@@ -1463,7 +1606,7 @@ function debulx_conteng_portainer_run () {
 #
 function debulx_conteng_yacht_run () {
     #
-    echo "Yacht" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Yacht"
     #
     if [[ $modus == "test" ]]; then
        echo 'Yacht'
@@ -1531,7 +1674,7 @@ function debulx_conteng_yacht_run () {
 #
 function debulx_conteng_vscsrv_run () {
     #
-    echo "Visual Studio Code Server" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Visual Studio Code Server"
     #
     if [[ $modus == "test" ]]; then
        echo 'Visual Studio Code Server'
@@ -1562,7 +1705,7 @@ function debulx_conteng_vscsrv_run () {
 #
 function debulx_conteng_jenkins_run () {
     #
-    echo "Jenkins" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Jenkins"
     #
     if [[ $modus == "test" ]]; then
        echo 'Jenkins'
@@ -1589,7 +1732,7 @@ function debulx_conteng_jenkins_run () {
 #
 function debulx_conteng_registry_run () {
     #
-    echo "Registry" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Registry"
     #
     if [[ $modus == "test" ]]; then
         echo 'Registry'
@@ -1614,7 +1757,7 @@ function debulx_conteng_registry_run () {
 #
 function debulx_conteng_watchtower_run () {
     #
-    echo "WachTower" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "WachTower" 
     #
     if [[ $modus == "test" ]]; then
         echo 'WatchTower'
@@ -1634,6 +1777,85 @@ function debulx_conteng_watchtower_run () {
     if [[ $containerengine == "podman" ]]; then
         $containerengine run -d -p 9106:8080 --restart always --name watchtower -v /var/run/podman/podman.sock:/var/run/podman/podman.sock containrrr/watchtower >> /home/$SUDO_USER/luct-logs/luct_start_WachTower.log 2>&1
     fi
+# WatchTower
+}
+#
+#
+#
+#
+# ################################################
+# Blok 4E-3-9    Container Engine
+#                PostGreSQL
+# ###############################################
+#
+#
+#
+#
+function debulx_conteng_postgresql_run () {
+    #
+    luct_log_message "PostGreSQL" 
+    #
+    if [[ $modus == "test" ]]; then
+        echo 'PostGreSQL'
+    fi
+    #
+    local containerengine=$1
+    #
+    #   Definitie Variabelen
+    #
+    VOLUME_NAME="postgres_data_volume"
+    DB_PASSWORD='@PASSword123!'
+    #
+    #   Verwijderen eventueel aanwezig volume
+    #
+    if [ "$($containerengine volume ls -q -f name=^$VOLUME_NAME$)" ]; then
+        $containerengine volume rm "$VOLUME_NAME"
+    fi
+    #
+    #   Aanmaken nieuw volume
+    #
+    $containerengine volume create "$VOLUME_NAME"
+    #
+    #   Starten PostGreSQL
+    $containerengine run -d -p 9107:5432 --restart always --name postgresql_rdbms -v "$VOLUME_NAME":/var/lib/postgresql/data -e POSTGRES_PASSWORD="$DB_PASSWORD" postgres:latest
+    #
+# PostGreSQL 
+}
+#
+#
+#
+#
+# ################################################
+# Blok 4E-3-10   Container Engine
+#                PostGreSQL Admin PGAdmin 4
+# ###############################################
+#
+#
+#   https://hub.docker.com/r/dpage/pgadmin4/
+#
+#
+function debulx_conteng_pgadmin4_run () {
+    #
+    luct_log_message "PGAdmin4" 
+    #
+    if [[ $modus == "test" ]]; then
+        echo 'PGAdmin4'
+    fi
+    #
+    local containerengine=$1
+    #
+
+#   https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html
+
+$containerengine run -d -p 9108:80 --restart always --name pgadmin4 \
+    -e 'PGADMIN_DEFAULT_EMAIL=user@domain.com' \
+    -e 'PGADMIN_DEFAULT_PASSWORD=SuperSecret' \
+    -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True' \
+    -e 'PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"' \
+    -e 'PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10' \
+    dpage/pgadmin4
+
+# PGAdmin4 
 }
 #
 #
@@ -1656,6 +1878,7 @@ function debulx_conteng_watchtower_run () {
 #
 function debulx_config_taal_nl () {
     #
+    luct_log_message "Language Pack NL"
     # Taal 
     apt install language-pack-nl -y > /dev/null 2>&1
     # Lokale instellingen
@@ -1682,8 +1905,8 @@ function debulx_config_taal_nl () {
 function debulx_config_os_repo_change () {
     if [[ $distro == "debian" ]] ; then
         if [[ $versie == "12" ]] ; then
-            sed -i '1c\deb http://mirror.ams.macarne.com/debian/ bookworm main non-free-firmware' /etc/apt/sources.list
-            sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/ bookworm main non-free-firmware' /etc/apt/sources.list
+            sed -i '1c\deb http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
+            sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
         fi
     # Debian
     fi 
@@ -1813,14 +2036,14 @@ function debulx_config_add_repositories () {
         if [[ $modus = "test" ]]; then 
             echo 'NL Datapacket 20Gbs'
         fi
-        echo "Datapacket" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        luct_log_message "NL Datapacket 20GBs"
         add-apt-repository http://mirror.nl.datapacket.com/$distro/ -s -y > /dev/null 2>&1
         #
         # UT Twente NL 10GBs
         if [[ $modus = "test" ]]; then 
             echo 'NL UT Twente 10Gbs'
         fi
-        echo "UT Twente" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        luct_log_message "NL UT Twente 10GBs"
         add-apt-repository https://ftp.snt.utwente.nl/pub/os/linux/$distro/ -s -y > /dev/null 2>&1
         #
         # Backup 1
@@ -1828,7 +2051,7 @@ function debulx_config_add_repositories () {
         if [[ $modus = "test" ]]; then 
             echo 'US PilotFiber 50GBs'
         fi
-        echo "Pilotfiber" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        luct_log_message "US Pilotfiber 50Gbs"
         add-apt-repository http://mirror.pilotfiber.com/$distro/ -s -y > /dev/null 2>&1
     fi
     if [[ $distro = "linuxmint" ]]; then
@@ -1842,7 +2065,7 @@ function debulx_config_add_repositories () {
     # ## Cockpit
     # ############################
     #
-    echo "Cockpit" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Cockpit" 
     #
     if [[ $distro == "debian" ]]; then
         echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" > /etc/apt/sources.list.d/backports.list
@@ -1852,7 +2075,7 @@ function debulx_config_add_repositories () {
     # ## Docker
     # ############################
     #
-    echo "Docker" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Docker"
     #
     install -m 0755 -d /etc/apt/keyrings
     # LET OP Curl van Ubuntu gebruiken omdat Snap Curl maar beperkt toegang heeft tot filesystem
@@ -1877,7 +2100,7 @@ function debulx_config_add_repositories () {
     # ## Microsoft
     # ############################
     #
-    echo "Microsoft" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Microsoft"
     #
     curl -s -SL "https://packages.microsoft.com/config/$distro/$versie/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb" > /dev/null 2>&1
     dpkg -i /tmp/packages-microsoft-prod.deb > /dev/null 2>&1
@@ -1886,7 +2109,7 @@ function debulx_config_add_repositories () {
     # ## Kubernetes
     # ############################
     #
-    echo "Kubernetes" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Kubernetes"
     #
     rm -f /etc/apt/keyrings/kubernetes-apt-keyring.gpg
     k8sstable_lang=$(curl -Ls https://dl.k8s.io/release/stable.txt)
@@ -1898,7 +2121,7 @@ function debulx_config_add_repositories () {
     # ## Ansible
     # ############################
     #
-    echo "Ansible" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Ansible"
     #
     if [[ $distro == "ubuntu" ]]; then
         apt-add-repository ppa:ansible/ansible -s -y > /dev/null 2>&1
@@ -1995,7 +2218,7 @@ function debulx_config_minikube_driver () {
             sudo -u "$SUDO_USER" export MINIKUBE_IN_STYLE=false
             sudo -u "$SUDO_USER" export MINIKUBE_SUPPRESS_DOCKER_PERFORMANCE=true
         else
-            echo "Docker is niet geïnstalleerd. Installeer Docker om verder te gaan."
+            echo "Docker is not installed. Install Docker to continue ..."
         fi
     fi
     if [[ $conteng == "podman" ]]; then
@@ -2009,7 +2232,7 @@ function debulx_config_minikube_driver () {
             sudo -u "$SUDO_USER" export MINIKUBE_IN_STYLE=false
             sudo -u "$SUDO_USER" export MINIKUBE_SUPPRESS_DOCKER_PERFORMANCE=true
         else
-            echo "Podman is niet geïnstalleerd. Installeer Docker om verder te gaan."
+            echo "Podman is not installed. Install Podman to continue ..."
         fi
     fi
 # Minikube config driver
@@ -2052,7 +2275,7 @@ function debulx_config_network_settings () {
 #
 function debulx_config_bash_shell () {
     #
-    echo "Bash Shell Config" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Bash Shell configuratiebestanden downloaden"
     #
     # Wordt ook gebruikt voor BuildRoot Linux omdat stappen exact gelijk zijn
     #
@@ -2085,18 +2308,17 @@ function debulx_config_bash_shell () {
 #
 function debulx_nested_os_config () {
     #
-    phase_eight_time=$(date)
-    echo "Phase 8 $phase_eight_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Phase 8 Start tijd $(date) $USER $SUDO_USER"
     #
-    # Europa Amsterdam instellen
-    echo '## Phase 8 - Step 1 of 12 Set Operating System settings to Europe'
+    echo '## Phase 8 - Step 1 of 13 Changing Machine ID'
+    debulx_os_machine_init
+    echo '## Phase 8 - Step 2 of 13 Set Operating System settings to Europe'
     debulx_config_taal_nl
-    echo "## Phase 8 - Step 2 of 12 Change Operating System Repository to Europe"
+    echo "## Phase 8 - Step 3 of 13 Change Operating System Repository to Europe"
     debulx_config_os_repo_change
-    # APT
-    echo '## Phase 8 - Step 3 of 12 Implementing new APT Repository from Europe'
+    echo '## Phase 8 - Step 4 of 13 Implementing new APT Repository from Europe'
     debulx_os_update_apt
-    echo '## Phase 8 - Step 4 of 12 Upgrading Operating System (takes about 5 minutes)'
+    echo '## Phase 8 - Step 5 of 13 Upgrading Operating System (takes about 5 minutes)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -2109,29 +2331,30 @@ function debulx_nested_os_config () {
         ulx_vers_nw=$VERSION
         echo "Version after upgrade $ulx_vers_nw"
     fi
-    echo '## Phase 8 - Step 5 of 12 Installing Default Apps (takes about 5 minutes)'
+    echo '## Phase 8 - Step 6 of 13 Installing Default Apps (takes about 5 minutes)'
     # Doet installate van add apt repository commando
     debulx_install_default_apps
-    echo "## Phase 8 - Step 6 of 12 Adding new Repositories to APT"
-    # Toevoegen Ansible Cockpit Docker Kubernetes Powershell 
-    # Gebruikt add apt repository commando
+    echo "## Phase 8 - Step 7 of 13 Adding new Repositories to APT"
+    # LET OP Gebruikt resultaat van vorige stap 
     debulx_config_add_repositories
     # Operating System instellen
-    echo "## Phase 8 - Step 7 of 12 Configure BASH Shell settings"
+    echo "## Phase 8 - Step 8 of 13 Configure BASH Shell settings"
     debulx_config_bash_shell
-    echo '## Phase 8 - Step 8 of 12 Releasing ROOT user'
+    echo '## Phase 8 - Step 9 of 13 Releasing ROOT user'
     wachtwoord=$SUDO_USER
     echo "root:$wachtwoord" | sudo chpasswd
     usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
     # Applicaties
-    echo '## Phase 8 - Step 9 of 12 Installing or updating of Open VM Tools'
+    echo '## Phase 8 - Step 10 of 13 Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo '## Phase 8 - Step 10 of 12 Python compatible with lower versions'
+    echo '## Phase 8 - Step 11 of 13 Python compatible with lower versions'
     debulx_python_compatible
-    echo '## Phase 8 - Step 11 of 12 Installing and configuration of Cockpit'
+    echo '## Phase 8 - Step 12 of 13 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo '## Phase 8 - Step 12 of 12 Installing Microsoft Powershell 7'
+    echo '## Phase 8 - Step 13 of 13 Installing Microsoft Powershell 7'
     debulx_install_pwrshell
+    #
+    luct_log_message "Phase 8 Eind tijd $(date) $USER $SUDO_USER"
     #
 # Debian Ubuntu Nested OS Config
 }
@@ -2149,8 +2372,7 @@ function debulx_nested_os_config () {
 #
 function debulx_nested_conteng_complete () {
     #
-    phase_ten_time=$(date)
-    echo "Phase 10 $phase_ten_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Phase 10 $(date) $USER $SUDO_USER"
     #
     # ##########################################################################
     #
@@ -2270,6 +2492,11 @@ function debulx_nested_conteng_complete () {
     echo '9105 Registry' >> /home/$SUDO_USER/port_list.txt
     echo '9106 WatchTower' >> /home/$SUDO_USER/port_list.txt
     #
+    echo '#! /bin/bash' >> /home/$SUDO_USER/port_list.sh
+    echo 'sudo lsof -i -P -n | grep LISTEN' >> /home/$SUDO_USER/port_list.sh
+    chmod +x /home/$SUDO_USER/port_list.sh
+    #
+# Container Engine Complete
 }
 #
 #
@@ -2525,6 +2752,19 @@ if [[ -n "$interface" ]]; then
     #
     #
     #   #########################################################
+    #   Stap 4: Genereer een nieuw MAC adres 
+    #   #########################################################
+    #
+    #
+    #   Format yy:yy:dd:mm:uu:mm
+    #
+    volledig_jaar=$(date +"%Y")
+    jaar_eerste_twee=${volledig_jaar:0:2}
+    jaar_laatste_twee=${volledig_jaar:2:2}
+    mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
+    #
+    #
+    #   #########################################################
     #   Stap 4: Genereer nieuwe configuratie
     #   #########################################################
     #
@@ -2538,6 +2778,7 @@ network:
   ethernets:
     $interface:
       dhcp4: true
+      macaddress: $mac_address
       nameservers:
         addresses: [145.2.14.10, 145.2.14.11, 8.8.8.8, 8.8.4.4]
 EOF
@@ -2549,10 +2790,13 @@ EOF
     #   Stap 5: Pas Netplan toe
     #   ##########################################################
     #
+    #   Als dit nu wordt gedaan dan is verbinding weg
+    #   Dit script doet een automatische reboot
+    #   Bij reboot wordt nieuwe configuratie actief
     #
-    netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-#
-#
+    #   netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+    #
+    #
 else
     echo 'No valid netwerkinterface found (eth* or ens*)'
 fi
@@ -2587,6 +2831,8 @@ fi
 #
 function luct_linux_oobe () {
     #
+    luct_log_message "LUCT Start Linux OOBE $(date)"
+    #
     echo '## Phase 6 - Changing Hostname'
     verander_machinenaam
     #
@@ -2606,6 +2852,9 @@ function luct_linux_oobe () {
     echo '## Phase 9 - Cloning GitHub Repositories'
     git_clone_demos
     #
+    luct_log_message "LUCT Einde Linux OOBE $(date)"
+    #
+# Linux OOBE
 } 
 #
 #
@@ -2624,8 +2873,7 @@ function luct_linux_oobe () {
 #
 function verander_machinenaam () {
     #
-    phase_six_time=$(date)
-    echo "Phase 6 $phase_six_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Phase 6 $(date) $USER $SUDO_USER"
     #
     if [[ "$SUDO_USER" != "vagrant" ]]; then
         if [[ $distro == "debian" ]] ; then
@@ -2647,7 +2895,8 @@ function verander_machinenaam () {
                 sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
             fi
             if [[ $actie == "omv" ]] ; then
-                NEW_HOSTNAME="D$versiehostnaam-LTS-D-OMV-001"
+                #   NEW_HOSTNAME="D$versiehostnaam-LTS-D-OMV-001"
+                NEW_HOSTNAME="omv332463"
                 hostnamectl set-hostname "$NEW_HOSTNAME"
                 sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
             fi
@@ -2767,17 +3016,26 @@ function verander_machinenaam () {
 #
 function maak_directories () {
     #
-    phase_seven_time=$(date)
-    echo "Phase 7 $phase_seven_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Phase 7 $(date) $USER $SUDO_USER"
     #
     #
     # Temporary
     #
     #
-    echo '## Phase 7 - Step 1 Creating TMP directory in home directory of this user'
+    echo '## Phase 7 - Step 1 Creating tmp directory in home directory of this user'
     if [ ! -d "/home/$SUDO_USER/tmp" ]; then
         mkdir -p /home/$SUDO_USER/tmp
-        chown -f -R $SUDO_USER /home/$SUDO_USER/tmp
+        chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/tmp
+    fi
+    #
+    #
+    # LAB
+    #
+    #
+    echo '## Phase 7 - Step 2 Creating lab directory in home directory of this user'
+    if [ ! -d "/home/$SUDO_USER/lab" ]; then
+        mkdir -p /home/$SUDO_USER/lab
+        chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/lab
     fi
     #
     #
@@ -2787,7 +3045,7 @@ function maak_directories () {
     echo '## Phase 7 - Step 2 Creating LUCT logging directory'
     if [ ! -d "/home/$SUDO_USER/luct-logs" ]; then
         mkdir -p /home/$SUDO_USER/luct-logs
-        chown -f -R $SUDO_USER /home/$SUDO_USER/luct-logs
+        chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/luct-logs
     fi
     #
     #
@@ -2799,13 +3057,13 @@ function maak_directories () {
         if [[ $actie == "docker" || $actie == "minikube" ]]; then
             if [ ! -d "/home/$SUDO_USER/dkr-scripts" ]; then
                 mkdir -p /home/$SUDO_USER/dkr-scripts
-                chown -f -R $SUDO_USER /home/$SUDO_USER/dkr-scripts
+                chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/dkr-scripts
             fi
         fi
         if [[ $actie == "podman" ]]; then
             if [ ! -d "/home/$SUDO_USER/pmn-scripts" ]; then
-                mkdir -p /home/$SUDO_USER/pdm-scripts
-                chown -f -R $SUDO_USER /home/$SUDO_USER/pdm-scripts
+                mkdir -p /home/$SUDO_USER/pmn-scripts
+                chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/pmn-scripts
             fi
         fi
     fi
@@ -2830,8 +3088,7 @@ function maak_directories () {
 #
 function git_clone_demos () {
     #
-    phase_nine_time=$(date)
-    echo "Phase 9 $phase_nine_time $USER $SUDO_USER" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    luct_log_message "Phase 9 Starttijd $(date) $USER $SUDO_USER"
     #
     # Demos
     echo '## Phase 9 - Clone GitHub JATUTERT Demos'
@@ -2842,26 +3099,28 @@ function git_clone_demos () {
     #
     # Awesome Compose
     if [[ $actie == "docker" ]] ; then
-        echo '## Phase 9 - Clone GitHub Docker Awesome Compose'
+        echo '## Phase 9 - Clone GitHub Awesome Compose'
         if [ -d "/home/$SUDO_USER/demos" ]; then
             rm -rf "/home/ubuntu/demos/Docker/Compose/Awesome-compose"
         fi
-        git clone --quiet https://github.com/docker/awesome-compose.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose
+        mkdir -p /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose
+        git clone --quiet https://github.com/docker/awesome-compose.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose/docker
+        git clone --quiet https://github.com/david-randoll/awesome-dockerfiles.git /home/$SUDO_USER/demos/Docker/Compose/Awesome-compose/david-randoll
     fi
     #
     # Onderwijs
-    if [[ $actie == "omv" || $actie == "osticket" ]] ; then
-        echo '## Phase 9 - Clone GitHub MSiekmans'
-        if [ -d "/home/$SUDO_USER/onderwijs" ]; then
-            rm -rf "/home/ubuntu/onderwijs"
-        fi
-        git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/onderwijs
+    echo '## Phase 9 - Clone GitHub Onderwijs'
+    if [ -d "/home/$SUDO_USER/onderwijs" ]; then
+        rm -rf "/home/ubuntu/onderwijs"
     fi
+    mkdir -p /home/$SUDO_USER/onderwijs
+    git clone --quiet https://github.com/msiekmans/linux-server-scripts.git /home/$SUDO_USER/onderwijs/linux-server-scripts
+    git clone --quiet https://github.com/msiekmans/msiekmans.github.io.git /home/$SUDO_USER/onderwijs/intro_infra
     #
     # PowerShell
     echo '## Phase 9 - Clone GitHub Powershell is fun'
-    if [ -d "/home/$SUDO_USER/powershell" ]; then
-        rm -rf "/home/$SUDO_USER/powershell"
+    if [ -d "/home/$SUDO_USER/powershellisfun" ]; then
+        rm -rf "/home/$SUDO_USER/powershellisfun"
     fi
     git clone --quiet https://github.com/HarmVeenstra/Powershellisfun.git /home/$SUDO_USER/powershellisfun
     #
@@ -2874,9 +3133,18 @@ function git_clone_demos () {
         git clone --quiet https://github.com/geerlingguy/ansible-for-devops.git /home/$SUDO_USER/ansible_devops
     fi 
     #
+    #
+    echo "## Phase 9 - Make $SUDO_USER user owner of all directories"
+    chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/demos
+    chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/onderwijs
+    chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/powershellisfun
+    #
     # Shell Scripts
     echo '## Phase 9 - Make all Shell Scriptfiles Executable'
     find /home/$SUDO_USER/demos -type f -name "*.sh" -exec chmod +x {} \;
+    #
+    luct_log_message "Phase 9 Eindtijd $(date) $USER $SUDO_USER"
+    #
 # Git Clone
 } 
 #
@@ -2932,8 +3200,14 @@ draw_progress_bar() {
 #
 function luct_finish_script () {
     #
-    echo "Eindtijd" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
-    timedatectl status | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+    #   Remove Unnecessary Dependencies
+    apt autoclean
+    #
+    #   Clean Package Cache
+    apt clean
+    #
+    #
+    luct_log_message "Eindtijd van het script $(date)"
     #
     clear
     luct_display_header
@@ -2950,7 +3224,7 @@ function luct_finish_script () {
         echo ''
         exit 1 
     else
-        echo "Herstart uitvoeren" | sudo tee -a /var/log/luct.log > /dev/null 2>&1
+        luct_log_message "Herstart uitvoeren"
         shutdown -r now
     fi
 # Actie klaar
@@ -3433,9 +3707,45 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Debian Ubuntu LinuxMint Debian LinuxMint optie 9
         #
         exit 1
-    elif [[ $actie == "scripts" ]]; then
+    elif [[ $actie == "vaxvms" ]]; then
         #
-        # Debian Ubuntu LinuxMint Debian LinuxMint optie 10
+        #
+        # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu optie 10
+        # Installeren VAX VMS Emulator
+        #
+        #
+        # Phase 6 tot en met 9
+        luct_linux_oobe
+        #
+        #   https://www.openvmshobby.com/vax-vms/openvms-on-vax-simh/
+        #   https://blog.poggs.com/2020/04/21/openvms-on-a-raspberry-pi/
+        #
+        apt install make -y
+        apt install libsdl2-dev libpng-dev libpcap-dev libvdeplug-dev -y
+        apt install bridge-utils -y
+        #
+        git clone --quiet https://github.com/simh/simh.git /opt/simh
+        #
+        yes | make --directory /opt/simh -j4 vax8600 --always-make
+        #
+        mkdir -p /opt/simulators/vax8600/iso
+        mkdir -p /opt/simulators/vax8600/data
+        mkdir -p /opt/simulators/vax8600/log
+        mkdir -p /opt/simulators/vax8600/bin
+        #
+        cp /opt/simh/BIN/vax8600 /opt/simulators/vax8600/bin/
+        #
+        curl -o /tmp/AG-QSBWB-BE.iso.zip http://vaxhaven.com/cd-image/AG-QSBWB-BE.iso.zip
+        #
+        unzip /tmp/AG-QSBWB-BE.iso.zip
+        #
+        cp AG-QSBWB-BE.ISO /opt/simulators/vax8600/iso/VAXVMS071.iso
+        #
+        # downloaden van /opt/simulators/vax8600/data/vax8600.ini
+        ln -s /opt/simulators/vax8600/data/vax8600.ini /opt/simulators/vax8600/bin/
+        #
+        ip tuntap add mode tap user ubuntu tapvax
+        ip link set dev tapvax up
         #
         exit 1
     elif [[ $actie == "menu" ]]; then

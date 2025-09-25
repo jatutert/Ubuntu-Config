@@ -71,7 +71,7 @@
 Major="4"
 Minor="1"
 Build="46"
-Patch="11"
+Patch="9"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
 Channel="DEV"
@@ -268,9 +268,7 @@ Channel="DEV"
 # 30aug25   B46 Patch 7 Hostname OMV aangepast 
 # 18sept25  B46 Patch 9 Podman Repo check aanwezigheid toegevoegd
 # 18sept25  B46 Patch 9 VaxVMS optie eerste opzetje toegevoegd
-# 19sept25  B46 Patch 9 Machine ID functie
-# 20sept25  B46 Patch 10 Uniek MAC adres Ubuntu
-# 21sept25  B46 Patch 11 Uniek MAC adres Debian
+#
 #
 # #######################
 # Blok 1F
@@ -669,35 +667,21 @@ function deb_config_dns_settings () {
     if [[ -n "$interface" ]]; then
         #
         #   #########################################################
-        #   Stap 1: Genereer een MAC adres 
-        #   #########################################################
-        #
-        volledig_jaar=$(date +"%Y")
-        jaar_eerste_twee=${volledig_jaar:0:2}
-        jaar_laatste_twee=${volledig_jaar:2:2}
-        mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
-        #
-        #   #########################################################
-        #   Stap 2: MAC adres aanpassen
-        #   #########################################################
-        #
-        ip link set "$interface" address "$mac_address"
-        #
-        #   #########################################################
-        #   Stap 3: Bepaal het configuratiebestand voor Debian
+        #   Stap 2: Bepaal het configuratiebestand voor Debian
         #   #########################################################
         #
         interfaces_file="/etc/network/interfaces"
+        
         #
         #   #########################################################
-        #   Stap 4: Maak een backup van het huidige bestand 
+        #   Stap 3: Maak een backup van het huidige bestand 
         #   #########################################################
         #
         backup_file="${interfaces_file}.bak.$(date +%Y%m%d%H%M%S)"
         cp "$interfaces_file" "$backup_file"
         #
         #   #########################################################
-        #   Stap 5: Genereer nieuwe configuratie
+        #   Stap 4: Genereer nieuwe configuratie
         #   #########################################################
         #
         # Verwijder bestaande dns-nameservers regels voor de interface
@@ -718,12 +702,9 @@ EOF
         #   Stap 5: Pas netwerkinstellingen toe
         #   #########################################################
         #
-        #   Herstart de netwerkinterface
-        #
-        #   Uitgezet omdat dit script een automatische herstart doet
-        #
-        #   ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-        #   ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        # Herstart de netwerkinterface
+        ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
     else
         echo 'No valid network interface found (eth* or ens*)'
     fi
@@ -762,19 +743,10 @@ EOF
 #
 #
 function debulx_os_machine_init () {
-    #
-    # Verwijder huidige machine ID
     rm /etc/machine-id
-    rm /var/lib/dbus/machine-id
-    #
-    #   Genereer nieuwe machine ID zonder herstart
     dbus-uuidgen --ensure=/etc/machine-id
-    #
-    #   Unieke SSH sleutels genereren
     #   sudo rm /etc/ssh/ssh_host_*
     #   sudo ssh-keygen -A
-    #
-    #   Cloud Init uitvoeren 
     cloud-init clean --logs
 }
 #
@@ -880,13 +852,11 @@ function debulx_install_default_apps () {
             "wget"
             "wget2"
             "zip"
-            "make"
         )
     else 
         APT_INSTALL_ARRAY=(
             "7zip"
             "apt-transport-https"
-            "bridge-utils"
             "ca-certificates"
             "cowsay"
             "curl"
@@ -898,7 +868,6 @@ function debulx_install_default_apps () {
             "gnupg"
             "gzip"
             "lolcat"
-            "make"
             "mc"
             "micro"
             "nano"
@@ -2316,15 +2285,15 @@ function debulx_nested_os_config () {
     #
     luct_log_message "Phase 8 Start tijd $(date) $USER $SUDO_USER"
     #
-    echo '## Phase 8 - Step 1 of 13 Changing Machine ID'
-    debulx_os_machine_init
-    echo '## Phase 8 - Step 2 of 13 Set Operating System settings to Europe'
+    # Europa Amsterdam instellen
+    echo '## Phase 8 - Step 1 of 12 Set Operating System settings to Europe'
     debulx_config_taal_nl
-    echo "## Phase 8 - Step 3 of 13 Change Operating System Repository to Europe"
+    echo "## Phase 8 - Step 2 of 12 Change Operating System Repository to Europe"
     debulx_config_os_repo_change
-    echo '## Phase 8 - Step 4 of 13 Implementing new APT Repository from Europe'
+    # APT
+    echo '## Phase 8 - Step 3 of 12 Implementing new APT Repository from Europe'
     debulx_os_update_apt
-    echo '## Phase 8 - Step 5 of 13 Upgrading Operating System (takes about 5 minutes)'
+    echo '## Phase 8 - Step 4 of 12 Upgrading Operating System (takes about 5 minutes)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -2337,27 +2306,28 @@ function debulx_nested_os_config () {
         ulx_vers_nw=$VERSION
         echo "Version after upgrade $ulx_vers_nw"
     fi
-    echo '## Phase 8 - Step 6 of 13 Installing Default Apps (takes about 5 minutes)'
+    echo '## Phase 8 - Step 5 of 12 Installing Default Apps (takes about 5 minutes)'
     # Doet installate van add apt repository commando
     debulx_install_default_apps
-    echo "## Phase 8 - Step 7 of 13 Adding new Repositories to APT"
-    # LET OP Gebruikt resultaat van vorige stap 
+    echo "## Phase 8 - Step 6 of 12 Adding new Repositories to APT"
+    # Toevoegen Ansible Cockpit Docker Kubernetes Powershell 
+    # Gebruikt add apt repository commando
     debulx_config_add_repositories
     # Operating System instellen
-    echo "## Phase 8 - Step 8 of 13 Configure BASH Shell settings"
+    echo "## Phase 8 - Step 7 of 12 Configure BASH Shell settings"
     debulx_config_bash_shell
-    echo '## Phase 8 - Step 9 of 13 Releasing ROOT user'
+    echo '## Phase 8 - Step 8 of 12 Releasing ROOT user'
     wachtwoord=$SUDO_USER
     echo "root:$wachtwoord" | sudo chpasswd
     usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
     # Applicaties
-    echo '## Phase 8 - Step 10 of 13 Installing or updating of Open VM Tools'
+    echo '## Phase 8 - Step 9 of 12 Installing or updating of Open VM Tools'
     debulx_config_virtualization
-    echo '## Phase 8 - Step 11 of 13 Python compatible with lower versions'
+    echo '## Phase 8 - Step 10 of 12 Python compatible with lower versions'
     debulx_python_compatible
-    echo '## Phase 8 - Step 12 of 13 Installing and configuration of Cockpit'
+    echo '## Phase 8 - Step 11 of 12 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo '## Phase 8 - Step 13 of 13 Installing Microsoft Powershell 7'
+    echo '## Phase 8 - Step 12 of 12 Installing Microsoft Powershell 7'
     debulx_install_pwrshell
     #
     luct_log_message "Phase 8 Eind tijd $(date) $USER $SUDO_USER"
@@ -2758,19 +2728,6 @@ if [[ -n "$interface" ]]; then
     #
     #
     #   #########################################################
-    #   Stap 4: Genereer een nieuw MAC adres 
-    #   #########################################################
-    #
-    #
-    #   Format yy:yy:dd:mm:uu:mm
-    #
-    volledig_jaar=$(date +"%Y")
-    jaar_eerste_twee=${volledig_jaar:0:2}
-    jaar_laatste_twee=${volledig_jaar:2:2}
-    mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
-    #
-    #
-    #   #########################################################
     #   Stap 4: Genereer nieuwe configuratie
     #   #########################################################
     #
@@ -2784,7 +2741,6 @@ network:
   ethernets:
     $interface:
       dhcp4: true
-      macaddress: $mac_address
       nameservers:
         addresses: [145.2.14.10, 145.2.14.11, 8.8.8.8, 8.8.4.4]
 EOF
@@ -2796,13 +2752,10 @@ EOF
     #   Stap 5: Pas Netplan toe
     #   ##########################################################
     #
-    #   Als dit nu wordt gedaan dan is verbinding weg
-    #   Dit script doet een automatische reboot
-    #   Bij reboot wordt nieuwe configuratie actief
     #
-    #   netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-    #
-    #
+    netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+#
+#
 else
     echo 'No valid netwerkinterface found (eth* or ens*)'
 fi
@@ -3733,6 +3686,8 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         git clone --quiet https://github.com/simh/simh.git /opt/simh
         #
         yes | make --directory /opt/simh -j4 vax8600 --always-make
+        #make -j4 vax8600
+        #
         #
         mkdir -p /opt/simulators/vax8600/iso
         mkdir -p /opt/simulators/vax8600/data
