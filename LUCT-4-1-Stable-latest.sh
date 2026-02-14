@@ -6,9 +6,9 @@
 #
 #   #    #  # #### #####  #   #      ####   Gemaakt door John Tutert (TutSOFT)
 #   #    #  # #      #    #   #         #   2023 WSL Config
-#   #    #  # #      #    #####        #    2024 Ubuntu Config
-#   #    #  # #      #        #       #     2025 LUCT
-#   #### #### ####   #        #  ##  ####   Persoonlijk en / of educatief gebruik
+#   #    #  # #      #    #####         #   2024 Ubuntu Config
+#   #    #  # #      #        #         #   2025 LUCT
+#   #### #### ####   #        #  ##     #   Persoonlijk en / of educatief gebruik
 #
 # ################################################################################
 # ################################################################################
@@ -33,15 +33,13 @@
 #
 #
 # Ophalen van DEV Latest versie van dit script in externe omgeving
-# sudo curl -L -o $HOME/luctv42.sh https://edu.nl/vnej9
-# sudo wget -O $HOME/luctv42.sh https://edu.nl/vnej9
+# sudo curl -L -o $HOME/luctv41.sh https://edu.nl/n7faw
+# sudo wget -O $HOME/luctv41.sh https://edu.nl/n7faw
 #
 # Hierna
-# sudo chmod +x $HOME/luctv42.sh 
-# sudo $HOME/luctv42.sh docker 
-# sudo $HOME/luctv42.sh podman 
-# sudo $HOME/luctv42.sh network 
-# sudo $HOME/luctv42.sh vaxvms 
+# sudo chmod +x $HOME/luctv41.sh 
+# sudo $HOME/luctv41.sh docker 
+# sudo $HOME/luctv41.sh podman 
 #
 #
 # #######################
@@ -71,12 +69,12 @@
 #
 #
 Major="4"
-Minor="2"
-Build="07"
-Patch="00"
+Minor="1"
+Build="46"
+Patch="9"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
-Channel="CAN"
+Channel="Stable"
 #
 #
 # #######################
@@ -112,14 +110,12 @@ Channel="CAN"
 #
 #
 # Uitgaande Containerpoorten 9100 Docker Management Tools
-#   9101    Portainer 
-#   9102    Yacht
-#   9103    Visual Studio Code Server
-#   9104    Jenkins 
-#   9105    Registry
-#   9106    WatchTower
-#   9107    PostGreSQL
-#   9108    PGAdmin4
+# 9101 Portainer 
+# 9102 Yacht
+# 9103 Visual Studio Code Server
+# 9104 Jenkins 
+# 9105 Registry
+# 9106 WatchTower
 #
 # Uitgaande Containerpoorten 9200 Docker Containers
 # 9201 prakhar1989/static-site
@@ -171,12 +167,108 @@ Channel="CAN"
 # Changelog Script
 # #######################
 #
-#   24sept25    LUCT versie 4.1 Build 46 Patch 11 = LUCT versie 4.2 Build 00 Patch 00
-#   25sept25    03  PostGreSQL en PGAdmin als containers eerste opzetje
-#   25sept25    04  Machine ID aanpassing via Job 
-#   
-#   11febr26    05  WSL2 eerste aanzet 
-#   12febr26    06  Ubuntu Repos
+#
+# Ubuntu
+# 11juli25 Yacht Container Management zie https://www.youtube.com/watch?v=bsB2dvpdBYg van 6 minuten 
+# 12juli25 Docker Management Tools functie 
+# 12juli25 Visual Studio Code Server native en Docker 
+# 12juli25 Visual Studio Code Server sed bug fixed 
+# 18juli25 Build 32 Jenkins als Container in plaats van native install
+# 18juli25 Build 32 Visual Studio Code Server als Container in plaats van native install 
+# 19juli25 Edu link naar Canary latest opgenomen in kop van het script
+# 20juli25 B5 PHP installatie output naar dev nul gezet
+# 20juli25 B5 Native installatie van Visual Studio code uitgezet stond nog aan 
+# 20juli25 B5 Docker Compose plugin installatie uitgezet wordt al gedaan bij installatie van Docker CE
+# 20juli25 B5 Docker Compose installatie functie opmerkingen erbij gezet
+# 20juli25 B5 Docker pull van Jenkins image gelijk aan gebruikte image stond op latest en lts 
+# 20juli25 B5 Visual Studio Code Server als Docker container functie aangepast en werkend gemaakt
+# 20juli25 B5 Volgorde functies Docker Podman en Minikube aangepast 
+# 20juli25 B5 Namen containers met LUCT ervoor 
+# 20juli25 B5 Initieel wachtwoord Jenkins naar lokaal bestand 
+# 20juli25 B5 Dockly werkend 
+# 20juli25 B5 LazyDocker werkend
+# 20juli25 B5 Dry toevoeging
+# 20juli25 B5 7zip in plaats van 7z installatie bugfix 
+# 21juli25 B6 Poorten overzicht bijgewerkt
+# 21juli25 B7 Nummering stappen correctie
+# 21juli25 B7 Commando starten VS Code Server aangepast
+# 21juli25 B8 Ansible eerste opzetje gemaakt start by scriptregel 1144
+# 22juli25 B9 Ansible eth en ens netwerkconfiguratie
+# 23juli25 B10 Ansible Master Inventory 
+# 23juli25 B10 Uitbreiding logging 
+# 23juli25 B10 Aanpassen hostname op basis van eerst check gebruikersnaam
+# 24juli25 B11 Powershell installatie met snap in plaats van apt
+# 24juli25 B11 Markering functies die niet meer actief in gebruik zijn
+# 24juli25 B11 Patch 1 Snap installatie Powershell parameter classic EN run dry script chmod 
+# 25juli25 B12 Nieuwe hoofd repo ubuntu en backup repo instellingen
+# 25juli25 B12 Nieuwe logging manier docker images pull 
+# 25juli25 B12 Patch 1 Bugfixes na run script
+# 25juli25 B12 Patch 1 Aanpassen Ubuntu Repo op nieuwe manier 
+# 25juli25 B13 Dive installatie fix WatchTower Image pull toegevoegd
+# 25juli25 B13 Jenkins Wachtwoord bestand aanmaak in nested docker functie gezet
+# Debian
+# 25juli25 B14 Debian 12 Linux support start
+# 25juli25 B14 Aanmaak Debian Ubuntu gezamenlijke functies 
+# 26juli25 B14 Patch 1 wget voor ophalen script en aanpassen hostname debian docker
+# 26juli25 B14 Patch 2 vullen distro variabele compatible met debian gemaakt
+# 26juli25 B14 Patch 3 volgorde fixes nested oobe nav eerste run op debian
+# 28juli25 B15 Succesvolle testrun op Debian gedaan melding apt repo add stil gemaakt en 7zz bij Debian
+# 28juli25 B15 Debian installatie Snap van Ubuntu toegevoegd Snap is dus nu ook beschikbaar op Debian
+# Debian Ubuntu
+# 28juli25 B16 Bepalen versienummer eerder in script verwijderd bij change repo ubuntu
+# 28juli25 B17 Proces fase meldingen 
+# 28juli25 B17 Powershell Debian Ubuntu 
+# 29juli25 B17 Patch 1 Powershell Debian Ubuntu naar 1 in plaats van per distro
+# 29juli25 B18 Docker pull Progress Bar en APT Install Progress Bar
+# 30juli25 B18 Patch 1 Progress Bars fix
+# 30juli25 B19 Progress Bar Functie apart gezet in distro onafhankelijk gedeelte
+# 30juli25 B19 Introductie van parameter 2 test waarbij veel meer zichtbaar wordt tijdens uitvoering
+# 30juli25 B19 Patch 1 bugfix parameter 2 en oude en nieuwe versie Debian weergeven
+# 30juli25 B20 Foutmelding Docker installatie distro afhankelijk gemaakt 
+# 30juli25 B20 paramater een en twee werkend gemaakt
+# 31juli25 B21 Debian en Ubuntu opties gelijk getrokken en omv optie voor Debian 
+# 31juli25 B22 Modus naar leeg bij geen parameter 2 opgegeven
+# 31juli25 B22 ContainerEngine in plaats van Docker of Podman voor pull images en portainer
+# 01aug25  B23 Introductie gezamenlijke functies besparing 900 regels code
+# 01aug25  B23 Patch 1 Herstel foutje in if then statement
+# 02aug25  B24 Check if then statements script en introductie nieuwe functies om regels te besparen
+# 02aug25  B24 Ansible Master en Ansible Slave function nieuwe opzet
+# 02aug25  B25 Debian Ubuntu deel voltooien uit B24
+# 02aug25  B25 Patch 1 fix apt https installatie 
+# 03aug25  B26 Eerste opzet nieuwe manier installatie Docker nog niet gereed
+# 03aug25  B27 Nieuwe Functie Container Engine en Nieuwe Functie Netwerk instellingen
+# 03aug25  B28 Testmodus apt update en fix dry EN Podman docker registry fix voor images
+# 03aug25  B29 Linux Distros aangepast beginscherm EN Testmodus aangezet op belangrijke onderdelen 
+# 04aug25  B30 Cockpit nieuwe installatie manier EN Podman Cockpit EN Gebruiker ROOT vrijgeven
+# 04aug25  B31 curl in plaats van snap curl omdat snap curl problemen geeft
+# 04aug25  B31 Add Repo in gezamenlijke functie in plaats van apart
+# 04aug25  B32 Test modus standaard uit
+# 06aug25  B33 Eerste implementatie van LinuxMint en LMDE Linux ondersteuning 
+# 06aug25  B33 Nieuwe manier hostnamen Debian en Ubuntu en Debian nieuwe structuur hostnaam
+# 06aug25  Feature Complete 
+# 06aug25  B34 RC1 Functie Config Bash shell naar debulx EN functie betere namen
+# 07aug25  B35 RC2 Minder meldingen op scherm en duidelijke indicate fasen in script op scherm 
+# 07aug25  B36 RC2 Minikube altijd installeren bij Docker 
+# 07aug25  B37 RC2 Progress bar bugfix alles blijft nu op 1 regel
+# 08aug25  B38 RC2 Debug modus aan bij test EN UT Twente Repo toevoeging
+# 08aug25  B39 RC3 Nieuwe menu optie non lts upgrade
+# 08aug25  B40 RC3 Minder meldingen tijdens run en set e uitgezet omdat script onstabiel wordt
+# 08aug25  B40 RC4 Nieuwe Structuur Script
+# 09aug25  B40 RC4 Nieuwe Structuur Script
+# 10aug25  B41 RC4 Nieuwe Structuur Script
+# 10aug25  B42 RC4 Nieuwe Structuur Script
+# 12aug25  B42 Lus eth ens Ansible master nieuwe opzet EN aanmaken log bestand in tmp directory
+# 12aug25  B44 en B45 Logging via log bestanden in var log directory 
+# 13aug25   B46 Canary Channel naar DEV Channel 
+# 13aug25   B46 Patch 1 Aanpassen verkorte URL naar nieuwe verkorte URL # GEEN aanpassingen in script verder 
+# 15aug25   B46 Patch 2 Logging via functie 
+# 15aug25   B46 Patch 3 Docker images regel 1436
+# 17aug25   B46 Patch 5 Git Clones functie 
+# 29aug25   B46 Patch 6 Debian Repo aangepast
+# 30aug25   B46 Patch 7 Hostname OMV aangepast 
+# 18sept25  B46 Patch 9 Podman Repo check aanwezigheid toegevoegd
+# 18sept25  B46 Patch 9 VaxVMS optie eerste opzetje toegevoegd
+#
 #
 # #######################
 # Blok 1F
@@ -380,12 +472,6 @@ if [[ $modus == "test" ]]; then
     set -x
 fi
 #
-#   Check aanwezigheid van WSL2 
-#
-if [[ "${kernel_name,,}" == *"wsl"* ]]; then
-    wsl_present='true'
-fi
-#
 #
 # ################################################################################
 # ################################################################################
@@ -430,54 +516,6 @@ fi
 # ################################################################################
 #
 # BLOK 4
-# Installeren tools voor script
-#
-# ################################################################################
-# ################################################################################
-#
-#
-luct_log_message "Phase 5 $(date) Installing or updating tools needed for script $USER $SUDO_USER"
-#
-#
-# #######################
-# Blok 4A
-# Installing or updating tools needed for this script 
-# #######################
-#
-#
-echo '## Phase 5 - Step 1 of 2 Installing or updating tools needed for this script'
-#
-if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
-    if [[ $versie == "24.04" ]] ; then
-        apt update -qq
-        apt install curl jq sed wget wget2 -y -qq
-    fi
-fi
-#
-#
-# #######################
-# Blok 4B
-# Changing OS Repository 
-# #######################
-#
-#
-echo '## Phase 5 - Step 2 of 2 Changing Operating System Repository'
-#
-if [[ $distro == "ubuntu" ]]; then
-    if [[ $versie == "22.04" ]] ; then
-        sed -i '/security.ubuntu.com/!s|URIs: .*|URIs: http://nl.archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list
-    fi
-    if [[ $versie == "24.04" ]] ; then
-        sed -i '/security.ubuntu.com/!s|URIs: .*|URIs: http://nl.archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list.d/ubuntu.sources
-    fi
-    apt update -qq
-fi
-#
-#
-# ################################################################################
-# ################################################################################
-#
-# BLOK 5
 # Definitie Functies Script
 #
 # ################################################################################
@@ -485,19 +523,19 @@ fi
 #
 #
 # #######################
-# Blok 5A
+# Blok 4A
 # Melding Scherm 
 # #######################
 #
 #
-luct_log_message "Phase 6 $(date) Define functions $USER $SUDO_USER"
+luct_log_message "Phase 5 $(date) Define functions $USER $SUDO_USER"
 #
-echo '## Phase 6 - Define Functions for this Script'
+echo '## Phase 5 - Define Functions for this Script'
 #
 #
 # ################################################################################
 #
-# Blok 5B                                                  #####
+# Blok 4B                                                  #####
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES              #     #
 # ALPINE LINUX                                           #       #
 #                                                        #########
@@ -511,7 +549,7 @@ echo '## Phase 6 - Define Functions for this Script'
 #
 #
 #   #######################
-#   Blok 5B-1    Function Alpine 
+#   Blok 4B-1    Function Alpine 
 #                Bijwerken
 #   #######################
 #
@@ -530,7 +568,7 @@ function alx_os_upgrade_full () {
 #
 # ################################################################################
 #
-# Blok 5C                                                #########
+# Blok 4C                                                #########
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES             #   #   #
 # BuildRoot (Minikube VM) LINUX                          #   #   #
 #                                                        #   #   #
@@ -544,7 +582,7 @@ function alx_os_upgrade_full () {
 #
 #
 #   #######################
-#   Blok 5C-1  BuildRoot 
+#   Blok 4C-1  BuildRoot 
 #              Function Docker Compose Installation 
 #   #######################
 #
@@ -564,7 +602,7 @@ function build_install_docker_compose_plugin () {
 #
 # ################################################################################
 #
-# Blok 5D                                                        #
+# Blok 4D                                                        #
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES                     #
 # Debian LINUX                                                   #
 #                                                        #########
@@ -577,18 +615,18 @@ function build_install_docker_compose_plugin () {
 #
 #
 #
-# Blok 5D-1 CATEGORIE 1 OS Functies
+# Blok 4D-1 CATEGORIE 1 OS Functies
 #
 #
 #
 #
-# Blok 5D-2 CATEGORIE 2 Install Software Functies
+# Blok 4D-2 CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 #   #######################
-#   5D-2-1    Debian OS Install Software Functies
+#   4D-2-1    Debian OS Install Software Functies
 #             Functie Installatie Open Media Vault 
 #             Debian OMV
 #   #######################
@@ -606,13 +644,13 @@ function deb_install_omv () {
 #
 #
 #
-# Blok 5D-3 CATEGORIE 3 Configuratie Functies
+# Blok 4D-3 CATEGORIE 3 Configuratie Functies
 #
 #
 #
 #
 #   #######################
-#   5D-3-1    Debian Configuratie Functies
+#   4D-3-1    Debian Configuratie Functies
 #             Functie Change DNS OS
 #             Onderdeel van Debian Nested OOBE Functie
 #   #######################
@@ -629,35 +667,21 @@ function deb_config_dns_settings () {
     if [[ -n "$interface" ]]; then
         #
         #   #########################################################
-        #   Stap 1: Genereer een MAC adres 
-        #   #########################################################
-        #
-        volledig_jaar=$(date +"%Y")
-        jaar_eerste_twee=${volledig_jaar:0:2}
-        jaar_laatste_twee=${volledig_jaar:2:2}
-        mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
-        #
-        #   #########################################################
-        #   Stap 2: MAC adres aanpassen
-        #   #########################################################
-        #
-        ip link set "$interface" address "$mac_address"
-        #
-        #   #########################################################
-        #   Stap 3: Bepaal het configuratiebestand voor Debian
+        #   Stap 2: Bepaal het configuratiebestand voor Debian
         #   #########################################################
         #
         interfaces_file="/etc/network/interfaces"
+        
         #
         #   #########################################################
-        #   Stap 4: Maak een backup van het huidige bestand 
+        #   Stap 3: Maak een backup van het huidige bestand 
         #   #########################################################
         #
         backup_file="${interfaces_file}.bak.$(date +%Y%m%d%H%M%S)"
         cp "$interfaces_file" "$backup_file"
         #
         #   #########################################################
-        #   Stap 5: Genereer nieuwe configuratie
+        #   Stap 4: Genereer nieuwe configuratie
         #   #########################################################
         #
         # Verwijder bestaande dns-nameservers regels voor de interface
@@ -678,12 +702,9 @@ EOF
         #   Stap 5: Pas netwerkinstellingen toe
         #   #########################################################
         #
-        #   Herstart de netwerkinterface
-        #
-        #   Uitgezet omdat dit script een automatische herstart doet
-        #
-        #   ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-        #   ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        # Herstart de netwerkinterface
+        ifdown "$interface" > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+        ifup "$interface" >> /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
     else
         echo 'No valid network interface found (eth* or ens*)'
     fi
@@ -694,7 +715,7 @@ EOF
 #
 # ################################################################################
 #
-# Blok 5E                                                        # #       #
+# Blok 4E                                                        # #       #
 # DECLARATIE Debian en Ubuntu Gezamenlijke functies              # #       #
 # Debian 12                                                      # #       #
 # Ubuntu 24                                              ######### #       #
@@ -707,13 +728,13 @@ EOF
 #
 #
 #
-# Blok 5E-1 CATEGORIE 1 OS FUNCTIES
+# Blok 4E-1 CATEGORIE 1 OS FUNCTIES
 #
 #
 #
 #
 #   #######################
-#   Blok 5E-1-1    Debian Ubuntu OS FUNCTIES
+#   Blok 4E-1-1    Debian Ubuntu OS FUNCTIES
 #                  Functie machine id 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -722,40 +743,18 @@ EOF
 #
 #
 function debulx_os_machine_init () {
-    #
-    # Verwijder huidige machine ID
-    echo 'rm /etc/machine-id' > /usr/local/sbin/luct_change_machine_id.sh
-    echo 'rm /var/lib/dbus/machine-id' >> /usr/local/sbin/luct_change_machine_id.sh
-    #
-    #   Genereer nieuwe machine ID zonder herstart
-    echo 'dbus-uuidgen --ensure=/etc/machine-id' >> /usr/local/sbin/luct_change_machine_id.sh
-    #
-    #   Unieke SSH sleutels genereren
+    rm /etc/machine-id
+    dbus-uuidgen --ensure=/etc/machine-id
     #   sudo rm /etc/ssh/ssh_host_*
     #   sudo ssh-keygen -A
-    #
-    #   Cloud Init uitvoeren 
-    echo 'cloud-init clean --logs' >> /usr/local/sbin/luct_change_machine_id.sh
-    #
-    # Automatisch reboot inbouwen
-    echo 'shutdown -r now' >> /usr/local/sbin/luct_change_machine_id.sh
-    #
-    # uitvoerbaar maken 
-    chmod +x /usr/local/sbin/luct_change_machine_id.sh
-    #
-    # Job starten 
-    sudo systemd-run --on-boot --unit="luct-change-machine-id" /usr/local/sbin/luct_change_machine_id.sh
-    #
-    # Check of Job bestaat
-    systemctl status luct-change-machine-id.service
-#
+    cloud-init clean --logs
 }
 #
 #
 #
 #
 #   #######################
-#   Blok 5E-1-2    Debian Ubuntu OS FUNCTIES
+#   Blok 4E-1-2    Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os update apt
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -771,12 +770,12 @@ function debulx_os_update_apt () {
 #
 #
 #   #######################
-#   Blok 5E-1-3    Debian Ubuntu OS FUNCTIES
+#   Blok 4E-1-3    Debian Ubuntu OS FUNCTIES
 #                  Functie debulx os upgrade packages 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
 #
-# Phase 9
+# Phase 8
 #
 #
 #
@@ -804,13 +803,13 @@ function debulx_os_upgrade_packages () {
 #
 #
 #
-# Blok 5E-2 CATEGORIE 2 Install Software Functies
+# Blok 4E-2 CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 #   #######################
-#   Blok 5E-2-1    Debian Ubuntu OS Install Software Functies
+#   Blok 4E-2-1    Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Default Apps
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -853,13 +852,11 @@ function debulx_install_default_apps () {
             "wget"
             "wget2"
             "zip"
-            "make"
         )
     else 
         APT_INSTALL_ARRAY=(
             "7zip"
             "apt-transport-https"
-            "bridge-utils"
             "ca-certificates"
             "cowsay"
             "curl"
@@ -871,7 +868,6 @@ function debulx_install_default_apps () {
             "gnupg"
             "gzip"
             "lolcat"
-            "make"
             "mc"
             "micro"
             "nano"
@@ -961,7 +957,7 @@ function debulx_install_default_apps () {
 #
 #
 #   #######################
-#   Blok 5E-2-2 Debian Ubuntu OS Install Software Functies
+#   Blok 4E-2-2 Debian Ubuntu OS Install Software Functies
 #                  Functie Native Installatie Cockpit Management Server
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1018,7 +1014,7 @@ function debulx_install_cockpit_srv () {
 #
 #
 #   #######################
-#   Blok 5E-2-3    Debian Ubuntu OS Install Software Functies
+#   Blok 4E-2-3    Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Container Engine
 #                  Onderdeel van Debian Ubuntu Container Engine Nested Functie
 #   #######################
@@ -1152,7 +1148,7 @@ function debulx_install_conteng () {
 #
 #
 #   #######################
-#   BLOK 5E-2-4    Debian Ubuntu OS Install Software Functies
+#   BLOK 4E-2-4    Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie OS Powershell
 #                  Onderdeel van Debian Nested OOBE Functie
 #   #######################
@@ -1165,10 +1161,6 @@ function debulx_install_pwrshell () {
     pwsh --command Get-Host > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         luct_log_message "Installatie Powershell"
-        #
-        # Installatie kan pas nadat Microsoft Repro is toegevoegd
-        # Toevoeging Microsoft Repro wordt gedaan door functie toevoegen repro
-        #
         apt install powershell -y >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
         rm /tmp/packages-microsoft-prod.deb >> /home/$SUDO_USER/luct-logs/luct_pwsh.log 2>&1
     fi
@@ -1179,20 +1171,20 @@ function debulx_install_pwrshell () {
 #
 #
 #   #######################
-#   BLOK 5E-2-5    Debian Ubuntu OS Install Software Functies
+#   BLOK 4E-2-5    Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Minikube
 #                  Minikube Kubeadm Kubectl
 #   #######################
 #
 #
-# PHASE 12
+# PHASE 11
 #
 #
 function debulx_install_minikube_and_k8stools () {
     #
     luct_log_message "Start Installatie Minikube $(date)"
     #
-    echo '## Phase 12 - Installing latest version of Minikube and tools'
+    echo '## Phase 11 - Installing latest version of Minikube and tools'
     # 
     # Bij installatie Docker of Podman wordt ALTIJD ook Minikube geinstalleerd 
     #
@@ -1220,7 +1212,7 @@ function debulx_install_minikube_and_k8stools () {
 #
 #
 #   #######################
-#   BLOK 5E-2-6    Debian Ubuntu OS Install Software Functies
+#   BLOK 4E-2-6    Debian Ubuntu OS Install Software Functies
 #                  Functie Installatie Ansible
 #                  Ansible Master Slave
 #   #######################
@@ -1385,13 +1377,13 @@ function debulx_install_ansible_master_slave () {
 #
 #
 #
-# BLOK 5E-3 CATEGORIE 3 Container Engine
+# BLOK 4E-3 CATEGORIE 3 Container Engine
 #
 #
 #
 #
 # ###############################
-# BLOK 5E-3-1  Container Engine
+# BLOK 4E-3-1  Container Engine
 #                 Function Management Tools Install and Run
 # ###############################
 #
@@ -1507,7 +1499,7 @@ function debulx_conteng_install_run_mgmt_tools () {
 #
 #
 # ################################################
-# Blok 5E-3-2     Container Engine
+# Blok 4E-3-2     Container Engine
 #                 Images Pull 
 # ###############################################
 #
@@ -1520,34 +1512,18 @@ function debulx_conteng_images_pull () {
     #
     local containerengine=$1
     #
-    if [[ $modus == "databases" ]]; then
-        DOCKER_IMAGES=(
-            "dpage/pgadmin4"
-            "portainer/portainer-ce:latest"
-            "postgresql:latest"
-            "selfhostedpro/yacht:latest"
-            "containrrr/watchtower:latest"
-        )
-    fi
-    #
-    if [[ $modus == "leeg" ]]; then
+    if [[ $modus == "test" ]]; then
         DOCKER_IMAGES=(
             "alpine:latest"
-            "amazonlinux:latest"
-            "clearlinux:latest"
-            "debian:latest"
-            "ubuntu:latest"
-            "httpd:latest"
-            "dockersamples/static-site"
-            "nginx:latest"
-            "wordpress:latest"
+            "alpine:3.5"
+            "codercom/code-server:latest"
+            "jenkins/jenkins:latest-jdk21"
             "portainer/portainer-ce:latest"
+            "registry:latest"
             "selfhostedpro/yacht:latest"
             "containrrr/watchtower:latest"
         )
-    fi
-    #
-    if [[ $modus == "virtualisatie" ]]; then
+    else
         DOCKER_IMAGES=(
             "alpine:latest"
             "alpine:3.5"
@@ -1567,15 +1543,6 @@ function debulx_conteng_images_pull () {
             "jenkins/jenkins:latest-jdk21"
             "portainer/portainer-ce:latest"
             "registry:latest"
-            "selfhostedpro/yacht:latest"
-            "containrrr/watchtower:latest"
-        )
-    fi
-    #
-    if [[ $modus == "test" ]]; then
-        DOCKER_IMAGES=(
-            "alpine:latest"
-            "portainer/portainer-ce:latest"
             "selfhostedpro/yacht:latest"
             "containrrr/watchtower:latest"
         )
@@ -1612,7 +1579,7 @@ function debulx_conteng_images_pull () {
 #
 #
 # ################################################
-# Blok 5E-3-3    Container Engine
+# Blok 4E-3-3    Container Engine
 #                Portainer
 # ###############################################
 #
@@ -1684,7 +1651,7 @@ function debulx_conteng_portainer_run () {
 #
 #
 # ################################################
-# Blok 5E-3-4    Container Engine
+# Blok 4E-3-4    Container Engine
 #                Yacht
 # ###############################################
 #
@@ -1752,7 +1719,7 @@ function debulx_conteng_yacht_run () {
 #
 #
 # ################################################
-# Blok 5E-3-5    Container Engine
+# Blok 4E-3-5    Container Engine
 #                Visual Studio Code Server
 # ###############################################
 #
@@ -1783,7 +1750,7 @@ function debulx_conteng_vscsrv_run () {
 #
 #
 # ################################################
-# Blok 5E-3-6    Container Engine
+# Blok 4E-3-6    Container Engine
 #                Jenkins
 # ###############################################
 #
@@ -1810,7 +1777,7 @@ function debulx_conteng_jenkins_run () {
 #
 #
 # ################################################
-# Blok 5E-3-7    Container Engine
+# Blok 4E-3-7    Container Engine
 #                Registry
 # ###############################################
 #
@@ -1835,7 +1802,7 @@ function debulx_conteng_registry_run () {
 #
 #
 # ################################################
-# Blok 5E-3-8    Container Engine
+# Blok 4E-3-8    Container Engine
 #                WatchTower
 # ###############################################
 #
@@ -1864,98 +1831,19 @@ function debulx_conteng_watchtower_run () {
     if [[ $containerengine == "podman" ]]; then
         $containerengine run -d -p 9106:8080 --restart always --name watchtower -v /var/run/podman/podman.sock:/var/run/podman/podman.sock containrrr/watchtower >> /home/$SUDO_USER/luct-logs/luct_start_WachTower.log 2>&1
     fi
-# WatchTower
 }
 #
 #
 #
 #
-# ################################################
-# Blok 5E-3-9    Container Engine
-#                PostGreSQL
-# ###############################################
-#
-#
-#
-#
-function debulx_conteng_postgresql_run () {
-    #
-    luct_log_message "PostGreSQL" 
-    #
-    if [[ $modus == "test" ]]; then
-        echo 'PostGreSQL'
-    fi
-    #
-    local containerengine=$1
-    #
-    #   Definitie Variabelen
-    #
-    VOLUME_NAME="postgres_data_volume"
-    DB_PASSWORD='@PASSword123!'
-    #
-    #   Verwijderen eventueel aanwezig volume
-    #
-    if [ "$($containerengine volume ls -q -f name=^$VOLUME_NAME$)" ]; then
-        $containerengine volume rm "$VOLUME_NAME"
-    fi
-    #
-    #   Aanmaken nieuw volume
-    #
-    $containerengine volume create "$VOLUME_NAME"
-    #
-    #   Starten PostGreSQL
-    $containerengine run -d -p 9107:5432 --restart always --name postgresql_rdbms -v "$VOLUME_NAME":/var/lib/postgresql/data -e POSTGRES_PASSWORD="$DB_PASSWORD" postgres:latest
-    #
-# PostGreSQL 
-}
-#
-#
-#
-#
-# ################################################
-# Blok 5E-3-10   Container Engine
-#                PostGreSQL Admin PGAdmin 4
-# ###############################################
-#
-#
-#   https://hub.docker.com/r/dpage/pgadmin4/
-#
-#
-function debulx_conteng_pgadmin4_run () {
-    #
-    luct_log_message "PGAdmin4" 
-    #
-    if [[ $modus == "test" ]]; then
-        echo 'PGAdmin4'
-    fi
-    #
-    local containerengine=$1
-    #
-
-#   https://www.pgadmin.org/docs/pgadmin4/latest/container_deployment.html
-
-$containerengine run -d -p 9108:80 --restart always --name pgadmin4 \
-    -e 'PGADMIN_DEFAULT_EMAIL=student@domain.com' \
-    -e 'PGADMIN_DEFAULT_PASSWORD=@PASSword123!' \
-    -e 'PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True' \
-    -e 'PGADMIN_CONFIG_LOGIN_BANNER="student@domain.com @PASSword123!"' \
-    -e 'PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10' \
-    dpage/pgadmin4
-
-# PGAdmin4 
-}
-#
-#
-#
-#
-# Blok 5E CATEGORIE 4 Ubuntu Configuratie 
+# Blok 4E CATEGORIE 4 Ubuntu Configuratie 
 #
 #
 #
 #
 #
 #   #######################
-#   Blok 5E-4-1    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-1    Debian UBUNTU Configuratie Functies
 #                  Functie Config Timezone Amsterdam Europa 
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1964,8 +1852,6 @@ $containerengine run -d -p 9108:80 --restart always --name pgadmin4 \
 #
 #
 function debulx_config_taal_nl () {
-    #
-    #   WSL2 compatible dd 11 febr 26 
     #
     luct_log_message "Language Pack NL"
     # Taal 
@@ -1983,7 +1869,7 @@ function debulx_config_taal_nl () {
 #
 #
 #   #######################
-#   Blok 5E-4-2    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-2    Debian UBUNTU Configuratie Functies
 #                  Functie Change OS Repository
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -1992,18 +1878,13 @@ function debulx_config_taal_nl () {
 #
 #
 function debulx_config_os_repo_change () {
-    #
-    # Debian
-    #
     if [[ $distro == "debian" ]] ; then
         if [[ $versie == "12" ]] ; then
-            #   werkt niet meer  sed -i '1c\deb http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
-            #   werkt niet meer sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
+            sed -i '1c\deb http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
+            sed -i '2c\deb-src http://mirror.ams.macarne.com/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
         fi
+    # Debian
     fi 
-    #
-    # LinuxMint Ubuntu
-    #
     if [[ $distro == "linuxmint" ]] ; then
         if [[ $versie == "21" ]] ; then
             linuxmintnaam = "vanessa"
@@ -2038,21 +1919,16 @@ function debulx_config_os_repo_change () {
         # Triple IT
         echo "deb https://mintlinux.mirror.wearetriple.com/packages $linuxmintnaam main upstream import backport" > /etc/apt/sources.list.d/official-package-repositories.list
         echo ' ' >> /etc/apt/sources.list.d/official-package-repositories.list
-        #
-        #   # Ubuntu NL 100 Gbs
-        #   Werkt niet meer
-        #   echo "deb http://mirror.ams.macarne.com/ubuntu/ $ubuntunaam-updates main restricted universe multiverse" >> /etc/apt/sources.list.d/official-package-repositories.list
-        #
+        # Ubuntu NL 100 Gbs
+        echo "deb http://mirror.ams.macarne.com/ubuntu/ $ubuntunaam-updates main restricted universe multiverse" >> /etc/apt/sources.list.d/official-package-repositories.list
         # Ubuntu NL 50 GBs
         echo "deb https://mirrors.mediascope.group/ubuntu/ $ubuntunaam-updates main restricted universe multiverse" >> /etc/apt/sources.list.d/official-package-repositories.list
         # Ubuntu NL 20 GBs
         echo "deb http://mirror.i3d.net/pub/ubuntu/ $ubuntunaam-updates main restricted universe multiverse" >> /etc/apt/sources.list.d/official-package-repositories.list
         echo ' ' >> /etc/apt/sources.list.d/official-package-repositories.list
         echo "deb http://security.ubuntu.com/ubuntu/ $ubuntunaam-security main restricted universe multiverse" >> /etc/apt/sources.list.d/official-package-repositories.list
+    # LinuxMint Ubuntu
     fi 
-    #
-    #   LinuxMint Debian
-    #
     if [[ $distro == "lmde" ]] ; then
         if [[ $versie == "5" ]] ; then
             linuxmintnaam = "elsie"
@@ -2077,41 +1953,28 @@ function debulx_config_os_repo_change () {
         echo "deb http://security.debian.org $debiannaam-security main contrib non-free" >> /etc/apt/sources.list.d/official-package-repositories.list
         echo ' ' >> /etc/apt/sources.list.d/official-package-repositories.list
         echo "deb https://deb.debian.org $debiannaam-backports main contrib non-free" >> /etc/apt/sources.list.d/official-package-repositories.list
+    # LinuxMint Debian
     fi 
-    #
-    #   Ubuntu
-    #
     if [[ $distro == "ubuntu" ]] ; then
         #
-        #   if [[ $versie == "22.04" ]] ; then
-        #       if grep -q "in.archive.ubuntu.com" /etc/apt/sources.list; then
-        #           sed "s@in.archive.ubuntu.com@nl.archive.ubuntu.com@" -i /etc/apt/sources.list
-        #       fi
-        #       if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
-        #           sed "s@mirrors.edge.kernel.org@nl.archive.ubuntu.com@" -i /etc/apt/sources.list
-        #       fi 
-        #       if grep -q "nl.archive.ubuntu.com" /etc/apt/sources.list; then
-        #           sed "s@nl.archive.ubuntu.com@mirror.ams.macarne.com@" -i /etc/apt/sources.list
-        #       fi
-        #   fi
+        if [[ $versie == "22.04" ]] ; then
+            if grep -q "in.archive.ubuntu.com" /etc/apt/sources.list; then
+                sed "s@in.archive.ubuntu.com@mirror.ams.macarne.com@" -i /etc/apt/sources.list
+            fi
+            if grep -q "nl.archive.ubuntu.com" /etc/apt/sources.list; then
+                sed "s@nl.archive.ubuntu.com@mirror.ams.macarne.com@" -i /etc/apt/sources.list
+            fi
+            if grep -q "mirrors.edge.kernel.org" /etc/apt/sources.list; then
+                sed "s@mirrors.edge.kernel.org@mirror.ams.macarne.com@" -i /etc/apt/sources.list
+            fi 
+        fi
         #
-        #   if [[ $versie == "24.04" ]] ; then
-        #       STAP 1
-        #       Opvragen lijst met Ubuntu mirrors
-        #       curl -sL http://mirrors.ubuntu.com/NL.txt | jq -R . | jq -s . > /tmp/ubuntu-nl-mirrors.txt
-        #       STAP 2
-        #       Opvragen eerste entry uit de lijst en dit plaatsen in variabele 
-        #           manier 1 http ervoor laten staan 
-        #           ubuntu_mirror_nieuw=$(sed -n '2p' /tmp/ubuntu-nl-mirrors.txt | cut -d'"' -f2)
-        #           manier 2 http ervoor weghalen 
-        #           ubuntu_mirror_nieuw=$(jq -r '.[0] | sub("^https?://"; "")' /tmp/ubuntu-nl-mirrors.txt)
-        #       STAP 3
-        #       Vervangen Repository
-        #           manier 1
-        #           sed -i '/security.ubuntu.com/!s|URIs: .*|URIs: '"$ubuntu_mirror_nieuw"'|' /etc/apt/sources.list.d/ubuntu.sources > /home/$SUDO_USER/luct-logs/add-apt-repository.log
-        #           manier 2
-        #           sed -i '/security.ubuntu.com/!s|URIs: .*|URIs: http://nl.archive.ubuntu.com/ubuntu/|' /etc/apt/sources.list.d/ubuntu.sources
-        #   fi
+        if [[ $versie == "24.04" ]] ; then
+            # Vervang tweede tekstregel door nieuwe inhoud 
+            # Op regel eronder staat Suites noble noble-updates noble-backports daarom alleen aanpassen host
+            sed -i '2c\URIs: http://mirror.ams.macarne.com/ubuntu/' /etc/apt/sources.list.d/ubuntu.sources > /home/$SUDO_USER/luct-logs/add-apt-repository.log
+        fi
+    # Ubuntu
     fi
     #
 }
@@ -2121,7 +1984,7 @@ function debulx_config_os_repo_change () {
 #
 #
 #   #######################
-#   Blok 5E-4-3    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-3    Debian UBUNTU Configuratie Functies
 #                  Functie Config Repository
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -2145,34 +2008,26 @@ function debulx_config_add_repositories () {
     if [[ $distro = "debian" || "ubuntu" ]]; then
         #
         # DataPacket NL 20GBs
-        #   if [[ $modus = "test" ]]; then 
-        #       echo 'NL Datapacket 20Gbs'
-        #   fi
-        #   luct_log_message "NL Datapacket 20GBs"
-        #   add-apt-repository http://mirror.nl.datapacket.com/$distro/ -s -y > /dev/null 2>&1
+        if [[ $modus = "test" ]]; then 
+            echo 'NL Datapacket 20Gbs'
+        fi
+        luct_log_message "NL Datapacket 20GBs"
+        add-apt-repository http://mirror.nl.datapacket.com/$distro/ -s -y > /dev/null 2>&1
         #
         # UT Twente NL 10GBs
-        #   if [[ $modus = "test" ]]; then 
-        #       echo 'NL UT Twente 10Gbs'
-        #   fi
-        #   luct_log_message "NL UT Twente 10GBs"
-        #   add-apt-repository https://ftp.snt.utwente.nl/pub/os/linux/$distro/ -s -y > /dev/null 2>&1
+        if [[ $modus = "test" ]]; then 
+            echo 'NL UT Twente 10Gbs'
+        fi
+        luct_log_message "NL UT Twente 10GBs"
+        add-apt-repository https://ftp.snt.utwente.nl/pub/os/linux/$distro/ -s -y > /dev/null 2>&1
         #
         # Backup 1
         # PilotFiber US 50GBs
-        #   if [[ $modus = "test" ]]; then 
-        #       echo 'US PilotFiber 50GBs'
-        #   fi
-        #   luct_log_message "US Pilotfiber 50Gbs"
-        #   add-apt-repository http://mirror.pilotfiber.com/$distro/ -s -y > /dev/null 2>&1
-        #
-        #
-        # MIRROR toevoegen
-        #   Eigen manier
-        echo 'deb mirror://mirrors.ubuntu.com/NL.txt noble main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list > /dev/null
-        #   Officiele manier
-        #   echo 'deb mirror://mirrors.ubuntu.com/mirrors.txt noble main restricted universe multiverse' | sudo tee -a /etc/apt/sources.list > /dev/null
-        #
+        if [[ $modus = "test" ]]; then 
+            echo 'US PilotFiber 50GBs'
+        fi
+        luct_log_message "US Pilotfiber 50Gbs"
+        add-apt-repository http://mirror.pilotfiber.com/$distro/ -s -y > /dev/null 2>&1
     fi
     if [[ $distro = "linuxmint" ]]; then
         add-apt-repository http://mirror.pilotfiber.com/$distro/ -s -y > /dev/null 2>&1
@@ -2222,8 +2077,6 @@ function debulx_config_add_repositories () {
     #
     luct_log_message "Microsoft"
     #
-    # Zie https://learn.microsoft.com/en-us/linux/packages
-    #
     curl -s -SL "https://packages.microsoft.com/config/$distro/$versie/packages-microsoft-prod.deb" -o "/tmp/packages-microsoft-prod.deb" > /dev/null 2>&1
     dpkg -i /tmp/packages-microsoft-prod.deb > /dev/null 2>&1
     #
@@ -2258,7 +2111,7 @@ function debulx_config_add_repositories () {
 #
 #
 #   #######################
-#   Blok 5E-4-4    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-4    Debian UBUNTU Configuratie Functies
 #                  Functie Configuratie Virtualisatie
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -2294,7 +2147,7 @@ function debulx_config_virtualization () {
 #
 #
 #   #######################
-#   Blok 5E-4-5    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-5    Debian UBUNTU Configuratie Functies
 #                  Functie Python Compatible
 #                  Onderdeel van Debian Ubuntu Nested OOBE Functie
 #   #######################
@@ -2315,7 +2168,7 @@ function debulx_python_compatible () {
 #
 #
 #   #######################
-#   Blok 5E-4-6    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-6    Debian UBUNTU Configuratie Functies
 #                  Functie Minikube
 #                  Minikube met Docker als driver
 #   #######################
@@ -2363,7 +2216,7 @@ function debulx_config_minikube_driver () {
 #
 #
 #   #######################
-#   Blok 5E-4-7    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-7    Debian UBUNTU Configuratie Functies
 #                  Functie Network Settings
 #         
 #   #######################
@@ -2387,7 +2240,7 @@ function debulx_config_network_settings () {
 #
 #
 #   #######################
-#   Blok 5E-4-8    Debian UBUNTU Configuratie Functies
+#   Blok 4E-4-8    Debian UBUNTU Configuratie Functies
 #                  Functie Configuratie BASH shell
 #         
 #   #######################
@@ -2414,40 +2267,33 @@ function debulx_config_bash_shell () {
 #
 #
 #
-# Blok 5E CATEGORIE 5 Nested Functions
+# Blok 4E CATEGORIE 5 Nested Functions
 #
 #
 #
 #
 #   #################################
-#   Blok 5E-5-1    Debian Ubuntu Nested 
+#   Blok 4E-5-1    Debian Ubuntu Nested 
 #                  OOBE
 #   #################################
 #
 #
-# PHASE 10
+# PHASE 8
 #
 #
 function debulx_nested_os_config () {
     #
-    luct_log_message "Phase 10 Start tijd $(date) $USER $SUDO_USER"
+    luct_log_message "Phase 8 Start tijd $(date) $USER $SUDO_USER"
     #
-    kernel_name=$(uname -r)
-    #
-    echo '## Phase 10 - Step 1 of 13 Changing Machine ID'
-    #
-    #   Alleen uitvoeren indien niet gelijk aan WSL2
-    #
-    if [[ "${kernel_name,,}" != *"wsl"* ]]; then
-        debulx_os_machine_init
-    fi
-    echo '## Phase 10 - Step 2 of 13 Set Operating System settings to Europe'
+    # Europa Amsterdam instellen
+    echo '## Phase 8 - Step 1 of 12 Set Operating System settings to Europe'
     debulx_config_taal_nl
-    echo "## Phase 10 - Step 3 of 13 Change default operating system repository to Europe"
+    echo "## Phase 8 - Step 2 of 12 Change Operating System Repository to Europe"
     debulx_config_os_repo_change
-    echo '## Phase 10 - Step 4 of 13 Activating new default operating system repository from Europe'
+    # APT
+    echo '## Phase 8 - Step 3 of 12 Implementing new APT Repository from Europe'
     debulx_os_update_apt
-    echo '## Phase 10 - Step 5 of 13 Upgrading Operating System (takes about 5 minutes)'
+    echo '## Phase 8 - Step 4 of 12 Upgrading Operating System (takes about 5 minutes)'
     debulx_os_upgrade_packages
     if [[ $distro == "debian" ]]; then
         echo "Version before upgrade $deb_vers_oud"
@@ -2460,42 +2306,31 @@ function debulx_nested_os_config () {
         ulx_vers_nw=$VERSION
         echo "Version after upgrade $ulx_vers_nw"
     fi
-    echo '## Phase 10 - Step 6 of 13 Installing Default Apps (takes about 5 minutes)'
+    echo '## Phase 8 - Step 5 of 12 Installing Default Apps (takes about 5 minutes)'
     # Doet installate van add apt repository commando
     debulx_install_default_apps
-    echo "## Phase 10 - Step 7 of 13 Adding extra repositories to APT"
-    # LET OP Gebruikt resultaat van vorige stap 
+    echo "## Phase 8 - Step 6 of 12 Adding new Repositories to APT"
+    # Toevoegen Ansible Cockpit Docker Kubernetes Powershell 
+    # Gebruikt add apt repository commando
     debulx_config_add_repositories
     # Operating System instellen
-    echo "## Phase 10 - Step 8 of 13 Configure BASH Shell settings"
+    echo "## Phase 8 - Step 7 of 12 Configure BASH Shell settings"
     debulx_config_bash_shell
-    echo '## Phase 10 - Step 9 of 13 Releasing ROOT user'
-    #
-    #   Alleen uitvoeren indien niet gelijk aan WSL2
-    #
-    kernel_name=$(uname -r)
-    if [[ "${kernel_name,,}" != *"wsl"* ]]; then
-        wachtwoord=$SUDO_USER
-        echo "root:$wachtwoord" | sudo chpasswd
-        usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
-    fi
+    echo '## Phase 8 - Step 8 of 12 Releasing ROOT user'
+    wachtwoord=$SUDO_USER
+    echo "root:$wachtwoord" | sudo chpasswd
+    usermod -p $(openssl passwd -1 -salt xyz $wachtwoord) root
     # Applicaties
-    echo '## Phase 10 - Step 10 of 13 Installing or updating of Open VM Tools'
-    #
-    #   Alleen uitvoeren indien niet gelijk aan WSL2
-    #
-    kernel_name=$(uname -r)
-    if [[ "${kernel_name,,}" != *"wsl"* ]]; then
-        debulx_config_virtualization
-    fi
-    echo '## Phase 10 - Step 11 of 13 Python compatible with lower versions'
+    echo '## Phase 8 - Step 9 of 12 Installing or updating of Open VM Tools'
+    debulx_config_virtualization
+    echo '## Phase 8 - Step 10 of 12 Python compatible with lower versions'
     debulx_python_compatible
-    echo '## Phase 10 - Step 12 of 13 Installing and configuration of Cockpit'
+    echo '## Phase 8 - Step 11 of 12 Installing and configuration of Cockpit'
     debulx_install_cockpit_srv
-    echo '## Phase 10 - Step 13 of 13 Installing Microsoft Powershell 7'
+    echo '## Phase 8 - Step 12 of 12 Installing Microsoft Powershell 7'
     debulx_install_pwrshell
     #
-    luct_log_message "Phase 10 Eind tijd $(date) $USER $SUDO_USER"
+    luct_log_message "Phase 8 Eind tijd $(date) $USER $SUDO_USER"
     #
 # Debian Ubuntu Nested OS Config
 }
@@ -2504,7 +2339,7 @@ function debulx_nested_os_config () {
 #
 #
 #   #################################
-#   Blok 5E-5-2    Debian Ubuntu Nested 
+#   Blok 4E-5-2    Debian Ubuntu Nested 
 #                  Container Engine 
 #   #################################
 #
@@ -2645,7 +2480,7 @@ function debulx_nested_conteng_complete () {
 #
 # ################################################################################
 #
-# Blok 5F                                                #########
+# Blok 4F                                                #########
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES             #
 # Fedora RHEL                                            #
 #                                                        #######
@@ -2658,19 +2493,19 @@ function debulx_nested_conteng_complete () {
 #
 #
 #
-# Blok 5F-1 CATEGORIE 1 OS Functies
+# Blok 4F-1 CATEGORIE 1 OS Functies
 #
 #
 #
 #
-# Blok 5F-2 CATEGORIE 2 Install Software Functies
+# Blok 4F-2 CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 # ################################################################################
 #
-# Blok 5G                                                #       #
+# Blok 4G                                                #       #
 # DECLARATIE SPECIFIEKE DISTRIBUTIE FUNCTIES             #       #
 # UBUNTU LINUX                                           #       #
 #                                                        #       #
@@ -2683,18 +2518,18 @@ function debulx_nested_conteng_complete () {
 #
 #
 #
-# Block 5G-1 CATEGORIE 1 OS Functies
+# Block 4G-1 CATEGORIE 1 OS Functies
 #
 #
 #
 #
-# Blok 5G-2 CATEGORIE 2 Install Software Functies
+# Blok 4G-2 CATEGORIE 2 Install Software Functies
 #
 #
 #
 #
 #   #######################
-#   Blok 5G-2-1    UBUNTU OS Install Software Functies
+#   Blok 4G-2-1    UBUNTU OS Install Software Functies
 #                  Functie Installatie gnome desktop
 #                  GUI
 #   #######################
@@ -2728,7 +2563,7 @@ function ulx_os_gnome_install () {
 #
 #
 #   #######################
-#   Blok 5G-2-2    UBUNTU OS Install Software Functies
+#   Blok 4G-2-2    UBUNTU OS Install Software Functies
 #                  Functie Installatie Desktop Tools
 #                  GUI
 #   #######################
@@ -2752,12 +2587,12 @@ function ulx_it-funda_tooling () {
 #
 #
 #
-# Block 5E CATEGORIE 3 Configuratie Functies
+# Block 4E CATEGORIE 3 Configuratie Functies
 #
 #
 #
 #   #######################
-#   Blok 5E-3-1    UBUNTU Configuratie Functies
+#   Blok 4E-3-1    UBUNTU Configuratie Functies
 #                  Functie NIC Config OS
 #              
 #   #######################
@@ -2843,7 +2678,7 @@ function ulx_os_netplan_download () {
 #
 #
 #   #######################
-#   Blok 5E-3-2    UBUNTU Configuratie Functies
+#   Blok 4E-3-2    UBUNTU Configuratie Functies
 #                  Functie Change DNS OS
 #       
 #   #######################
@@ -2893,19 +2728,6 @@ if [[ -n "$interface" ]]; then
     #
     #
     #   #########################################################
-    #   Stap 4: Genereer een nieuw MAC adres 
-    #   #########################################################
-    #
-    #
-    #   Format yy:yy:dd:mm:uu:mm
-    #
-    volledig_jaar=$(date +"%Y")
-    jaar_eerste_twee=${volledig_jaar:0:2}
-    jaar_laatste_twee=${volledig_jaar:2:2}
-    mac_address="${jaar_eerste_twee}:${jaar_laatste_twee}:$(date +"%d:%m:%H:%M")"
-    #
-    #
-    #   #########################################################
     #   Stap 4: Genereer nieuwe configuratie
     #   #########################################################
     #
@@ -2919,7 +2741,6 @@ network:
   ethernets:
     $interface:
       dhcp4: true
-      macaddress: $mac_address
       nameservers:
         addresses: [145.2.14.10, 145.2.14.11, 8.8.8.8, 8.8.4.4]
 EOF
@@ -2931,13 +2752,10 @@ EOF
     #   Stap 5: Pas Netplan toe
     #   ##########################################################
     #
-    #   Als dit nu wordt gedaan dan is verbinding weg
-    #   Dit script doet een automatische reboot
-    #   Bij reboot wordt nieuwe configuratie actief
     #
-    #   netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
-    #
-    #
+    netplan apply > /home/$SUDO_USER/luct-logs/ulx_os_config_dns.log 2>&1
+#
+#
 else
     echo 'No valid netwerkinterface found (eth* or ens*)'
 fi
@@ -2950,7 +2768,7 @@ fi
 #   ################################################################################
 #   ################################################################################
 #
-#   Blok 6
+#   Blok 5
 #
 #   Linux Distributie Onafhankelijke Functies 
 #
@@ -2958,12 +2776,12 @@ fi
 #   ################################################################################
 #
 #
-#   Blok 6-1 Categorie 1 OOBE
+#   Blok 5-1 Categorie 1 OOBE
 #
 #
 #
 #  ####################################
-#  Blok 6-1-1
+#  Blok 5-1-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Linux OOBE
 #  ####################################
@@ -2974,23 +2792,23 @@ function luct_linux_oobe () {
     #
     luct_log_message "LUCT Start Linux OOBE $(date)"
     #
-    echo '## Phase 8 - Changing Hostname'
+    echo '## Phase 6 - Changing Hostname'
     verander_machinenaam
     #
     # Directories maken
     # Moet eerst omdat LUCT logging directory wordt aangemaakt in deze functie 
-    echo '## Phase 9 - Creating LUCT environment'
+    echo '## Phase 7 - Creating LUCT environment'
     maak_directories
     #
     # Operating System zo instellen zoals gewenst
     # Maakt gebruik van LUCT logging directory voor logging van de uitgevoerde functies 
-    echo '## Phase 10 - Configure Operating System'
+    echo '## Phase 8 - Configure Operating System'
     if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
         debulx_nested_os_config
     fi
     #
     # GitHub Clones maken
-    echo '## Phase 11 - Cloning GitHub Repositories'
+    echo '## Phase 9 - Cloning GitHub Repositories'
     git_clone_demos
     #
     luct_log_message "LUCT Einde Linux OOBE $(date)"
@@ -2999,25 +2817,24 @@ function luct_linux_oobe () {
 } 
 #
 #
-# Blok 6 Categorie 2 Verander Machinenaam
+# Blok 5 Categorie 2 Verander Machinenaam
 #
 #
 #
 #  ####################################
-#  Blok 6-2-1
+#  Blok 5-2-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Verander Machinenaam
 #  ####################################
 #
-#  PHASE 8
+#  PHASE 6
 #
 #
 function verander_machinenaam () {
     #
-    luct_log_message "Phase 8 $(date) $USER $SUDO_USER"
+    luct_log_message "Phase 6 $(date) $USER $SUDO_USER"
     #
-    kernel_name=$(uname -r)
-    if [[ "$SUDO_USER" != "vagrant" &&  "${kernel_name,,}" != *"wsl"* ]]; then
+    if [[ "$SUDO_USER" != "vagrant" ]]; then
         if [[ $distro == "debian" ]] ; then
             . /etc/os-release
             versiehostnaam=${VERSION_ID:0:2}
@@ -3141,30 +2958,30 @@ function verander_machinenaam () {
 }
 #
 #
-# Blok 6 Categorie 3 Maak Directories
+# Blok 5 Categorie 3 Maak Directories
 #
 #
 #
 #  ####################################
-#  Blok 6-3-1
+#  Blok 5-3-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function maak directories
 #  ####################################
 #
 #
-# PHASE 9
+# PHASE 7
 #
 #
 #
 function maak_directories () {
     #
-    luct_log_message "Phase 9 $(date) $USER $SUDO_USER"
+    luct_log_message "Phase 7 $(date) $USER $SUDO_USER"
     #
     #
     # Temporary
     #
     #
-    echo '## Phase 9 - Step 1 Creating tmp directory in home directory of this user'
+    echo '## Phase 7 - Step 1 Creating tmp directory in home directory of this user'
     if [ ! -d "/home/$SUDO_USER/tmp" ]; then
         mkdir -p /home/$SUDO_USER/tmp
         chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/tmp
@@ -3174,7 +2991,7 @@ function maak_directories () {
     # LAB
     #
     #
-    echo '## Phase 9 - Step 2 Creating lab directory in home directory of this user'
+    echo '## Phase 7 - Step 2 Creating lab directory in home directory of this user'
     if [ ! -d "/home/$SUDO_USER/lab" ]; then
         mkdir -p /home/$SUDO_USER/lab
         chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/lab
@@ -3184,7 +3001,7 @@ function maak_directories () {
     # LUCT Loggings 
     #
     #
-    echo '## Phase 9 - Step 2 Creating LUCT logging directory'
+    echo '## Phase 7 - Step 2 Creating LUCT logging directory'
     if [ ! -d "/home/$SUDO_USER/luct-logs" ]; then
         mkdir -p /home/$SUDO_USER/luct-logs
         chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/luct-logs
@@ -3195,7 +3012,7 @@ function maak_directories () {
     #
     #
     if [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
-        echo '## Phase 9 - Step 3 Creating Container Engine scripts directory'
+        echo '## Phase 7 - Step 3 Creating Container Engine scripts directory'
         if [[ $actie == "docker" || $actie == "minikube" ]]; then
             if [ ! -d "/home/$SUDO_USER/dkr-scripts" ]; then
                 mkdir -p /home/$SUDO_USER/dkr-scripts
@@ -3213,27 +3030,27 @@ function maak_directories () {
 }
 #
 #
-# Blok 6 Categorie 4 Git Clone functies
+# Blok 5 Categorie 4 Git Clone functies
 #
 #
 #
 #  ####################################
-#  Blok 6-4-1
+#  Blok 5-4-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function git clone 
 #  ####################################
 #
 #
-# PHASE 11
+# PHASE 9
 #
 #
 #
 function git_clone_demos () {
     #
-    luct_log_message "Phase 11 Starttijd $(date) $USER $SUDO_USER"
+    luct_log_message "Phase 9 Starttijd $(date) $USER $SUDO_USER"
     #
     # Demos
-    echo '## Phase 11 - Clone GitHub JATUTERT Demos'
+    echo '## Phase 9 - Clone GitHub JATUTERT Demos'
     if [ -d "/home/$SUDO_USER/demos" ]; then
         rm -rf "/home/ubuntu/demos"
     fi
@@ -3241,7 +3058,7 @@ function git_clone_demos () {
     #
     # Awesome Compose
     if [[ $actie == "docker" ]] ; then
-        echo '## Phase 11 - Clone GitHub Awesome Compose'
+        echo '## Phase 9 - Clone GitHub Awesome Compose'
         if [ -d "/home/$SUDO_USER/demos" ]; then
             rm -rf "/home/ubuntu/demos/Docker/Compose/Awesome-compose"
         fi
@@ -3251,7 +3068,7 @@ function git_clone_demos () {
     fi
     #
     # Onderwijs
-    echo '## Phase 11 - Clone GitHub Onderwijs'
+    echo '## Phase 9 - Clone GitHub Onderwijs'
     if [ -d "/home/$SUDO_USER/onderwijs" ]; then
         rm -rf "/home/ubuntu/onderwijs"
     fi
@@ -3260,7 +3077,7 @@ function git_clone_demos () {
     git clone --quiet https://github.com/msiekmans/msiekmans.github.io.git /home/$SUDO_USER/onderwijs/intro_infra
     #
     # PowerShell
-    echo '## Phase 11 - Clone GitHub Powershell is fun'
+    echo '## Phase 9 - Clone GitHub Powershell is fun'
     if [ -d "/home/$SUDO_USER/powershellisfun" ]; then
         rm -rf "/home/$SUDO_USER/powershellisfun"
     fi
@@ -3268,7 +3085,7 @@ function git_clone_demos () {
     #
     # Ansible 
     if [[ $actie == "iacmaster" ]] ; then
-        echo '## Phase 11 - Clone GitHub Ansible for DevOps'
+        echo '## Phase 9 - Clone GitHub Ansible for DevOps'
         if [ -d "/home/$SUDO_USER/ansible_devops" ]; then
             rm -rf "/home/$SUDO_USER/ansible_devops"
         fi
@@ -3276,27 +3093,27 @@ function git_clone_demos () {
     fi 
     #
     #
-    echo "## Phase 11 - Make $SUDO_USER user owner of all directories"
+    echo "## Phase 9 - Make $SUDO_USER user owner of all directories"
     chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/demos
     chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/onderwijs
     chown -f -R $SUDO_USER:$SUDO_USER /home/$SUDO_USER/powershellisfun
     #
     # Shell Scripts
-    echo '## Phase 11 - Make all Shell Scriptfiles Executable'
+    echo '## Phase 9 - Make all Shell Scriptfiles Executable'
     find /home/$SUDO_USER/demos -type f -name "*.sh" -exec chmod +x {} \;
     #
-    luct_log_message "Phase 11 Eindtijd $(date) $USER $SUDO_USER"
+    luct_log_message "Phase 9 Eindtijd $(date) $USER $SUDO_USER"
     #
 # Git Clone
 } 
 #
 #
-# Blok 6 Categorie 5 Progress Bar functies
+# Blok 5 Categorie 5 Progress Bar functies
 #
 #
 #
 #  ####################################
-#  Blok 6-5-1
+#  Blok 5-5-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function progress bar 
 #  ####################################
@@ -3327,18 +3144,17 @@ draw_progress_bar() {
 }
 #
 #
-# Blok 6 Categorie 6 Finish Script functies
+# Blok 5 Categorie 6 Finish Script functies
 #
 #
 #
 #  ####################################
-#  Blok 6-6-1
+#  Blok 5-6-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Actie Klaar
 #  ####################################
 #
 #
-#   PHASE 15
 #
 #
 function luct_finish_script () {
@@ -3374,12 +3190,12 @@ function luct_finish_script () {
 }
 #
 #
-# Blok 6 Categorie 7 Interactief menu functies
+# Blok 5 Categorie 7 Interactief menu functies
 #
 #
 #
 #  ####################################
-#  Blok 6-7-1
+#  Blok 5-7-1
 #  ## Linux Distributie Onafhankelijke Functies
 #  ## Function Menu
 #  ####################################
@@ -3543,21 +3359,18 @@ function config_menu () {
 #   ################################################################################
 #   ################################################################################
 #
-#   Blok 7 Main functies
-#   Fase 7 
+#   Blok 6 Main functies
+#   Fase 4 
 #
 #   ################################################################################
 #   ################################################################################
 #
-luct_log_message "Phase 7 Starttijd $(date) $USER $SUDO_USER"
-#
-echo '## Phase 7 - Main'
 #
 #
 #
 #   ################################################################################
 #   ################################################################################
-#   Blok 7-1 ALPINE
+#   Blok 6-1 ALPINE
 #   PLANNED FOR 2026
 #   ################################################################################
 #   ################################################################################
@@ -3636,7 +3449,7 @@ fi
 #
 #   ################################################################################
 #   ################################################################################
-#   Blok 7-2
+#   Blok 6-2
 #   BuildRoot 
 #   ################################################################################
 #   ################################################################################
@@ -3715,13 +3528,12 @@ fi
 #
 #   ################################################################################
 #   ################################################################################
-#   Blok 7-3 
+#   Blok 6-3 
 #   Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu
 #   ################################################################################
 #   ################################################################################
 #
 #
-#   Fase 7
 #
 #
 if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $distro == "ubuntu" ]]; then
@@ -3733,9 +3545,9 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Besturingssysteem en standaard applicaties bijwerken naar laatste stand
         #
         #
-        # Phase 8 tot en met 11
+        # Phase 6 tot en met 9
         luct_linux_oobe
-        # Phase 15
+        # Phase 10
         luct_finish_script
         exit 1
     elif [[ $actie == "normal" ]]; then
@@ -3757,11 +3569,11 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Aanpassen netwerkinstellingen zoals dns en nic2
         #
         #
-        # Phase 8 tot en met 11
+        # Phase 6 tot en met 9
         luct_linux_oobe
-        # Phase 12
+        # Phase 10
         debulx_config_network_settings
-        # Phase 15
+        # Phase 11
         luct_finish_script
         exit 1
     elif [[ $actie == "docker" || $actie == "podman" || $actie == "minikube" ]]; then
@@ -3770,20 +3582,20 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Debian Ubuntu LinuxMint Debian LinuxMint Ubuntu Optie 4
         # Installeren en Configureren Docker Podman en Minikube op Docker
         #
-        # Phase 8 tot en met 11
+        # Phase 6 tot en met 9
         luct_linux_oobe
-        # Phase 12
+        # Phase 10
         debulx_nested_conteng_complete
-        # Phase 13
+        # Phase 11
         debulx_install_minikube_and_k8stools
-        # Phase 14
+        # Phase 12
         if [[ $actie == "docker" || $actie == "minikube" || $modus == "docker" || $modus = "test" || $modus = "leeg" ]] ; then
             debulx_config_minikube_driver "docker"
         fi
         if [[ $actie == "podman" || $modus == "podman" ]] ; then
             debulx_config_minikube_driver "podman"
         fi
-        # Phase 15
+        # Phase 11
         luct_finish_script
         exit 1
     elif [[ $actie == "iacmaster" || $actie == "iaslave" ]]; then
@@ -3793,16 +3605,16 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Installeren en Configureren Ansible
         #
         #
-        # Phase 8 tot en met 11
+        # Phase 4 tot en met 7
         luct_linux_oobe
-        # Phase 12
+        # Phase 8
         if [[ $actie == "iacmaster" ]] ; then
             debulx_install_ansible_master_slave "master"
         fi
         if [[ $actie == "iacslave" ]] ; then
             debulx_install_ansible_master_slave "slave"
         fi
-        # Phase 15
+        # Phase 9
         luct_finish_script
         exit 1
     elif [[ $actie == "omv" ]]; then
@@ -3812,7 +3624,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Installeren en Configureren
         # Open Media Vault
         #
-        # Phase 8 tot en met 11
+        # Phase 4 tot en met 7
         luct_linux_oobe
         if [[ $distro == "debian" ||  $distro == "lmde" ]] ; then
             deb_install_omv
@@ -3821,7 +3633,6 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         if [[ $distro == "ubuntu" || $distro == "linuxmint" ]] ; then
             echo 'Installing Open Media Vault is NOT supported'
         fi 
-        # Phase 15
         exit 1
     elif [[ $actie == "osticket" ]]; then
         #
@@ -3862,7 +3673,7 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         # Installeren VAX VMS Emulator
         #
         #
-        # Phase 8 tot en met 11
+        # Phase 6 tot en met 9
         luct_linux_oobe
         #
         #   https://www.openvmshobby.com/vax-vms/openvms-on-vax-simh/
@@ -3875,6 +3686,8 @@ if [[ $distro == "debian" || $distro == "linuxmint" || $distro == "lmde" || $dis
         git clone --quiet https://github.com/simh/simh.git /opt/simh
         #
         yes | make --directory /opt/simh -j4 vax8600 --always-make
+        #make -j4 vax8600
+        #
         #
         mkdir -p /opt/simulators/vax8600/iso
         mkdir -p /opt/simulators/vax8600/data

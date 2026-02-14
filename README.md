@@ -57,6 +57,14 @@ Finally, there is the Stable Build. This Build is a Dev Build, but now tested by
 Finally, an adjustment has been made to the name. Henceforth, the script is called Linux Universal Configuration Script (LUCT for short) 
 instead of Ubuntu Config.
 
+### Version 4.1
+
+Version 4.1 introduced a complete new Docker environment (e.g. Visual Studio Code Server, Yacht Server and Portainer)
+
+### Version 4.2
+
+Version 4.2 will introduce full compability with Ubuntu running on Windows Subsystem for Linux (WSL) version 2
+
 ### Version 4.5
 
 Version 4.5 will introduce compability with Alpine Linux. This is scheduled for sometime in the year 2026.
