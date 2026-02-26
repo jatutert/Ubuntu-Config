@@ -30,6 +30,7 @@ Available options are:
 Script Language in current version is only Dutch. 
 
 Script version 2 is no longer maintained. Feel free to make modifications or additions to the script.
+I would really appreciate it if you could also send me a copy of the modified script. 
 
 ### Version 3
 
@@ -42,7 +43,9 @@ So that later this can be converted to other distributions.
 Completely new to version 3 is the implementation of startup parameter for the script. 
 The script then goes to work based on this parameter. 
 Version 2 has remained a bit, because you can also start the script with the parameter menu and then menu is shown similar to version 2. 
+
 Script version 3 is no longer maintained. Feel free to make modifications or additions to the script.
+I would really appreciate it if you could also send me a copy of the modified script. 
 
 ### Version 4
 
@@ -59,13 +62,32 @@ instead of Ubuntu Config.
 
 ### Version 4.1
 
-Version 4.1 introduced a complete new Docker environment (e.g. Visual Studio Code Server, Yacht Server and Portainer)
+Version 4.1 introduced a complete new Docker environment (e.g. Visual Studio Code Server, Yacht Server and Portainer).
+This version is currently in the Stable channel. It has been thoroughly tested by a very large group of students.
+Active development on version 4.1 is currently on hold, as work is underway on version 4.2. 
 
 ### Version 4.2
 
 Version 4.2 will introduce full compability with Ubuntu running on Windows Subsystem for Linux (WSL) version 2
+Version 4.2 will also introduce the ability to change the machine ID within Linux. 
+This version is currently in the Canary development channel. It may therefore contain errors. 
 
 ### Version 4.5
 
-Version 4.5 will introduce compability with Alpine Linux. This is scheduled for sometime in the year 2026.
+Version 4.5 will introduce compability with Alpine Linux. This is scheduled for sometime in the year 2027. 
+
+## License / Copyright / Trademarks 
+> - Vagrant by Hashicorp Inc. (hashicorp.com) 
+> - Virtualbox by Oracle Corporation (oracle.com) 
+> - VMware by VMware Company (vmware.com) / Broadcom (broadcom.com) 
+> - Windows by Microsoft Corporation (microsoft.com)
+
+Everything I describe is intended for personal or educational use. In my case, that is primarily educational use. 
+
+All references to and quotations from external sources are licensed and/or copyright the respective owners. 
+I make no claim to ownership of these sources. 
+References to and quotations from these sources have been used on the basis of assumption of reasonableness and fair use. 
+To my knowledge, no copyright or other rights have been infringed. 
+If it is believed that references to and/or quotations from certain external sources violate any rules, rights or interests, please contact.
+
 
