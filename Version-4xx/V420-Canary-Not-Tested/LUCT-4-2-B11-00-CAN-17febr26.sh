@@ -72,7 +72,7 @@
 #
 Major="4"
 Minor="2"
-Build="12"
+Build="11"
 Patch="00"
 # Indien GEEN Release Candidate op 0 zetten
 ReleaseCandidate="0"
@@ -1535,19 +1535,15 @@ function debulx_conteng_images_pull () {
             "alpine:latest"
             "amazonlinux:latest"
             "clearlinux:latest"
-            "codercom/code-server:latest"
             "debian:latest"
-            "dockersamples/static-site"
-            "moncho/dry:latest"
-            "httpd:latest"
-            "jenkins/jenkins:latest-jdk21"
-            "lirantal/dockly:latest"
-            "nginx:latest"
-            "portainer/portainer-ce:latest"
             "ubuntu:latest"
-            "percona/watchtower:latest"
+            "httpd:latest"
+            "dockersamples/static-site"
+            "nginx:latest"
             "wordpress:latest"
+            "portainer/portainer-ce:latest"
             "selfhostedpro/yacht:latest"
+            "percona/watchtower:latest"
         )
     fi
     #
@@ -1557,24 +1553,22 @@ function debulx_conteng_images_pull () {
             "alpine:3.5"
             "amazonlinux:latest"
             "clearlinux:latest"
-            "codercom/code-server:latest"
             "debian:latest"
-            "moncho/dry:latest"
             "fedora:latest"
-            "httpd:latest"
-            "jenkins/jenkins:latest-jdk21"
             "photon:latest"
+            "ubuntu:latest"
+            "codercom/code-server:latest"
+            "httpd:latest"
             "prakhar1989/static-site"
             "dockersamples/static-site"
             "minio/minio:latest"
             "nginx:latest"
+            "wordpress:latest"
+            "jenkins/jenkins:latest-jdk21"
             "portainer/portainer-ce:latest"
             "registry:latest"
-            "lirantal/dockly"
-            "ubuntu:latest"
-            "percona/watchtower:latest"
-            "wordpress:latest"
             "selfhostedpro/yacht:latest"
+            "percona/watchtower:latest"
         )
     fi
     #
@@ -1584,8 +1578,6 @@ function debulx_conteng_images_pull () {
             "portainer/portainer-ce:latest"
             "selfhostedpro/yacht:latest"
             "percona/watchtower:latest"
-            "lirantal/dockly"
-            "moncho/dry"
         )
     fi
     #
@@ -1637,7 +1629,6 @@ function debulx_conteng_portainer_run () {
     #
     local containerengine=$1
     #
-    $containerengine volume rm portainer_data > /dev/null 2>&1
     $containerengine volume create portainer_data > /dev/null 2>&1
     #
     # Docker Run Portainer
@@ -1649,11 +1640,11 @@ function debulx_conteng_portainer_run () {
     #
     #
     if [[ $containerengine == "docker" ]]; then
-        $containerengine run -d --name LUCT_portainer -p 8000:8000 -p 9101:9443 --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest >> /home/$SUDO_USER/luct-logs/luct_start_Portainer.log 2>&1
+        $containerengine run -d -p 8000:8000 -p 9101:9443 --name LUCT_portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest >> /home/$SUDO_USER/luct-logs/luct_start_Portainer.log 2>&1
     fi
     #
     if [[ $containerengine == "podman" ]]; then
-        $containerengine run -d --name LUCT_portainer -p 8000:8000 -p 9101:9443 --restart=always -v /var/run/podman/podman.sock:/var/run/podman/podman.sock -v portainer_data:/data portainer/portainer-ce:latest >> /home/$SUDO_USER/luct-logs/luct_start_Portainer.log 2>&1
+        $containerengine run -d -p 8000:8000 -p 9101:9443 --name LUCT_portainer --restart=always -v /var/run/podman/podman.sock:/var/run/podman/podman.sock -v portainer_data:/data portainer/portainer-ce:latest >> /home/$SUDO_USER/luct-logs/luct_start_Portainer.log 2>&1
     fi
     #
     #
@@ -1710,7 +1701,6 @@ function debulx_conteng_yacht_run () {
     #
     local containerengine=$1
     #
-    $containerengine volume rm yacht_data > /home/$SUDO_USER/luct-logs/debulx_docker_yacht_run.log 2>&1
     $containerengine volume create yacht_data > /home/$SUDO_USER/luct-logs/debulx_docker_yacht_run.log 2>&1
     #
     if [[ $containerengine == "docker" ]]; then
@@ -1783,7 +1773,7 @@ function debulx_conteng_vscsrv_run () {
     PROJECT_DIR="/home/$SUDO_USER/demos"
     DOCKER_IMAGE="codercom/code-server:latest"
     #
-    $containerengine run -d --name "$CONTAINER_NAME" -p 9103:8080 --restart=always -v "$PROJECT_DIR:/home/coder/project" "$DOCKER_IMAGE" --auth=none >> /home/$SUDO_USER/luct-logs/luct_start_vsc_srv.log 2>&1
+    $containerengine run -d -p 9103:8080 -v "$PROJECT_DIR:/home/coder/project" --name "$CONTAINER_NAME" --restart=always "$DOCKER_IMAGE" --auth=none >> /home/$SUDO_USER/luct-logs/luct_start_vsc_srv.log 2>&1
     #
     # In Visual Studio Code Server is lokale omgeving zichtbaar onder Project
     #
@@ -1810,7 +1800,6 @@ function debulx_conteng_jenkins_run () {
     #
     local containerengine=$1
     #
-    $containerengine volume rm jenkins_data > /home/$SUDO_USER/luct-logs/debulx_docker_jenkins_run.log 2>&1
     $containerengine volume create jenkins_data > /home/$SUDO_USER/luct-logs/debulx_docker_jenkins_run.log 2>&1
     #
     $containerengine run -d --name LUCT_Jenkins -p 9104:8080 -p 50000:50000 --restart=always -v jenkins_data:/var/jenkins_home jenkins/jenkins:latest-jdk21 >> /home/$SUDO_USER/luct-logs/luct_start_jenkins.log 2>&1
@@ -1838,10 +1827,7 @@ function debulx_conteng_registry_run () {
     #
     local containerengine=$1
     #
-    $containerengine volume rm registry-data
-    $containerengine volume create registry-data
-
-    $containerengine run -d --name LUCT_Registry -p 9105:5000 --restart always  -v registry-data:/var/lib/registry registry > /home/$SUDO_USER/luct-logs/luct_start_registry.log 2>&1 
+    $containerengine run -d -p 9105:5000 --restart always --name LUCT_Registry registry > /home/$SUDO_USER/luct-logs/luct_start_registry.log 2>&1 
     #
 } 
 #
@@ -1873,10 +1859,10 @@ function debulx_conteng_watchtower_run () {
     # ###########
     #
     if [[ $containerengine == "docker" ]]; then
-        $containerengine run -d --name LUCT_Watchtower -p 9106:8080 --restart always  -v /var/run/docker.sock:/var/run/docker.sock percona/watchtower >> /home/$SUDO_USER/luct-logs/luct_start_WachTower.log 2>&1
+        $containerengine run -d -p 9106:8080 --restart always --name LUCT_Watchtower -v /var/run/docker.sock:/var/run/docker.sock percona/watchtower >> /home/$SUDO_USER/luct-logs/luct_start_WachTower.log 2>&1
     fi
     if [[ $containerengine == "podman" ]]; then
-        $containerengine run -d --name LUCT_Watchtower -p 9106:8080 --restart always  -v /var/run/podman/podman.sock:/var/run/podman/podman.sock percona/watchtower >> /home/$SUDO_USER/luct-logs/luct_start_WachTower.log 2>&1
+        $containerengine run -d -p 9106:8080 --restart always --name LUCT_Watchtower -v /var/run/podman/podman.sock:/var/run/podman/podman.sock percona/watchtower >> /home/$SUDO_USER/luct-logs/luct_start_WachTower.log 2>&1
     fi
 # WatchTower
 }
