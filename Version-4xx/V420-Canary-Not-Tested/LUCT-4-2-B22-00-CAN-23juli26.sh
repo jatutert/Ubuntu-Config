@@ -52,16 +52,16 @@
 #   sudo wget -O $HOME/luctv42.sh https://edu.nl/vnej9
 #
 #   Hierna
-#   sudo chmod +x $HOME/luctv42.sh
-#   sudo $HOME/luctv42.sh docker
-#   sudo $HOME/luctv42.sh podman
-#   sudo $HOME/luctv42.sh network
-#   sudo $HOME/luctv42.sh vaxvms
+#   sudo chmod +x $HOME/luctv42.sh 
+#   sudo $HOME/luctv42.sh docker 
+#   sudo $HOME/luctv42.sh podman 
+#   sudo $HOME/luctv42.sh network 
+#   sudo $HOME/luctv42.sh vaxvms 
 #
 #
 #   #######################
 #   Blok 1B
-#   Bugcheck
+#   Bugcheck 
 #   #######################
 #
 #
@@ -87,7 +87,7 @@
 #
 readonly LUCT_Major_Version="4"
 readonly LUCT_Minor_Version="2"
-readonly LUCT_Minor_Version_Build="23"
+readonly LUCT_Minor_Version_Build="22"
 readonly LUCT_Minor_Version_Build_Patch="00"
 # Indien GEEN Release Candidate op 0 zetten
 readonly LUCT_ReleaseCandidate="0"
@@ -102,7 +102,7 @@ readonly LUCT_Channel="CAN"
 #
 #   Inkomende Poorten
 #   #################
-#   22   Inkomende poort Ansible host vanuit Controller
+#   22   Inkomende poort Ansible host vanuit Controller 
 #   9001 Inkomende poort voor Portainer Agent naar Portainer Server
 #
 #
@@ -139,7 +139,7 @@ readonly LUCT_Channel="CAN"
 #   Uitgaande Containerpoorten 9200 Docker Containers
 #   9201 prakhar1989/static-site
 #   9202 dockersamples/static-site
-#   9203 Demo Dockerfile Apache
+#   9203 Demo Dockerfile Apache 
 #   9204 Demo Dockerfile NodeJS
 #   9205 Flask-demo # Website 1 # Docker
 #
@@ -150,7 +150,7 @@ readonly LUCT_Channel="CAN"
 #   9210 NextCloud
 #
 #   9211 MinIO API poort (wordt niet actief gebruikt maar beschikbaar houden voor bijv kubernetes)
-#   9212 Minio Console
+#   9212 Minio Console 
 #   9213 x
 #   9214 x
 #   9215 x
@@ -165,7 +165,7 @@ readonly LUCT_Channel="CAN"
 #   9306 x
 #   9307 x
 #   9308 x
-#   9309 x
+#   9309 x 
 #   9310 x
 #
 
@@ -188,20 +188,18 @@ readonly LUCT_Channel="CAN"
 #
 #   24sept25    LUCT versie 4.1 Build 46 Patch 11 = LUCT versie 4.2 Build 00 Patch 00
 #   25sept25    03  PostGreSQL en PGAdmin als containers eerste opzetje
-#   25sept25    04  Machine ID aanpassing via Job
+#   25sept25    04  Machine ID aanpassing via Job 
 #   
-#   11febr26    05  WSL2 eerste aanzet
+#   11febr26    05  WSL2 eerste aanzet 
 #   12febr26    06  Ubuntu Repos
 #
 #   15mrt26     14  Claude AI implementatie verbeteren script
 #   17jun26     16  Machine ID functie compleet niet en bugfixes
-#   20juni26    17  Nieuwe opdeling in blokken script voor beter overzicht
+#   20juni26    17  Nieuwe opdeling in blokken script voor beter overzicht 
 #   22juli26    18  Debian 13 Eerste aanzet
 #   22juli26    19  Bugfixes voor Debian 13 eerste run en verwijderen spinner bij default apps
 #   23juli26    20  Bugfixes voor Debian 13 tweede run
-#   23juli26    21  Bugfixes voor Debian 13 derde run en stiller maken apt install op debian
-#   23juli26    22  APT Debian minder meldingen
-#   23juli26    23  Terugdraaien aanpassingen build 22 Debian APT
+#   23juli26    21  Bugfixes voor Debian 13 derde run en stiller maken apt install op debian 
 #
 #   #######################
 #
@@ -335,7 +333,7 @@ luct_log_message "Tijdzone ingesteld op $TARGET_TIMEZONE"
 (( phase = phase + 1 ))
 #
 #
-#   Controleer ROOT rechten voor het script
+#   Controleer ROOT rechten voor het script 
 #
 #   luct_phase_one_time=$(date)
 #   luct_log_message "Phase 1 $luct_phase_one_time"
@@ -532,8 +530,14 @@ distro=$(echo "$ID" | tr '[:upper:]' '[:lower:]')
 versie=$(echo "$VERSION_ID" | tr '[:upper:]' '[:lower:]')
 #
 if [[ $distro == "debian" || $distro == "ubuntu" ]]; then
-    apt update -qq -y || true > /dev/null 2>&1
-    apt install curl jq sed wget wget2 -qq -y || true > /dev/null 2>&1
+    if [[ $versie == "13" ]] ; then
+        apt update -qq -y || true > /dev/null 2>&1
+        apt install -qq -y -o Dpkg::Use-Pty=0 curl jq sed wget wget2 || true > /dev/null 2>&1
+    fi
+    if [[ $versie == "24.04" ]] ; then
+        apt update -qq -y || true > /dev/null 2>&1
+        apt install curl jq sed wget wget2 -qq -y || true > /dev/null 2>&1
+    fi
 fi
 #
 #
@@ -565,30 +569,18 @@ if [[ $distro == "debian" ]] ; then
         sed -i '2c\deb-src https://mirror.nl.mirhosting.net/debian/ bookworm main non-free non-free-firmware' /etc/apt/sources.list
     fi
     if [[ $versie == "13" ]] ; then
+        sed -i '1c\deb https://mirror.nl.mirhosting.net/debian/ trixie main non-free non-free-firmware' /etc/apt/sources.list
+        sed -i '2c\deb-src https://mirror.nl.mirhosting.net/debian/ trixie main non-free non-free-firmware' /etc/apt/sources.list
         #
-        kernel_version="$(uname -r)"
-        if [[ "$kernel_version" == *-WSL2 ]]; then
-            echo "WSL is actief."
-            if grep -q '^URIs: https://mirror.nl.mirhosting.net/debian/$' /etc/apt/sources.list.d/0000debian.sources; then
-                echo "Mirror is al ingesteld."
-            else
-                sed -i 's|https://deb.debian.org/debian|https://mirror.nl.mirhosting.net/debian/|g' /etc/apt/sources.list.d/0000debian.sources
-                echo "Mirror aangepast."
-            fi
-        else
-            echo "WSL is niet actief."
-            sed -i '1c\deb https://mirror.nl.mirhosting.net/debian/ trixie main non-free non-free-firmware' /etc/apt/sources.list
-            sed -i '2c\deb-src https://mirror.nl.mirhosting.net/debian/ trixie main non-free non-free-firmware' /etc/apt/sources.list
-            #
-            #   Backports are packages taken from the next Debian release adjusted and recompiled for usage on Debian stable.
-            #   Zie https://backports.debian.org/
-            #
-            echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" | sudo tee /etc/apt/sources.list.d/backports.list > /dev/null 2>&1
-            #
-        fi
+        #   Backports are packages taken from the next Debian release adjusted and recompiled for usage on Debian stable.
+        #   Zie https://backports.debian.org/
+        #
+        echo "deb http://deb.debian.org/debian ${VERSION_CODENAME}-backports main" | sudo tee /etc/apt/sources.list.d/backports.list > /dev/null 2>&1
+        #
     fi
     apt update -qq -y || true > /dev/null 2>&1
-fi
+fi 
+
 #
 #
 # ################################################################################
@@ -714,7 +706,7 @@ function build_install_docker_compose_plugin () {
 #
 #   #######################
 #   5D-2-1    Debian OS Install Software Functies
-#             Functie Installatie Open Media Vault
+#             Functie Installatie Open Media Vault 
 #             Debian OMV
 #   #######################
 #
@@ -1021,7 +1013,13 @@ function debulx_install_default_apps () {
         if [[ $modus == "test" ]]; then 
             echo "Installing $apt_install"
         fi
-        apt install "$apt_install" -qq -y || true >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_pb.log 2>&1
+        if [[ $distro == "debian" ]]; then
+            #   apt -qq -y -o Dpkg::Use-Pty=0 -t ${VERSION_CODENAME}-backports install "$apt_install" || true >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_pb.log 2>&1
+            apt -qq -y -o Dpkg::Use-Pty=0 install "$apt_install" || true >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_pb.log 2>&1
+        fi
+        if [[ $distro == "ubuntu" ]]; then
+            apt install "$apt_install" -qq -y || true >> /home/$SUDO_USER/luct-logs/debulx_install_default_apps_pb.log 2>&1
+        fi
         if [[ $? -ne 0 ]]; then
             echo "$apt_install could not be installed. Continue with the next one ..."
             luct_log_message "FOUT $apt_install kon NIET geinstaleerd worden"
